@@ -17,7 +17,7 @@ namespace TrainingTask.Common.Models
 
         public DateTime FinishDate { get; set; }
 
-        public string FullName { get; set; }
+        public IEnumerable<string> FullNames { get; set; }
 
         public Status Status { get; set; }
     }
