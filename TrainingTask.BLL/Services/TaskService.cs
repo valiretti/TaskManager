@@ -34,14 +34,7 @@ namespace TrainingTask.BLL.Services
             using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             {
                 var insertedId = _repository.Create(nTask);
-                if (task.Employees != null)
-                {
-                    _employeeTaskRepository.DeleteEmployeesFromTask(insertedId);
-                    foreach (var employee in task.Employees)
-                    {
-                        _employeeTaskRepository.Add(insertedId, employee.Id);
-                    }
-                }
+                UpdateEmployees(task, insertedId);
                 transactionScope.Complete();
                 return insertedId;
             }
@@ -61,15 +54,7 @@ namespace TrainingTask.BLL.Services
             using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
             {
                 _repository.Update(task);
-                if (modifiedTask.Employees != null)
-                {
-                    _employeeTaskRepository.DeleteEmployeesFromTask(task.Id);
-                    foreach (var employee in modifiedTask.Employees)
-                    {
-                        _employeeTaskRepository.Add(task.Id, employee.Id);
-                    }
-                }
-
+                UpdateEmployees(modifiedTask, task.Id);
                 transactionScope.Complete();
             }
         }
@@ -87,6 +72,18 @@ namespace TrainingTask.BLL.Services
         public IEnumerable<TaskViewModel> GetAll()
         {
             return _repository.GetAll();
+        }
+
+        private void UpdateEmployees(CreateTask task, int id)
+        {
+            if (task.Employees != null)
+            {
+                _employeeTaskRepository.DeleteEmployeesFromTask(id);
+                foreach (var employee in task.Employees)
+                {
+                    _employeeTaskRepository.Add(id, employee.Id);
+                }
+            }
         }
     }
 }
