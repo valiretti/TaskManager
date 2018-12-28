@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;

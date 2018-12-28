@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
-using Task = System.Threading.Tasks.Task;
 
 namespace TrainingTask.Web.Controllers
 {

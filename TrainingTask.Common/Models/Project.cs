@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingTask.Common.Models
+﻿namespace TrainingTask.Common.Models
 {
     public class Project
     {

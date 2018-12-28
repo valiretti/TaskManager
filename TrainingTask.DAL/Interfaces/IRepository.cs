@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingTask.DAL.Interfaces
+﻿namespace TrainingTask.DAL.Interfaces
 {
     public interface IRepository<T> where T: class
     {

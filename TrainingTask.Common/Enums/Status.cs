@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TrainingTask.Common.Enums
+﻿namespace TrainingTask.Common.Enums
 {
     public enum Status
     {

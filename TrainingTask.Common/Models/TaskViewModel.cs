@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Common.Models
