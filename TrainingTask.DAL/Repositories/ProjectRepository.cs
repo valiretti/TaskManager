@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using TrainingTask.Common.Models;
@@ -51,10 +52,10 @@ namespace TrainingTask.DAL.Repositories
             return null;
         }
 
-        public void Create(Project item)
+        public int Create(Project item)
         {
             string sqlExpression =
-                "INSERT INTO Projects (Name, Abbreviation, Description) VALUES (@name, @abbreviation, @description)";
+                "INSERT INTO Projects (Name, Abbreviation, Description) VALUES (@name, @abbreviation, @description) SET @id=SCOPE_IDENTITY()";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -62,8 +63,12 @@ namespace TrainingTask.DAL.Repositories
                 SqlParameter nameParam = new SqlParameter("@name", item.Name);
                 SqlParameter abbreviationParam = new SqlParameter("@abbreviation", item.Abbreviation);
                 SqlParameter descriptionParam = new SqlParameter("@description", item.Description);
+                SqlParameter idParam = new SqlParameter("@id", SqlDbType.Int) { Direction = ParameterDirection.Output };
                 command.Parameters.AddRange(new[] { nameParam, abbreviationParam, descriptionParam });
+                command.Parameters.Add(idParam);
                 command.ExecuteNonQuery();
+
+                return (int)idParam.Value;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using TrainingTask.Common.Models;
@@ -53,10 +54,10 @@ namespace TrainingTask.DAL.Repositories
             return null;
         }
 
-        public void Create(Employee item)
+        public int Create(Employee item)
         {
             string sqlExpression =
-                "INSERT INTO Employees (FirstName, LastName, Patronymic, Position) VALUES (@firstName, @lastName, @patronymic, @position)";
+                "INSERT INTO Employees (FirstName, LastName, Patronymic, Position) VALUES (@firstName, @lastName, @patronymic, @position) SET @id=SCOPE_IDENTITY()";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -65,8 +66,12 @@ namespace TrainingTask.DAL.Repositories
                 SqlParameter lastNameParam = new SqlParameter("@lastName", item.LastName);
                 SqlParameter patronymicParam = new SqlParameter("@patronymic", item.Patronymic);
                 SqlParameter positionParam = new SqlParameter("@position", item.Position);
+                SqlParameter idParam = new SqlParameter("@id", SqlDbType.Int) {Direction = ParameterDirection.Output};
                 command.Parameters.AddRange(new[] { firstNameParam, lastNameParam, patronymicParam, positionParam });
+                command.Parameters.Add(idParam);
                 command.ExecuteNonQuery();
+
+                return (int)idParam.Value;
             }
         }
 

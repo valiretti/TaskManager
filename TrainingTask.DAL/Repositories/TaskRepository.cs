@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -59,10 +60,10 @@ namespace TrainingTask.DAL.Repositories
             return null;
         }
 
-        public void Create(Task item)
+        public int Create(Task item)
         {
             string sqlExpression =
-                "INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) VALUES (@name, @workTime, @startDate, @finishDate, @status, @projectId)";
+                "INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) VALUES (@name, @workTime, @startDate, @finishDate, @status, @projectId) SET @id=SCOPE_IDENTITY()";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -73,8 +74,12 @@ namespace TrainingTask.DAL.Repositories
                 SqlParameter finishDateParam = new SqlParameter("@finishDate", item.FinishDate);
                 SqlParameter statusParam = new SqlParameter("@status", (int)item.Status);
                 SqlParameter projectIdParam = new SqlParameter("@projectId", item.ProjectId);
+                SqlParameter idParam = new SqlParameter("@id", SqlDbType.Int) { Direction = ParameterDirection.Output };
                 command.Parameters.AddRange(new[] { nameParam, workTimeParam, startDateParam, finishDateParam, statusParam, projectIdParam });
+                command.Parameters.Add(idParam);
                 command.ExecuteNonQuery();
+
+                return (int)idParam.Value;
             }
         }
 
@@ -117,8 +122,8 @@ namespace TrainingTask.DAL.Repositories
             string sqlExpression =
                 "SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status FROM Tasks " +
                 "JOIN Projects ON Projects.Id = Tasks.ProductId " +
-                "JOIN EmployeeTasks ON TaskId.Id = Tasks.Id " +
-                "JOIN Employee ON EmployeeTasks.EmployeeId = Employee.Id";
+                "LEFT JOIN EmployeeTasks ON TaskId.Id = Tasks.Id " +
+                "LEFT JOIN Employee ON EmployeeTasks.EmployeeId = Employee.Id";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -136,9 +141,9 @@ namespace TrainingTask.DAL.Repositories
                             string name = reader.GetString(2);
                             DateTime startDate = reader.GetDateTime(3);
                             DateTime finishDate = reader.GetDateTime(4);
-                            string firstName = reader.GetString(5);
-                            string lastName = reader.GetString(6);
-                            string patronymic = reader.GetString(7);
+                            string firstName = reader.IsDBNull(5) ? String.Empty : reader.GetString(5);
+                            string lastName = reader.IsDBNull(6) ? String.Empty : (reader.GetString(6));
+                            string patronymic = reader.IsDBNull(7) ? String.Empty : reader.GetString(7);
                             int status = reader.GetInt32(8);
 
                             var task = new TaskModel
@@ -164,7 +169,7 @@ namespace TrainingTask.DAL.Repositories
                                 Name = m.Key.Name,
                                 StartDate = m.Key.StartDate,
                                 FinishDate = m.Key.FinishDate,
-                                FullNames = m.Select(p => p.FullName),
+                                FullNames = m.Where(p=>!string.IsNullOrWhiteSpace(p.FullName)).Select(p => p.FullName),
                                 Status = m.Key.Status
                             });
 

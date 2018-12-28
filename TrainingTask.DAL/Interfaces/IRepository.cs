@@ -8,7 +8,7 @@ namespace TrainingTask.DAL.Interfaces
     {
         T Get(int id);
 
-        void Create(T item);
+        int Create(T item);
 
         void Update(T item);
 
