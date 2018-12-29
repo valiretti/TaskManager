@@ -16,37 +16,37 @@
         <div class="panel-body">
             <a id="add" class="btn btn-sm btn-primary">Create New</a>
         </div>
-        <form name="employeeForm" id="employeeForm" style="display: none" >
+        <form name="employeeForm" id="employeeForm" style="display: none">
             <h4 id="headerCreate">Create Employee</h4>
             <h4 id="headerEdit" style="display: none">Edit Employee</h4>
             <input type="hidden" name="id" value="0" />
             <div class="form-group">
                 <label for="firstName">First Name:</label>
-                <input type="text" class="form-control" name="firstName" />
+                <input type="text" required class="form-control" name="firstName" />
             </div>
             <div class="form-group">
                 <label for="lastName">Last Name:</label>
-                <input type="text" class="form-control" name="lastName" />
+                <input type="text" required class="form-control" name="lastName" />
             </div>
             <div class="form-group">
                 <label for="patronymic">Patronymic:</label>
-                <input type="text" class="form-control" name="patronymic" />
+                <input type="text" required class="form-control" name="patronymic" />
             </div>
             <div class="form-group">
                 <label for="position">Position:</label>
-                <input type="text" class="form-control" name="position" />
+                <input type="text" required class="form-control" name="position" />
             </div>
             <div class="panel-body">
                 <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
                 <a id="edit" class="btn btn-sm btn-primary" style="display:none;">Edit</a>
                 <a id="back" class="btn btn-sm btn-primary">Undo</a>
-           </div>
+            </div>
         </form>
         <table class="table table-condensed table-striped table-bordered">
             <thead><tr><th>Id</th><th>First Name</th><th>Last Name</th><th>Patronymic</th><th>Position</th></tr></thead>
             <tbody></tbody>
         </table>
-        </div>
-
+        <a href="/Index.html" class="btn btn-sm btn-primary">Back</a>
+    </div>
 </body>
 </html>

@@ -9,7 +9,7 @@ function GetEmployees() {
             var rows = "";
             $.each(employees, function (index, employee) {
                 rows += row(employee);
-            })
+            });
             $("table tbody").append(rows);
         }
     });
@@ -61,19 +61,11 @@ function CreateEmployee(employee) {
                         $('#errors').append("<p>" + item + "</p>");
                     });
                 }
-                // добавляем ошибки свойства Name
-                if (response['Name']) {
-
-                    $.each(response['Name'], function (index, item) {
-                        $('#errors').append("<p>" + item + "</p>");
-                    });
-                }
-
             }
 
             $('#errors').show();
         }
-    })
+    });
 }
 
 function EditEmployee(employee) {
@@ -93,7 +85,7 @@ function EditEmployee(employee) {
             cancelButton.click();
             $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(employee));
         }
-    })
+    });
 }
 
 function DeleteEmployee(id) {
@@ -104,7 +96,7 @@ function DeleteEmployee(id) {
         success: function () {
             $("tr[data-rowid='" + id + "']").remove();
         }
-    })
+    });
 }
 
 var row = function (employee) {
@@ -112,28 +104,28 @@ var row = function (employee) {
         "<td>" + employee.firstName + "</td> <td>" + employee.lastName + "</td> <td>" + employee.patronymic + "</td> <td>" + employee.position + "</td>" +
         "<td><a class='editLink' data-id='" + employee.id + "'>Edit</a> | " +
         "<a class='removeLink' data-id='" + employee.id + "'>Delete</a></td></tr>";
-}
-
-
+};
 
 $(function () {
 
     $("#add").click(function (e) {
         e.preventDefault();
+        document.getElementById('headerEdit').setAttribute("style", "display:none;");
+        document.getElementById('headerCreate').setAttribute("style", "display:block;");
         document.employeeForm.reset();
         $('#employeeForm').show();
-    })
+    });
 
     $("#back").click(function (e) {
         e.preventDefault();
         $('#employeeForm').hide();
         document.employeeForm.reset();
-    })
+    });
 
 
     $("#edit").click(function (e) {
         e.preventDefault();
-      
+
         let searchForm = document.forms["employeeForm"];
 
         let eId = idForEdit;
@@ -148,10 +140,10 @@ $(function () {
             lastName: eLastName,
             patronymic: ePatronymic,
             position: ePosition
-        }
+        };
 
         EditEmployee(employee);
-    })
+    });
 
     $("form").submit(function (e) {
         e.preventDefault();
@@ -170,7 +162,7 @@ $(function () {
             lastName: eLastName,
             patronymic: ePatronymic,
             position: ePosition
-        }
+        };
 
         CreateEmployee(employee);
     });
@@ -181,10 +173,12 @@ $(function () {
             var id = $(this).data("id");
             document.getElementById('employeeForm').setAttribute("style", "display:block;");
             document.getElementById('edit').setAttribute("style", "display:inline;");
+            document.getElementById('headerEdit').setAttribute("style", "display:block;");
+            document.getElementById('headerCreate').setAttribute("style", "display:none;");
             $('#addButton').hide();
             idForEdit = id;
             GetEmployee(id);
-        })
+        });
 
     $("body").on("click",
         ".removeLink",
@@ -194,7 +188,7 @@ $(function () {
             if (isDelete) {
                 DeleteEmployee(id);
             }
-        })
+        });
 
     GetEmployees();
-})
+});
