@@ -92,7 +92,7 @@ namespace TrainingTask.DAL.Repositories
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
                 SqlParameter idParam = new SqlParameter("@id", item.Id);
                 SqlParameter nameParam = new SqlParameter("@name", item.Name);
-                SqlParameter workTimeParam = new SqlParameter("@workTime", item.WorkHours.Minutes);
+                SqlParameter workTimeParam = new SqlParameter("@workTime", item.WorkHours.TotalMinutes);
                 SqlParameter startDateParam = new SqlParameter("@startDate", item.StartDate);
                 SqlParameter finishDateParam = new SqlParameter("@finishDate", item.FinishDate);
                 SqlParameter statusParam = new SqlParameter("@status", (int)item.Status);
