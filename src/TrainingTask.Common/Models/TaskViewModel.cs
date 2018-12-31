@@ -19,5 +19,11 @@ namespace TrainingTask.Common.Models
         public IEnumerable<string> FullNames { get; set; }
 
         public Status Status { get; set; }
+
+        public int ProjectId { get; set; }
+
+        public IEnumerable<int> EmployeeIds { get; set; }
+
+        public TimeSpan WorkHours { get; set; }
     }
 }

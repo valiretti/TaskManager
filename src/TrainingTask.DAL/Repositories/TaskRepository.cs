@@ -35,7 +35,7 @@ namespace TrainingTask.DAL.Repositories
                         {
                             int i = reader.GetInt32(0);
                             string name = reader.GetString(1);
-                            TimeSpan workTime = TimeSpan.FromHours((double)reader.GetInt32(2) / 60);
+                            TimeSpan workTime = TimeSpan.FromMinutes(reader.GetInt32(2));
                             DateTime startDate = reader.GetDateTime(3);
                             DateTime finishDate = reader.GetDateTime(4);
                             int status = reader.GetInt32(5);
@@ -68,7 +68,7 @@ namespace TrainingTask.DAL.Repositories
                 connection.Open();
                 SqlCommand command = new SqlCommand(sqlExpression, connection);
                 SqlParameter nameParam = new SqlParameter("@name", item.Name);
-                SqlParameter workTimeParam = new SqlParameter("@workTime", item.WorkHours.Minutes);
+                SqlParameter workTimeParam = new SqlParameter("@workTime", item.WorkHours.TotalMinutes);
                 SqlParameter startDateParam = new SqlParameter("@startDate", item.StartDate);
                 SqlParameter finishDateParam = new SqlParameter("@finishDate", item.FinishDate);
                 SqlParameter statusParam = new SqlParameter("@status", (int)item.Status);
@@ -120,9 +120,9 @@ namespace TrainingTask.DAL.Repositories
         {
             string sqlExpression =
                 "SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status FROM Tasks " +
-                "JOIN Projects ON Projects.Id = Tasks.ProductId " +
-                "LEFT JOIN EmployeeTasks ON TaskId.Id = Tasks.Id " +
-                "LEFT JOIN Employee ON EmployeeTasks.EmployeeId = Employee.Id";
+                "JOIN Projects ON Projects.Id = Tasks.ProjectId " +
+                "LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id " +
+                "LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId";
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
                 connection.Open();
@@ -168,11 +168,87 @@ namespace TrainingTask.DAL.Repositories
                                 Name = m.Key.Name,
                                 StartDate = m.Key.StartDate,
                                 FinishDate = m.Key.FinishDate,
-                                FullNames = m.Where(p=>!string.IsNullOrWhiteSpace(p.FullName)).Select(p => p.FullName),
+                                FullNames = m.Where(p => !string.IsNullOrWhiteSpace(p.FullName)).Select(p => p.FullName),
                                 Status = m.Key.Status
                             });
 
                         return taskGroups;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public TaskViewModel GetViewModel(int i)
+        {
+            string sqlExpression =
+                "SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status, Tasks.ProjectId, Employees.Id, Tasks.WorkTime FROM Tasks " +
+                "JOIN Projects ON Projects.Id = Tasks.ProjectId " +
+                "LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id " +
+                "LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId " +
+                "WHERE Tasks.Id = @id";
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                SqlParameter param = new SqlParameter("@id", i);
+                command.Parameters.Add(param);
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        var tasks = new List<TaskModel>();
+
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string abbreviation = reader.GetString(1);
+                            string name = reader.GetString(2);
+                            DateTime startDate = reader.GetDateTime(3);
+                            DateTime finishDate = reader.GetDateTime(4);
+                            string firstName = reader.IsDBNull(5) ? String.Empty : reader.GetString(5);
+                            string lastName = reader.IsDBNull(6) ? String.Empty : (reader.GetString(6));
+                            string patronymic = reader.IsDBNull(7) ? String.Empty : reader.GetString(7);
+                            int status = reader.GetInt32(8);
+                            int projId = reader.GetInt32(9);
+                            int? employeeId = reader.IsDBNull(10) ? default(int?) : reader.GetInt32(10);
+                            TimeSpan workTime = TimeSpan.FromMinutes(reader.GetInt32(11));
+
+                            var task = new TaskModel
+                            {
+                                Id = id,
+                                ProjectAbbreviation = abbreviation,
+                                Name = name,
+                                StartDate = startDate,
+                                FinishDate = finishDate,
+                                FullName = $"{firstName} {lastName} {patronymic}",
+                                Status = (Status)status,
+                                ProjectId = projId,
+                                EmployeeId = employeeId,
+                                WorkHours = workTime
+                            };
+
+                            tasks.Add(task);
+                        }
+
+
+                        var taskGroups = tasks.GroupBy(t => new { t.Id, t.Name, t.Status, t.ProjectAbbreviation, t.FinishDate, t.StartDate, t.ProjectId, t.WorkHours })
+                            .Select(m => new TaskViewModel
+                            {
+                                Id = m.Key.Id,
+                                ProjectAbbreviation = m.Key.ProjectAbbreviation,
+                                Name = m.Key.Name,
+                                StartDate = m.Key.StartDate,
+                                FinishDate = m.Key.FinishDate,
+                                FullNames = m.Where(p => p.EmployeeId != null).Select(p => p.FullName),
+                                EmployeeIds = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
+                                Status = m.Key.Status,
+                                ProjectId = m.Key.ProjectId,
+                                WorkHours = m.Key.WorkHours
+                            });
+
+                        return taskGroups.FirstOrDefault();
                     }
                 }
             }
@@ -195,6 +271,13 @@ namespace TrainingTask.DAL.Repositories
             public string FullName { get; set; }
 
             public Status Status { get; set; }
+
+            public int ProjectId { get; set; }
+
+            public int? EmployeeId { get; set; }
+
+            public TimeSpan WorkHours { get; set; }
+
         }
     }
 }

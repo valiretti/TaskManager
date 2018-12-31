@@ -24,7 +24,7 @@ namespace TrainingTask.Web.Controllers
         [HttpGet, Route("{id:int:min(1)}")]
         public IActionResult GetById(int id)
         {
-            var task = _taskService.Get(id);
+            var task = _taskService.GetViewModel(id);
             if (task == null)
                 return NotFound();
             return new ObjectResult(task);
@@ -44,10 +44,10 @@ namespace TrainingTask.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = _taskService.Add(task);
-            task.Id = result;
+            var insertedId = _taskService.Add(task);
+            var task1 = _taskService.GetViewModel(insertedId);
 
-            return Ok(task);
+            return Ok(task1);
         }
 
         [HttpPut, Route("")]

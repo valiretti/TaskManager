@@ -6,11 +6,9 @@ function GetEmployees() {
         type: 'GET',
         contentType: "application/json",
         success: function (employees) {
-            var rows = "";
             $.each(employees, function (index, employee) {
-                rows += row(employee);
+                $("table tbody").append(row(employee));
             });
-            $("table tbody").append(rows);
         }
     });
 }
@@ -36,15 +34,9 @@ function CreateEmployee(employee) {
         url: "api/employees",
         contentType: "application/json",
         method: "POST",
-        data: JSON.stringify({
-            FirstName: employee.firstName,
-            LastName: employee.lastName,
-            Patronymic: employee.patronymic,
-            Position: employee.position
-        }),
+        data: GetJson(employee),
         success: function (empl) {
-            var cancelButton = $("#back");
-            cancelButton.click();
+            closeForm();
             $("table tbody").append(row(empl));
         },
 
@@ -68,21 +60,25 @@ function CreateEmployee(employee) {
     });
 }
 
+function GetJson(employee) {
+    let data = JSON.stringify({
+        Id: employee.id,
+        FirstName: employee.firstName,
+        LastName: employee.lastName,
+        Patronymic: employee.patronymic,
+        Position: employee.position
+    });
+    return data;
+}
+
 function EditEmployee(employee) {
     $.ajax({
         url: "api/employees",
         contentType: "application/json",
         method: "PUT",
-        data: JSON.stringify({
-            Id: employee.id,
-            FirstName: employee.firstName,
-            LastName: employee.lastName,
-            Patronymic: employee.patronymic,
-            Position: employee.position
-        }),
+        data: GetJson(employee),
         success: function () {
-            var cancelButton = $("#back");
-            cancelButton.click();
+            closeForm();
             $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(employee));
         }
     });
@@ -100,48 +96,57 @@ function DeleteEmployee(id) {
 }
 
 var row = function (employee) {
-    return "<tr data-rowid='" + employee.id + "'><td>" + employee.id + "</td>" +
-        "<td>" + employee.firstName + "</td> <td>" + employee.lastName + "</td> <td>" + employee.patronymic + "</td> <td>" + employee.position + "</td>" +
-        "<td><a class='editLink' data-id='" + employee.id + "'>Edit</a> | " +
-        "<a class='removeLink' data-id='" + employee.id + "'>Delete</a></td></tr>";
+    let tr = $('<tr>').attr("data-rowid", employee.id).append(
+        $('<td>').text(employee.id),
+        $('<td>').text(employee.firstName),
+        $('<td>').text(employee.lastName),
+        $('<td>').text(employee.patronymic),
+        $('<td>').text(employee.position),
+        $('<td>').append(
+            $('<a>').addClass("editLink").attr("data-id", employee.id).text("Edit |"),
+            $('<a>').addClass("removeLink").attr("data-id", employee.id).text("Delete")));
+    return tr;
 };
+
+function GetEmployeeFromForm() {
+    let searchForm = document.forms["employeeForm"];
+    let employee = {
+        id: idForEdit,
+        firstName: searchForm.elements["firstName"].value,
+        lastName: searchForm.elements["lastName"].value,
+        patronymic: searchForm.elements["patronymic"].value,
+        position: searchForm.elements["position"].value
+    };
+    return employee;
+}
+
+function closeForm() {
+    $('#employeeForm').hide();
+    $('#employeeForm')[0].reset();
+}
 
 $(function () {
 
+    closeForm();
+
     $("#add").click(function (e) {
         e.preventDefault();
-        document.getElementById('headerEdit').setAttribute("style", "display:none;");
-        document.getElementById('headerCreate').setAttribute("style", "display:block;");
-        document.employeeForm.reset();
+        $('#headerEdit').hide();
+        $('#headerCreate').show();
+        $('#employeeForm')[0].reset();
         $('#employeeForm').show();
+        $('#edit').hide();
+        $('#addButton').show();
     });
 
     $("#back").click(function (e) {
         e.preventDefault();
-        $('#employeeForm').hide();
-        document.employeeForm.reset();
+        closeForm();
     });
-
 
     $("#edit").click(function (e) {
         e.preventDefault();
-
-        let searchForm = document.forms["employeeForm"];
-
-        let eId = idForEdit;
-        let eFirstName = searchForm.elements["firstName"].value;
-        let eLastName = searchForm.elements["lastName"].value;
-        let ePatronymic = searchForm.elements["patronymic"].value;
-        let ePosition = searchForm.elements["position"].value;
-
-        let employee = {
-            id: eId,
-            firstName: eFirstName,
-            lastName: eLastName,
-            patronymic: ePatronymic,
-            position: ePosition
-        };
-
+        let employee = GetEmployeeFromForm();
         EditEmployee(employee);
     });
 
@@ -149,21 +154,7 @@ $(function () {
         e.preventDefault();
         $('#errors').empty();
         $('#errors').hide();
-
-        let eId = this.elements["id"].value;
-        let eFirstName = this.elements["firstName"].value;
-        let eLastName = this.elements["lastName"].value;
-        let ePatronymic = this.elements["patronymic"].value;
-        let ePosition = this.elements["position"].value;
-
-        let employee = {
-            id: eId,
-            firstName: eFirstName,
-            lastName: eLastName,
-            patronymic: ePatronymic,
-            position: ePosition
-        };
-
+        let employee = GetEmployeeFromForm();
         CreateEmployee(employee);
     });
 
@@ -171,10 +162,10 @@ $(function () {
         ".editLink",
         function () {
             var id = $(this).data("id");
-            document.getElementById('employeeForm').setAttribute("style", "display:block;");
-            document.getElementById('edit').setAttribute("style", "display:inline;");
-            document.getElementById('headerEdit').setAttribute("style", "display:block;");
-            document.getElementById('headerCreate').setAttribute("style", "display:none;");
+            $('#employeeForm').show();
+            $('#edit').show();
+            $('#headerEdit').show();
+            $('#headerCreate').hide();
             $('#addButton').hide();
             idForEdit = id;
             GetEmployee(id);

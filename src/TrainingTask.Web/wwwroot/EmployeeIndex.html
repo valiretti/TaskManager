@@ -16,9 +16,9 @@
         <div class="panel-body">
             <a id="add" class="btn btn-sm btn-primary">Create New</a>
         </div>
-        <form name="employeeForm" id="employeeForm" style="display: none">
+        <form name="employeeForm" id="employeeForm" >
             <h4 id="headerCreate">Create Employee</h4>
-            <h4 id="headerEdit" style="display: none">Edit Employee</h4>
+            <h4 id="headerEdit">Edit Employee</h4>
             <input type="hidden" name="id" value="0" />
             <div class="form-group">
                 <label for="firstName">First Name:</label>
@@ -38,8 +38,8 @@
             </div>
             <div class="panel-body">
                 <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
-                <a id="edit" class="btn btn-sm btn-primary" style="display:none;">Edit</a>
-                <a id="back" class="btn btn-sm btn-primary">Undo</a>
+                <a id="edit" class="btn btn-sm btn-primary" >Edit</a>
+                <a id="back" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
         <table class="table table-condensed table-striped table-bordered">

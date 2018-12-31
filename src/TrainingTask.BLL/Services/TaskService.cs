@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Transactions;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
@@ -22,7 +23,7 @@ namespace TrainingTask.BLL.Services
             var nTask = new Task
             {
                 Name = task.Name,
-                WorkHours = task.WorkHours,
+                WorkHours = TimeSpan.FromHours(task.WorkHours),
                 StartDate = task.StartDate,
                 FinishDate = task.FinishDate,
                 Status = task.Status,
@@ -43,7 +44,7 @@ namespace TrainingTask.BLL.Services
             var task = _repository.Get(modifiedTask.Id);
 
             task.Name = modifiedTask.Name;
-            task.WorkHours = modifiedTask.WorkHours;
+            task.WorkHours = TimeSpan.FromHours(modifiedTask.WorkHours);
             task.Status = modifiedTask.Status;
             task.StartDate = modifiedTask.StartDate;
             task.FinishDate = modifiedTask.FinishDate;
@@ -67,6 +68,11 @@ namespace TrainingTask.BLL.Services
             return _repository.Get(id);
         }
 
+        public TaskViewModel GetViewModel(int id)
+        {
+            return _repository.GetViewModel(id);
+        }
+
         public IEnumerable<TaskViewModel> GetAll()
         {
             return _repository.GetAll();
@@ -79,7 +85,7 @@ namespace TrainingTask.BLL.Services
                 _employeeTaskRepository.DeleteEmployeesFromTask(id);
                 foreach (var employee in task.Employees)
                 {
-                    _employeeTaskRepository.Add(id, employee.Id);
+                    _employeeTaskRepository.Add(employee, id);
                 }
             }
         }

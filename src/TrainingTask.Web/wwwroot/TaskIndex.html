@@ -16,42 +16,47 @@
         <div class="panel-body">
             <a id="add" class="btn btn-sm btn-primary">Create New</a>
         </div>
-        <form name="taskForm" id="taskForm" style="display: none">
+        <form name="taskForm" id="taskForm">
             <h4 id="headerCreate">Create Task</h4>
-            <h4 id="headerEdit" style="display: none">Edit Task</h4>
+            <h4 id="headerEdit">Edit Task</h4>
             <input type="hidden" name="id" value="0" />
             <div class="form-group">
                 <label for="project">Project:</label>
-                <select id="project" name="project" class="form-control"></select>
+                <select id="project" required name="project" class="form-control"></select>
             </div>
             <div class="form-group">
                 <label for="name">Name:</label>
-                <input type="text" class="form-control" name="name" />
+                <input type="text" required class="form-control" name="name" />
             </div>
             <div class="form-group">
                 <label for="workTime">Work Time (hours):</label>
-                <input type="number" class="form-control" name="workTime" />
+                <input type="number" step="0.1" required class="form-control" name="workTime" />
             </div>
             <div class="form-group">
                 <label for="startDate">Start Date:</label>
-                <input type="date" class="form-control" name="startDate" />
+                <input type="date" required class="form-control" name="startDate" />
             </div>
             <div class="form-group">
                 <label for="finishDate">Finish Date:</label>
-                <input type="date" class="form-control" name="finishDate" />
+                <input type="date" required class="form-control" name="finishDate" />
             </div>
             <div class="form-group">
                 <label for="finishDate">Status:</label>
-                <select id="status" name="status" class="form-control"></select>
+                <select id="status" required name="status" class="form-control">
+                    <option value="0">Not Started</option>
+                    <option value="1">In Progress</option>
+                    <option value="2">Completed</option>
+                    <option value="3">Postponed</option>
+                </select>
             </div>
             <div class="form-group">
                 <label for="employees">Employees:</label>
-                <select multiple id="employees" name="employees" class="form-control"></select>
+                <select multiple="multiple" id="employees" name="employees" class="form-control"></select>
             </div>
             <div class="panel-body">
                 <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
-                <a id="edit" class="btn btn-sm btn-primary" style="display:none;">Edit</a>
-                <a id="back" class="btn btn-sm btn-primary">Undo</a>
+                <a id="edit" class="btn btn-sm btn-primary">Edit</a>
+                <a id="back" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
         <table class="table table-condensed table-striped table-bordered">

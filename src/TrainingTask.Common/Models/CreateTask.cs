@@ -15,7 +15,7 @@ namespace TrainingTask.Common.Models
         public string Name { get; set; }
 
         [Required]
-        public TimeSpan WorkHours { get; set; }
+        public double WorkHours { get; set; }
 
         [Required]
         public DateTime StartDate { get; set; }
@@ -26,6 +26,6 @@ namespace TrainingTask.Common.Models
         [Required]
         public Status Status { get; set; }
 
-        public IEnumerable<Employee> Employees { get; set; }
+        public IEnumerable<int> Employees { get; set; }
     }
 }
