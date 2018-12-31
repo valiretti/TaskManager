@@ -3,11 +3,11 @@ using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.DAL.Repositories
 {
-    public class EmployeeTaskRepository : IEmployeeTaskRepository
+    public class EmployeeTaskRepository : BaseRepository, IEmployeeTaskRepository
     {
         private readonly string _connectionString;
 
-        public EmployeeTaskRepository(string connectionString)
+        public EmployeeTaskRepository(string connectionString) : base(connectionString)
         {
             _connectionString = connectionString;
         }
@@ -29,16 +29,7 @@ namespace TrainingTask.DAL.Repositories
 
         public void DeleteEmployeesFromTask(int taskId)
         {
-            string sqlExpression =
-                "DELETE FROM EmployeeTasks WHERE TaskId = @id";
-            using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-                connection.Open();
-                SqlCommand command = new SqlCommand(sqlExpression, connection);
-                SqlParameter idParam = new SqlParameter("@id", taskId);
-                command.Parameters.Add(idParam);
-                command.ExecuteNonQuery();
-            }
+            base.Delete($"DELETE FROM EmployeeTasks WHERE TaskId = {taskId}");
         }
     }
 }
