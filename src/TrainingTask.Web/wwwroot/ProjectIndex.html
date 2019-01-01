@@ -3,26 +3,52 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tasks</title>
+    <title>Projects</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-    <script src="/scripts/Tasks.js"></script>
+    <script src="/scripts/Common.js"></script>
+    <script src="/scripts/Projects.js"></script>
 </head>
 <body>
     <div class="container body-content">
-        <h3>Tasks</h3>
+        <h3>Projects</h3>
         <div id="errors" class="alert alert-danger" style="display:none;"></div>
         <div class="panel-body">
-            <a id="add" class="btn btn-sm btn-primary">Create New</a>
+            <a id="addProject" class="btn btn-sm btn-primary">Create New</a>
         </div>
-        <form name="taskForm" id="taskForm">
-            <h4 id="headerCreate">Create Task</h4>
-            <h4 id="headerEdit">Edit Task</h4>
+        <form name="projectForm" id="projectForm">
+            <h4 id="headerCreate">Create Project</h4>
+            <h4 id="headerEdit">Edit Project</h4>
             <input type="hidden" name="id" value="0" />
             <div class="form-group">
-                <label for="project">Project:</label>
-                <select id="project" required name="project" class="form-control"></select>
+                <label for="name">Name:</label>
+                <input type="text" required class="form-control" name="name" />
             </div>
+            <div class="form-group">
+                <label for="abbreviation">Abbreviation:</label>
+                <input type="text" required class="form-control" name="abbreviation" />
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea rows="4" class="form-control" name="description"></textarea>
+            </div>
+            <label for="tasks">Tasks:</label>
+            <a id="addTasks" class="btn btn-sm btn-primary">Create New</a>
+            <table id="tasks" name="tasks" class="table table-condensed table-striped table-bordered">
+                <thead><tr><th>Id</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+
+            <div class="panel-body">
+                <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
+                <a id="editProj" class="btn btn-sm btn-primary">Edit</a>
+                <a id="backProj" class="btn btn-sm btn-primary">Cancel</a>
+            </div>
+        </form>
+        <form name="taskForm" id="taskForm">
+            <h4 id="headerCreateTask">Create Task</h4>
+            <h4 id="headerEditTask">Edit Task</h4>
+            <input type="hidden" name="id" value="0" />
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" required class="form-control" name="name" />
@@ -53,13 +79,13 @@
                 <select multiple="multiple" id="employees" name="employees" class="form-control"></select>
             </div>
             <div class="panel-body">
-                <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
-                <a id="edit" class="btn btn-sm btn-primary">Edit</a>
-                <a id="back" class="btn btn-sm btn-primary">Cancel</a>
+                <a id="addTask" class="btn btn-sm btn-primary">Add</a>
+                <a id="editTask" class="btn btn-sm btn-primary">Edit</a>
+                <a id="backTask" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
         <table class="table table-condensed table-striped table-bordered">
-            <thead><tr><th>Id</th><th>Project Name</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
+            <thead><tr><th>Id</th><th>Name</th><th>Abbreviation</th><th>Description</th></tr></thead>
             <tbody></tbody>
         </table>
         <a href="/Index.html" class="btn btn-sm btn-primary">Back</a>

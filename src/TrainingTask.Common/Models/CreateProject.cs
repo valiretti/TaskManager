@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace TrainingTask.Common.Models
 {
@@ -6,10 +7,13 @@ namespace TrainingTask.Common.Models
     {
         public int Id { get; set; }
 
+        [Required]
         public string Name { get; set; }
 
+        [Required]
         public string Abbreviation { get; set; }
 
+        [StringLength(200)]
         public string Description { get; set; }
 
         public IEnumerable<CreateTask> Tasks { get; set; }

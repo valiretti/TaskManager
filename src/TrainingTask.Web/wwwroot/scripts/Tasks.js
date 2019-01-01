@@ -110,17 +110,12 @@ function EditTask(task) {
             $.extend(task,
                 {
                     projectAbbreviation: projects.find(p => p.id == task.project).abbreviation,
-                    fullNames: employees.filter(e => task.employees.some(id => id == e.id))
+                    fullNames: employees.filter(e => task.employees && task.employees.some(id => id == e.id))
                         .map(e => e.firstName + " " + e.lastName + " " + e.patronymic)
                 });
             $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(task));
         }
     });
-}
-
-function closeForm() {
-    $('#taskForm').hide();
-    $('#taskForm')[0].reset();
 }
 
 var row = function (task) {
@@ -160,6 +155,10 @@ function FillEmployees(employees) {
     });
 }
 
+function closeForm() {
+    $('#taskForm').hide();
+    $('#taskForm')[0].reset();
+}
 
 function FillTask(task) {
     var form = document.forms["taskForm"];

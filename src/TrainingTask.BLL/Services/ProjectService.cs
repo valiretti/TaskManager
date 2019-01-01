@@ -35,6 +35,7 @@ namespace TrainingTask.BLL.Services
                 {
                     foreach (var projectTask in project.Tasks)
                     {
+                        projectTask.ProjectId = insertedId;
                         _taskService.Add(projectTask);
                     }
                 }
@@ -57,7 +58,16 @@ namespace TrainingTask.BLL.Services
                 _projectRepository.Update(project);
                 foreach (var projectTask in modifiedProject.Tasks)
                 {
-                    _taskService.Update(projectTask);
+                    projectTask.ProjectId = modifiedProject.Id;
+                    if (projectTask.Id == 0)
+                    {
+                        _taskService.Add(projectTask);
+                    }
+                    else
+                    {
+                        _taskService.Update(projectTask);
+                    }
+                    //добавить учет удаления задачи из проекта
                 }
 
                 transactionScope.Complete();
