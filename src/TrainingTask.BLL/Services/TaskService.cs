@@ -73,6 +73,11 @@ namespace TrainingTask.BLL.Services
             return _repository.GetViewModel(id);
         }
 
+        public IEnumerable<TaskViewModel> GetByProjectId(int id)
+        {
+            return _repository.GetByProjectId(id);
+        }
+
         public IEnumerable<TaskViewModel> GetAll()
         {
             return _repository.GetAll();

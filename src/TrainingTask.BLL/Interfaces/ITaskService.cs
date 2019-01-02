@@ -16,5 +16,7 @@ namespace TrainingTask.BLL.Interfaces
         IEnumerable<TaskViewModel> GetAll();
 
         TaskViewModel GetViewModel(int id);
+
+        IEnumerable<TaskViewModel> GetByProjectId(int id);
     }
 }

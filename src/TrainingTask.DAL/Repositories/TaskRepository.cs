@@ -146,6 +146,55 @@ namespace TrainingTask.DAL.Repositories
             return taskGroups.FirstOrDefault();
         }
 
+        public IEnumerable<TaskViewModel> GetByProjectId(int id)
+        {
+            var tasks = base.GetAll(
+               $@"SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status, Tasks.ProjectId, Employees.Id, Tasks.WorkTime 
+                    FROM Tasks JOIN Projects ON Projects.Id = Tasks.ProjectId 
+                    LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id 
+                    LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId 
+                    WHERE Tasks.ProjectId = {id}",
+               record =>
+               {
+                   string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
+                   string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
+                   string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
+                   int? employeeId = record.IsDBNull(10) ? default(int?) : record.GetInt32(10);
+
+                   return new TaskModel()
+                   {
+                       Id = record.GetInt32(0),
+                       ProjectAbbreviation = record.GetString(1),
+                       Name = record.GetString(2),
+                       StartDate = record.GetDateTime(3),
+                       FinishDate = record.GetDateTime(4),
+                       FullName = $"{firstName} {lastName} {patronymic}",
+                       Status = (Status)record.GetInt32(8),
+                       ProjectId = record.GetInt32(9),
+                       EmployeeId = employeeId,
+                       WorkHours = TimeSpan.FromMinutes(record.GetInt32(11))
+                   };
+               });
+
+            var taskGroups = tasks
+                .GroupBy(t => new { t.Id, t.Name, t.Status, t.ProjectAbbreviation, t.FinishDate, t.StartDate, t.ProjectId, t.WorkHours })
+                .Select(m => new TaskViewModel
+                {
+                    Id = m.Key.Id,
+                    ProjectAbbreviation = m.Key.ProjectAbbreviation,
+                    Name = m.Key.Name,
+                    StartDate = m.Key.StartDate,
+                    FinishDate = m.Key.FinishDate,
+                    FullNames = m.Where(p => p.EmployeeId != null).Select(p => p.FullName),
+                    EmployeeIds = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
+                    Status = m.Key.Status,
+                    ProjectId = m.Key.ProjectId,
+                    WorkHours = m.Key.WorkHours
+                });
+
+            return taskGroups;
+        }
+
         private class TaskModel
         {
             public int Id { get; set; }

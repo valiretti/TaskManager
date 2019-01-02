@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Transactions;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
@@ -47,6 +48,7 @@ namespace TrainingTask.BLL.Services
 
         public void Update(CreateProject modifiedProject)
         {
+            var tasks = _taskService.GetByProjectId(modifiedProject.Id).Where(m => modifiedProject.Tasks.All(t => t.Id != m.Id)).ToArray();
             var project = _projectRepository.Get(modifiedProject.Id);
             project.Name = modifiedProject.Name;
             project.Abbreviation = modifiedProject.Abbreviation;
@@ -67,7 +69,10 @@ namespace TrainingTask.BLL.Services
                     {
                         _taskService.Update(projectTask);
                     }
-                    //добавить учет удаления задачи из проекта
+                }
+                foreach (var task in tasks)
+                {
+                    _taskService.Delete(task.Id);
                 }
 
                 transactionScope.Complete();
