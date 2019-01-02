@@ -66,7 +66,8 @@ namespace TrainingTask.Web.Controllers
 
             if (_projectService.Get(project.Id) == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "Not found.");
+                return NotFound(ModelState);
             }
 
             _projectService.Update(project);

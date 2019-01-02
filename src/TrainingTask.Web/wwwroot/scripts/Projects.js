@@ -60,7 +60,7 @@ function FillTask(task) {
     var form = document.forms["taskForm"];
     form.elements["id"].value = task.id;
     form.elements["name"].value = task.name;
-    form.elements["workTime"].value = ConvertTimeSpanToHours(task.workHours);
+    form.elements["workTime"].value = task.workHours;
     form.elements["startDate"].valueAsDate = new Date(task.startDate);
     form.elements["finishDate"].valueAsDate = new Date(task.finishDate);
     $("#status").val(task.status);
@@ -212,6 +212,7 @@ function GetTasksByProject(id) {
                 type: 'GET',
                 contentType: "application/json",
                 success: t => {
+                    $.each(t, (i, e) => e.workHours = ConvertTimeSpanToHours(e.workHours));
                     allTasks = t;
                     resolve(t);
                 },
@@ -243,6 +244,24 @@ function EditProject(project) {
         success: function () {
             closeProjectForm();
             $("table#projects tr[data-rowid='" + idForEditProject + "']").replaceWith(rowProj(project));
+        },
+        error: function (jxqr, error, status) {
+            console.log(jxqr);
+            
+            if (jxqr.responseText === "") {
+                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
+            }
+            else {
+                var response = JSON.parse(jxqr.responseText);
+                if (response['']) {
+
+                    $.each(response[''], function (index, item) {
+                        $('#errors').append("<p>" + item + "</p>");
+                    });
+                }
+            }
+
+            $('#errors').show();
         }
     });
 }

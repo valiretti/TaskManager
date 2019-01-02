@@ -13,10 +13,12 @@ namespace TrainingTask.DAL.Repositories
     public class ProjectRepository : BaseRepository, IProjectRepository
     {
         private readonly string _connectionString;
+        private readonly ILog _log;
 
-        public ProjectRepository(string connectionString) : base(connectionString)
+        public ProjectRepository(string connectionString, ILog log) : base(connectionString)
         {
             _connectionString = connectionString;
+            _log = log;
         }
 
         public Project Get(int id)
@@ -44,7 +46,10 @@ namespace TrainingTask.DAL.Repositories
             }
             catch (SqlException ex) when (ex.Number == 2601)
             {
-                throw new UniquenessViolationException($"The project with the name {item.Name} and abbreviation {item.Abbreviation} already exists.", ex);
+                var message =
+                    $"The project with the name {item.Name} and abbreviation {item.Abbreviation} already exists.";
+                _log.Error($"{message} SqlException message : {ex.Message}");
+                throw new UniquenessViolationException(message, ex);
             }
 
         }

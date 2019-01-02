@@ -16,60 +16,32 @@ namespace TrainingTask.Common.Logging
             _file = new StreamWriter(pathToLogging, true);
         }
 
-        public void Debug(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Debug: {message}");
-            }
-        }
+        public void Debug(string message) => Write("Debug", message);
 
-        public void Error(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Error: {message}");
-            }
-        }
+        public void Error(string message) => Write("Error", message);
 
-        public void Info(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Info: {message}");
-            }
-        }
+        public void Info(string message) => Write("Info", message);
 
-        public void Fatal(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Fatal: {message}");
-            }
-        }
+        public void Fatal(string message) => Write("Fatal", message);
 
-        public void Trace(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Trace: {message}");
-            }
-        }
+        public void Trace(string message) => Write("Trace", message);
 
-        public void Warn(string message)
-        {
-            lock (lockObj)
-            {
-                _file.Write($"{DateTime.Now} Warn: {message}");
-            }
-        }
-
+        public void Warn(string message) => Write("Warn", message);
+       
         public void Dispose()
         {
             lock (lockObj)
             {
                 _file.Flush();
                 _file.Close();
+            }
+        }
+
+        private void Write(string level, string message)
+        {
+            lock (lockObj)
+            {
+                _file.Write($"{DateTime.Now} {level}: {message}");
             }
         }
     }

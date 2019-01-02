@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.DAL.Interfaces;
 using TrainingTask.DAL.Repositories;
 
@@ -10,7 +11,7 @@ namespace TrainingTask.DAL
         {
             services.AddScoped<IEmployeeRepository, EmployeeRepository>(provider => new EmployeeRepository(connection));
             services.AddScoped<ITaskRepository, TaskRepository>(provider => new TaskRepository(connection));
-            services.AddScoped<IProjectRepository, ProjectRepository>(provider => new ProjectRepository(connection));
+            services.AddScoped<IProjectRepository, ProjectRepository>(provider => new ProjectRepository(connection, provider.GetService<ILog>()));
             services.AddScoped<IEmployeeTaskRepository, EmployeeTaskRepository>(provider => new EmployeeTaskRepository(connection));
             return services;
         }
