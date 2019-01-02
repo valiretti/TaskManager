@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using TrainingTask.BLL;
+using TrainingTask.Common.Interfaces;
+using TrainingTask.Common.Logging;
 using TrainingTask.DAL;
 
 namespace TrainingTask.Web
@@ -21,8 +23,9 @@ namespace TrainingTask.Web
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-
+            string pathToLogging = Configuration.GetConnectionString("PathToLogging");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
             services.RegisterRepositories(connectionString);
             services.RegisterServices();
         }

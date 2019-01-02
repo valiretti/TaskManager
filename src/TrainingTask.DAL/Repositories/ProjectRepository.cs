@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;
 
@@ -32,10 +35,18 @@ namespace TrainingTask.DAL.Repositories
 
         public int Create(Project item)
         {
-            return base.Create(
-                $@"INSERT INTO Projects (Name, Abbreviation, Description) 
+            try
+            {
+                return base.Create(
+                    $@"INSERT INTO Projects (Name, Abbreviation, Description) 
                    VALUES ({item.Name}, {item.Abbreviation}, {item.Description}) 
                    SET @id=SCOPE_IDENTITY()");
+            }
+            catch (SqlException ex) when (ex.Number == 2601)
+            {
+                throw new UniquenessViolationException($"The project with the name {item.Name} and abbreviation {item.Abbreviation} already exists.", ex);
+            }
+
         }
 
         public void Update(Project item)
