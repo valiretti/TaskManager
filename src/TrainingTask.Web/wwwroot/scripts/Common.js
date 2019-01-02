@@ -3,7 +3,10 @@ var employees = [];
 
 var statusStrings = ["Not Started", "In Progress", "Completed", "Postponed"];
 
-
+function ConvertTimeSpanToHours(str) {
+    let parts = str.split(":");
+    return parseInt(parts[0], 10) + parseInt(parts[1], 10) / 60.0;
+}
 
 function GetProjects() {
     return new Promise(
@@ -37,6 +40,7 @@ function GetEmployees() {
         });
 }
 
+
 function GetEmployeeListItems(employees) {
     let li = [];
     $.each(employees, function (key, value) {
@@ -55,21 +59,6 @@ function FillEmployees(employees) {
     $.each(employees, function (key, value) {
         $('#employees').append($("<option>").attr("value", value.id).text(value.firstName + " " + value.lastName));
     });
-}
-
-function GetTaskFromForm() {
-    let searchForm = document.forms["taskForm"];
-    let task = {
-        id: idForEdit,
-        project: searchForm.elements["project"] ? searchForm.elements["project"].value : undefined,
-        name: searchForm.elements["name"].value,
-        workTime: searchForm.elements["workTime"].value,
-        startDate: searchForm.elements["startDate"].value,
-        finishDate: searchForm.elements["finishDate"].value,
-        status: searchForm.elements["status"].value,
-        employees: $("#employees").val()
-    };
-    return task;
 }
 
 

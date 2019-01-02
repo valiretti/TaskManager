@@ -38,8 +38,7 @@
                 <thead><tr><th>Id</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
                 <tbody></tbody>
             </table>
-
-            <div class="panel-body">
+            <div id="projectButtons" class="panel-body">
                 <button id="addButton" type="submit" class="btn btn-sm btn-primary">Add</button>
                 <a id="editProj" class="btn btn-sm btn-primary">Edit</a>
                 <a id="backProj" class="btn btn-sm btn-primary">Cancel</a>
@@ -79,12 +78,12 @@
                 <select multiple="multiple" id="employees" name="employees" class="form-control"></select>
             </div>
             <div class="panel-body">
-                <a id="addTask" class="btn btn-sm btn-primary">Add</a>
+                <button id="addTaskButton" type="submit" class="btn btn-sm btn-primary">Add</button>
                 <a id="editTask" class="btn btn-sm btn-primary">Edit</a>
                 <a id="backTask" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
-        <table class="table table-condensed table-striped table-bordered">
+        <table id="projects" name="projects" class="table table-condensed table-striped table-bordered">
             <thead><tr><th>Id</th><th>Name</th><th>Abbreviation</th><th>Description</th></tr></thead>
             <tbody></tbody>
         </table>

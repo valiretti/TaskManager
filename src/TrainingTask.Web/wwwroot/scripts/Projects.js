@@ -2,7 +2,7 @@
 var idForEditProject;
 
 var nextId = 0;
-var tasks = [];
+var allTasks = [];
 
 function closeProjectForm() {
     $('#projectForm').hide();
@@ -14,9 +14,23 @@ function closeForm() {
     $('#taskForm')[0].reset();
 }
 
+function hideButtonsProjectForm() {
+    $('#projectButtons').hide();
+}
+
+function showButtonsProjectForm() {
+    $('#projectButtons').show();
+}
+
+function showButtonsEditProjectForm() {
+    $('#addButton').hide();
+    $('#editProj').show();
+    $('#backProj').show();
+}
+
 var row = function (task) {
     let tr = $('<tr>').attr("data-rowid", task.id || task.tempId).append(
-        $('<td>').text(task.id),
+        $('<td>').text(task.id > 0 ? task.id : undefined),
         $('<td>').text(task.name),
         $('<td>').text(new Date(task.startDate).toLocaleDateString()),
         $('<td>').text(new Date(task.finishDate).toLocaleDateString()),
@@ -30,20 +44,32 @@ var row = function (task) {
     return tr;
 };
 
+var rowProj = function (project) {
+    let tr = $('<tr>').attr("data-rowid", project.id).append(
+        $('<td>').text(project.id),
+        $('<td>').text(project.name),
+        $('<td>').text(project.abbreviation),
+        $('<td>').text(project.description),
+        $('<td>').append(
+            $('<a>').addClass("editProjLink").attr("data-id", project.id).text("Edit |"),
+            $('<a>').addClass("removeProjLink").attr("data-id", project.id).text("Delete")));
+    return tr;
+};
+
 function FillTask(task) {
     var form = document.forms["taskForm"];
     form.elements["id"].value = task.id;
     form.elements["name"].value = task.name;
-    form.elements["workTime"].value = task.workHours ? ConvertTimeSpanToHours(task.workHours) : task.workTime;
+    form.elements["workTime"].value = ConvertTimeSpanToHours(task.workHours);
     form.elements["startDate"].valueAsDate = new Date(task.startDate);
     form.elements["finishDate"].valueAsDate = new Date(task.finishDate);
     $("#status").val(task.status);
-    $("#employees").val(task.employeeIds);
+    $("#employees").val(task.employeeIds ? task.employeeIds : task.employees);
 }
 
 function InsertTask(task) {
     closeForm();
-    tasks.push(task);
+    allTasks.push(task);
     $.extend(task,
         {
             fullNames: employees.filter(e => task.employees && task.employees.some(id => id == e.id))
@@ -52,10 +78,174 @@ function InsertTask(task) {
     $("table#tasks tbody").append(row(task));
 }
 
-function GetTask(id) {
-    return tasks.find(t => t.id == id || t.tempId == id);
+function EditTask(task) {
+    closeForm();
+    let index = allTasks.indexOf(GetTask(idForEdit));
+    allTasks[index] = task;
+    $.extend(task,
+        {
+            fullNames: employees.filter(e => task.employees && task.employees.some(id => id == e.id))
+                .map(e => e.firstName + " " + e.lastName + " " + e.patronymic)
+        });
+    $("table#tasks tr[data-rowid='" + idForEdit + "']").replaceWith(row(task));
 }
 
+function DeleteTask(id) {
+    let index = allTasks.indexOf(GetTask(id));
+    allTasks.splice(index, 1);
+    $("table#tasks tr[data-rowid='" + id + "']").remove();
+}
+
+function GetTask(id) {
+    return allTasks.find(t => t.id == id || t.tempId == id);
+}
+
+function GetProjectFromForm() {
+    let searchForm = document.forms["projectForm"];
+    let project = {
+        id: idForEditProject,
+        name: searchForm.elements["name"].value,
+        abbreviation: searchForm.elements["abbreviation"].value,
+        description: searchForm.elements["description"].value,
+        tasks: allTasks
+    };
+    return project;
+}
+
+function GetTaskFromForm() {
+    let searchForm = document.forms["taskForm"];
+    let task = {
+        id: idForEdit,
+        name: searchForm.elements["name"].value,
+        workHours: searchForm.elements["workTime"].value,
+        startDate: searchForm.elements["startDate"].value,
+        finishDate: searchForm.elements["finishDate"].value,
+        status: searchForm.elements["status"].value,
+        employees: $("#employees").val()
+    };
+    return task;
+}
+
+function GetJson(project) {
+    let data = JSON.stringify({
+        Id: project.id,
+        Name: project.name,
+        Abbreviation: project.abbreviation,
+        Description: project.description,
+        Tasks: project.tasks
+    });
+    return data;
+}
+
+function CreateProject(project) {
+    $.ajax({
+        url: "api/projects",
+        contentType: "application/json",
+        method: "POST",
+        data: GetJson(project),
+        success: function (t) {
+            closeProjectForm();
+            $("table#projects tbody").append(rowProj(t));
+        },
+
+        error: function (jxqr, error, status) {
+            if (jxqr.responseText === "") {
+                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
+            }
+            else {
+                var response = JSON.parse(jxqr.responseText);
+                if (response['']) {
+
+                    $.each(response[''], function (index, item) {
+                        $('#errors').append("<p>" + item + "</p>");
+                    });
+                }
+            }
+
+            $('#errors').show();
+        }
+    });
+}
+
+function GetAllProjects() {
+    $.ajax({
+        url: "api/projects",
+        type: 'GET',
+        contentType: "application/json",
+        success: function (projects) {
+            $.each(projects, function (index, project) {
+                $("table#projects tbody").append(rowProj(project));
+            });
+        }
+    });
+}
+
+function DeleteProject(id) {
+    $.ajax({
+        url: "api/projects/" + id,
+        contentType: "application/json",
+        method: "DELETE",
+        success: function () {
+            $("table#projects tr[data-rowid='" + id + "']").remove();
+        }
+    });
+}
+
+function GetProject(id) {
+    return new Promise(
+        function (resolve, reject) {
+            $.ajax({
+                url: '/api/projects/' + id,
+                type: 'GET',
+                contentType: "application/json",
+                success: projects => resolve(projects),
+                error: (jxqr, error, status) => reject(jxqr)
+            });
+        });
+}
+
+function GetTasksByProject(id) {
+    return new Promise(
+        function (resolve, reject) {
+            $.ajax({
+                url: 'api/tasks/byProject/' + id,
+                type: 'GET',
+                contentType: "application/json",
+                success: t => {
+                    allTasks = t;
+                    resolve(t);
+                },
+                error: (jxqr, error, status) => reject(jxqr)
+            });
+        });
+}
+
+function FillProject(project) {
+    var form = document.forms["projectForm"];
+    form.elements["id"].value = project.id;
+    form.elements["name"].value = project.name;
+    form.elements["abbreviation"].value = project.abbreviation;
+    form.elements["description"].value = project.description;
+}
+
+function FillTasks(tasks) {
+    $.each(tasks, function (key, value) {
+        $("table#tasks tbody").append(row(value));
+    });
+}
+
+function EditProject(project) {
+    $.ajax({
+        url: "api/projects",
+        contentType: "application/json",
+        method: "PUT",
+        data: GetJson(project),
+        success: function () {
+            closeProjectForm();
+            $("table#projects tr[data-rowid='" + idForEditProject + "']").replaceWith(rowProj(project));
+        }
+    });
+}
 
 $(function () {
 
@@ -84,77 +274,112 @@ $(function () {
     $("#backProj").click(function (e) {
         e.preventDefault();
         closeProjectForm();
-        closeForm();
     });
-
 
     $("#editProj").click(function (e) {
         e.preventDefault();
-
+        let project = GetProjectFromForm();
+        EditProject(project);
     });
 
-    $("form").submit(function (e) {
+    $("#projectForm").submit(function (e) {
         e.preventDefault();
         $('#errors').empty();
         $('#errors').hide();
-
+        let project = GetProjectFromForm();
+        CreateProject(project);
     });
-
-
 
     $("#addTasks").click(function (e) {
         e.preventDefault();
+        hideButtonsProjectForm();
         $('#headerEditTask').hide();
         $('#headerCreateTask').show();
         $('#taskForm')[0].reset();
         $('#taskForm').show();
         $('#editTask').hide();
-        $('#addTask').show();
-
+        $('#addTaskButton').show();
     });
 
     $("#backTask").click(function (e) {
         e.preventDefault();
         closeForm();
+        showButtonsProjectForm();
     });
 
 
     $("#editTask").click(function (e) {
         e.preventDefault();
-        //let task = GetTaskFromForm();
-        //EditTask(task);
+        showButtonsProjectForm();
+        let task = GetTaskFromForm();
+        task.tempId = idForEdit;
+        EditTask(task);
     });
 
-    $("#addTask").click(function (e) {
+    $("#taskForm").submit(function (e) {
         e.preventDefault();
         $('#errors').empty();
         $('#errors').hide();
+        showButtonsProjectForm();
 
         let task = GetTaskFromForm();
         task.tempId = --nextId;
+        task.Id = 0;
         InsertTask(task);
     });
+
+    $("body").on("click",
+        ".editProjLink",
+        function () {
+            var id = $(this).data("id");
+            $("table#tasks tbody tr").remove();
+            $('#projectForm').show();
+            $('#editProj').show();
+            $('#headerEdit').show();
+            $('#headerCreate').hide();
+            $('#addButton').hide();
+            closeForm();
+            idForEditProject = id;
+            uiPromise
+                .then(() => GetProject(id))
+                .then(project => FillProject(project))
+                .then(() => GetTasksByProject(id))
+                .then(tasks => FillTasks(tasks));
+        });
+
+    $("body").on("click",
+        ".removeProjLink",
+        function () {
+            var id = $(this).data("id");
+            let isDelete = confirm("Are you sure to delete this project?");
+            if (isDelete) {
+                DeleteProject(id);
+            }
+        });
 
     $("body").on("click",
         ".editLink",
         function () {
             var id = $(this).data("id");
+            hideButtonsProjectForm();
             $('#taskForm').show();
             $('#editTask').show();
             $('#headerEditTask').show();
             $('#headerCreateTask').hide();
-            $('#addTask').hide();
+            $('#addTaskButton').hide();
+            idForEdit = id;
             FillTask(GetTask(id));
         });
 
-    //  $("body").on("click",
-    //      ".removeLink",
-    //      function () {
-    //          var id = $(this).data("id");
-    //          let isDelete = confirm("Are you sure to delete this task?");
-    //          if (isDelete) {
-    //              DeleteTask(id);
-    //          }
-    //      });
+    $("body").on("click",
+        ".removeLink",
+        function () {
+            var id = $(this).data("id");
+            let isDelete = confirm("Are you sure to delete this task?");
+            if (isDelete) {
+                DeleteTask(id);
+            }
+        });
 
+    GetAllProjects();
 })
