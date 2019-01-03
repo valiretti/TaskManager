@@ -25,6 +25,9 @@ function GetEmployee(id) {
             form.elements["lastName"].value = employee.lastName;
             form.elements["patronymic"].value = employee.patronymic;
             form.elements["position"].value = employee.position;
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, id);
         }
     });
 }
@@ -41,21 +44,7 @@ function CreateEmployee(employee) {
         },
 
         error: function (jxqr, error, status) {
-            console.log(jxqr);
-            if (jxqr.responseText === "") {
-                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
-            }
-            else {
-                var response = JSON.parse(jxqr.responseText);
-                if (response['']) {
-
-                    $.each(response[''], function (index, item) {
-                        $('#errors').append("<p>" + item + "</p>");
-                    });
-                }
-            }
-
-            $('#errors').show();
+            errorHandling(jxqr, employee.id);
         }
     });
 }
@@ -80,6 +69,9 @@ function EditEmployee(employee) {
         success: function () {
             closeForm();
             $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(employee));
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, employee.id);
         }
     });
 }
@@ -90,7 +82,12 @@ function DeleteEmployee(id) {
         contentType: "application/json",
         method: "DELETE",
         success: function () {
+            closeForm();
+            closeErrors();
             $("tr[data-rowid='" + id + "']").remove();
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, id);
         }
     });
 }
@@ -125,6 +122,32 @@ function closeForm() {
     $('#employeeForm')[0].reset();
 }
 
+function closeErrors() {
+    $('#errors').empty();
+    $('#errors').hide();
+}
+
+function errorHandling(jxqr, id) {
+    if (jxqr.status == 404) {
+        $('#errors').append("<p>" + "The employee not found" + "</p>");
+        closeForm();
+        $("tr[data-rowid='" + id + "']").remove();
+    }
+    else if (jxqr.responseText === "") {
+        $('#errors').append("<p>" + jxqr.statusText + "</p>");
+    }
+    else {
+        var response = JSON.parse(jxqr.responseText);
+        if (response['']) {
+
+            $.each(response[''], function (index, item) {
+                $('#errors').append("<p>" + item + "</p>");
+            });
+        }
+    }
+    $('#errors').show();
+}
+
 $(function () {
 
     closeForm();
@@ -137,6 +160,7 @@ $(function () {
         $('#employeeForm').show();
         $('#edit').hide();
         $('#addButton').show();
+        closeErrors();
     });
 
     $("#back").click(function (e) {
@@ -152,8 +176,7 @@ $(function () {
 
     $("form").submit(function (e) {
         e.preventDefault();
-        $('#errors').empty();
-        $('#errors').hide();
+        closeErrors();
         let employee = GetEmployeeFromForm();
         CreateEmployee(employee);
     });
@@ -161,6 +184,7 @@ $(function () {
     $("body").on("click",
         ".editLink",
         function () {
+            closeErrors();
             var id = $(this).data("id");
             $('#employeeForm').show();
             $('#edit').show();
@@ -175,6 +199,7 @@ $(function () {
         ".removeLink",
         function () {
             var id = $(this).data("id");
+            closeErrors();
             let isDelete = confirm("Are you sure to delete this employee?");
             if (isDelete) {
                 DeleteEmployee(id);
