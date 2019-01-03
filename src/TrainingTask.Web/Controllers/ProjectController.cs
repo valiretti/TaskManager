@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using TrainingTask.BLL.Interfaces;
+using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Models;
 
 namespace TrainingTask.Web.Controllers
@@ -44,10 +46,23 @@ namespace TrainingTask.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = _projectService.Add(project);
-            project.Id = result;
+            try
+            {
+                var result = _projectService.Add(project);
+                project.Id = result;
 
-            return Ok(project);
+                return Ok(project);
+            }
+            catch (UniquenessViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpPut, Route("")]
@@ -66,19 +81,31 @@ namespace TrainingTask.Web.Controllers
 
             if (_projectService.Get(project.Id) == null)
             {
-                ModelState.AddModelError("", "Not found.");
                 return NotFound(ModelState);
             }
 
-            _projectService.Update(project);
-            return NoContent();
+            try
+            {
+                _projectService.Update(project);
+                return NoContent();
+            }
+            catch (UniquenessViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpDelete, Route("{id:int:min(1)}")]
         public IActionResult Delete(int id)
         {
-            var task = _projectService.Get(id);
-            if (task == null)
+            var project = _projectService.Get(id);
+            if (project == null)
             {
                 return NotFound();
             }

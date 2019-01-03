@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using TrainingTask.BLL.Interfaces;
+using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Models;
 
 namespace TrainingTask.Web.Controllers
@@ -53,10 +55,18 @@ namespace TrainingTask.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            var insertedId = _taskService.Add(task);
-            var task1 = _taskService.GetViewModel(insertedId);
+            try
+            {
+                var insertedId = _taskService.Add(task);
+                var task1 = _taskService.GetViewModel(insertedId);
+                return Ok(task1);
+            }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
 
-            return Ok(task1);
+            return BadRequest(ModelState);
         }
 
         [HttpPut, Route("")]
@@ -75,11 +85,21 @@ namespace TrainingTask.Web.Controllers
 
             if (_taskService.Get(task.Id) == null)
             {
-                return NotFound();
+                ModelState.AddModelError("", "The task not found.");
+                return NotFound(ModelState);
             }
 
-            _taskService.Update(task);
-            return NoContent();
+            try
+            {
+                _taskService.Update(task);
+                return NoContent();
+            }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest(ModelState);
         }
 
         [HttpDelete, Route("{id:int:min(1)}")]
