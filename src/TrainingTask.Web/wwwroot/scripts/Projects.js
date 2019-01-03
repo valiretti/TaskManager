@@ -28,6 +28,33 @@ function showButtonsEditProjectForm() {
     $('#backProj').show();
 }
 
+function closeErrors() {
+    $('#errors').empty();
+    $('#errors').hide();
+}
+
+function errorHandling(jxqr, id) {
+    if (jxqr.status == 404) {
+        $('#errors').append("<p>" + "The project not found" + "</p>");
+        closeForm();
+        closeProjectForm();
+        $("tr[data-rowid='" + id + "']").remove();
+    }
+    else if (jxqr.responseText === "") {
+        $('#errors').append("<p>" + jxqr.statusText + "</p>");
+    }
+    else {
+        var response = JSON.parse(jxqr.responseText);
+        if (response['']) {
+
+            $.each(response[''], function (index, item) {
+                $('#errors').append("<p>" + item + "</p>");
+            });
+        }
+    }
+    $('#errors').show();
+}
+
 var row = function (task) {
     let tr = $('<tr>').attr("data-rowid", task.id || task.tempId).append(
         $('<td>').text(task.id > 0 ? task.id : undefined),
@@ -149,20 +176,7 @@ function CreateProject(project) {
         },
 
         error: function (jxqr, error, status) {
-            if (jxqr.responseText === "") {
-                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
-            }
-            else {
-                var response = JSON.parse(jxqr.responseText);
-                if (response['']) {
-
-                    $.each(response[''], function (index, item) {
-                        $('#errors').append("<p>" + item + "</p>");
-                    });
-                }
-            }
-
-            $('#errors').show();
+            errorHandling(jxqr, project.id);
         }
     });
 }
@@ -187,6 +201,10 @@ function DeleteProject(id) {
         method: "DELETE",
         success: function () {
             $("table#projects tr[data-rowid='" + id + "']").remove();
+        },
+
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, id);
         }
     });
 }
@@ -246,22 +264,7 @@ function EditProject(project) {
             $("table#projects tr[data-rowid='" + idForEditProject + "']").replaceWith(rowProj(project));
         },
         error: function (jxqr, error, status) {
-            console.log(jxqr);
-            
-            if (jxqr.responseText === "") {
-                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
-            }
-            else {
-                var response = JSON.parse(jxqr.responseText);
-                if (response['']) {
-
-                    $.each(response[''], function (index, item) {
-                        $('#errors').append("<p>" + item + "</p>");
-                    });
-                }
-            }
-
-            $('#errors').show();
+            errorHandling(jxqr, project.id);
         }
     });
 }
@@ -288,11 +291,13 @@ $(function () {
         $('#projectForm').show();
         $('#editProj').hide();
         $('#addButton').show();
+        closeErrors();
     });
 
     $("#backProj").click(function (e) {
         e.preventDefault();
         closeProjectForm();
+        closeErrors();
     });
 
     $("#editProj").click(function (e) {
@@ -307,6 +312,7 @@ $(function () {
         $('#errors').hide();
         let project = GetProjectFromForm();
         CreateProject(project);
+        closeErrors();
     });
 
     $("#addTasks").click(function (e) {
@@ -324,6 +330,9 @@ $(function () {
         e.preventDefault();
         closeForm();
         showButtonsProjectForm();
+        $('#errors').empty();
+        $('#errors').hide();
+        closeErrors();
     });
 
 
@@ -351,6 +360,7 @@ $(function () {
         ".editProjLink",
         function () {
             var id = $(this).data("id");
+            closeErrors();
             $("table#tasks tbody tr").remove();
             $('#projectForm').show();
             $('#editProj').show();
@@ -363,13 +373,15 @@ $(function () {
                 .then(() => GetProject(id))
                 .then(project => FillProject(project))
                 .then(() => GetTasksByProject(id))
-                .then(tasks => FillTasks(tasks));
+                .then(tasks => FillTasks(tasks))
+                .catch(jxqr => errorHandling(jxqr, id));
         });
 
     $("body").on("click",
         ".removeProjLink",
         function () {
             var id = $(this).data("id");
+            closeErrors();
             let isDelete = confirm("Are you sure to delete this project?");
             if (isDelete) {
                 DeleteProject(id);
