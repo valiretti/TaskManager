@@ -12,12 +12,10 @@ namespace TrainingTask.DAL.Repositories
 {
     public class ProjectRepository : BaseRepository, IProjectRepository
     {
-        private readonly string _connectionString;
         private readonly ILog _log;
 
         public ProjectRepository(string connectionString, ILog log) : base(connectionString)
         {
-            _connectionString = connectionString;
             _log = log;
         }
 
@@ -44,21 +42,30 @@ namespace TrainingTask.DAL.Repositories
                    VALUES ({item.Name}, {item.Abbreviation}, {item.Description}) 
                    SET @id=SCOPE_IDENTITY()");
             }
-            catch (SqlException ex) when (ex.Number == 2601)
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
             {
                 var message =
                     $"The project with the name {item.Name} and abbreviation {item.Abbreviation} already exists.";
                 _log.Error($"{message} SqlException message : {ex.Message}");
                 throw new UniquenessViolationException(message, ex);
             }
-
         }
 
         public void Update(Project item)
         {
-            base.Update(
-                $@"UPDATE Projects SET 
+            try
+            {
+                base.Update(
+                    $@"UPDATE Projects SET 
                    Name = {item.Name}, Abbreviation = {item.Abbreviation}, Description = {item.Description} WHERE Id = {item.Id}");
+            }
+            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+            {
+                var message =
+                    $"The project with the name {item.Name} or abbreviation {item.Abbreviation} already exists.";
+                _log.Error($"{message} SqlException message : {ex.Message}");
+                throw new UniquenessViolationException(message, ex);
+            }
         }
 
         public void Delete(int id)

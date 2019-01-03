@@ -9,11 +9,8 @@ namespace TrainingTask.DAL.Repositories
 {
     public class EmployeeRepository : BaseRepository, IEmployeeRepository
     {
-        private readonly string _connectionString;
-
         public EmployeeRepository(string connectionString) : base(connectionString)
         {
-            _connectionString = connectionString;
         }
 
         public Employee Get(int id)

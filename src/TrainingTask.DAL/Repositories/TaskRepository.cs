@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using TrainingTask.Common.Enums;
+using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;
 
@@ -11,11 +13,11 @@ namespace TrainingTask.DAL.Repositories
 {
     public class TaskRepository : BaseRepository, ITaskRepository
     {
-        private readonly string _connectionString;
+        private readonly ILog _log;
 
-        public TaskRepository(string connectionString) : base(connectionString)
+        public TaskRepository(string connectionString, ILog log) : base(connectionString)
         {
-            _connectionString = connectionString;
+            _log = log;
         }
 
         public Task Get(int id)
@@ -37,18 +39,39 @@ namespace TrainingTask.DAL.Repositories
 
         public int Create(Task item)
         {
-            return base.Create(
-                $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
+            try
+            {
+                return base.Create(
+                    $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
                    VALUES ({item.Name}, {item.WorkHours.TotalMinutes}, {item.StartDate}, {item.FinishDate}, {(int)item.Status}, {item.ProjectId} ) 
                    SET @id=SCOPE_IDENTITY()");
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                var message =
+                    $"The project with the Id {item.ProjectId} has already deleted.";
+                _log.Error($"{message} SqlException message : {ex.Message}");
+                throw new ForeignKeyViolationException(message, ex);
+            }
         }
 
         public void Update(Task item)
         {
-            base.Update(
-                $@"UPDATE Tasks SET 
+            try
+            {
+                base.Update(
+                    $@"UPDATE Tasks SET 
                     Name = {item.Name}, WorkTime = {item.WorkHours.TotalMinutes}, StartDate = {item.StartDate}, FinishDate = {item.FinishDate}, 
                     Status = {(int)item.Status}, ProjectId = {item.ProjectId} WHERE Id = {item.Id}");
+
+            }
+            catch (SqlException ex) when (ex.Number == 547)
+            {
+                var message =
+                    $"The project with the Id {item.ProjectId} has already deleted.";
+                _log.Error($"{message} SqlException message : {ex.Message}");
+                throw new ForeignKeyViolationException(message, ex);
+            }
         }
 
         public void Delete(int id)
