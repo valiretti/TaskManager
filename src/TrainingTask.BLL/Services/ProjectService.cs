@@ -44,7 +44,7 @@ namespace TrainingTask.BLL.Services
                 transactionScope.Complete();
                 return insertedId;
             }
-        }
+           }
 
         public void Update(CreateProject modifiedProject)
         {

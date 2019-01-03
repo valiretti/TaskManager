@@ -133,6 +133,11 @@ function errorHandling(jxqr, id) {
         closeForm();
         $("tr[data-rowid='" + id + "']").remove();
     }
+    else if (jxqr.status == 500) {
+        $('#errors').append(jxqr.responseText);
+        closeForm();
+        closeProjectForm();
+    }
     else if (jxqr.responseText === "") {
         $('#errors').append("<p>" + jxqr.statusText + "</p>");
     }
