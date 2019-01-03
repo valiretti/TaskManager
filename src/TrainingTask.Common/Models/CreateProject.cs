@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TrainingTask.Common.Models
 {
+    /// <summary>
+    /// Represents a model for creating project
+    /// </summary>
     public class CreateProject
     {
         public int Id { get; set; }

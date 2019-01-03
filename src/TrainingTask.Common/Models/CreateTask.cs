@@ -5,6 +5,9 @@ using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Common.Models
 {
+    /// <summary>
+    /// Represents a model for creating task
+    /// </summary>
     public class CreateTask
     {
         public int Id { get; set; }

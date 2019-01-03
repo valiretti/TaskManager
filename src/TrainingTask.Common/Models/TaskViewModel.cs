@@ -4,6 +4,9 @@ using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Common.Models
 {
+    /// <summary>
+    /// Class for output information about task
+    /// </summary>
     public class TaskViewModel 
     {
         public int Id { get; set; }

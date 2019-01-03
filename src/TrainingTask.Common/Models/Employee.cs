@@ -2,6 +2,9 @@
 
 namespace TrainingTask.Common.Models
 {
+    /// <summary>
+    /// Represents employee
+    /// </summary>
     public class Employee
     {
         public int Id { get; set; }

@@ -3,6 +3,9 @@ using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Common.Models
 {
+    /// <summary>
+    /// Represents task
+    /// </summary>
     public class Task
     {
         public int Id { get; set; }
