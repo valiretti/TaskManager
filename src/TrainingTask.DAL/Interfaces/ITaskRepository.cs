@@ -5,10 +5,23 @@ namespace TrainingTask.DAL.Interfaces
 {
     public interface ITaskRepository : IRepository<Task>
     {
+        /// <summary>
+        /// Gets all tasks include employees.
+        /// </summary>
         IEnumerable<TaskViewModel> GetAll();
 
-        TaskViewModel GetViewModel(int i);
 
+        /// <summary>
+        /// Gets the task including employees by Id.
+        /// </summary>
+        /// <param name="id">The task identifier.</param>
+        TaskViewModel GetViewModel(int id);
+
+
+        /// <summary>
+        /// Gets all tasks including employees by project identifier.
+        /// </summary>
+        /// <param name="id">The task identifier.</param>
         IEnumerable<TaskViewModel> GetByProjectId(int id);
     }
 }
