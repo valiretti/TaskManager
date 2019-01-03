@@ -25,7 +25,7 @@ namespace TrainingTask.Web
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             string pathToLogging = Configuration.GetConnectionString("PathToLogging");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            //services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
+            services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
             services.RegisterRepositories(connectionString);
             services.RegisterServices();
         }
