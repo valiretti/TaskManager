@@ -46,7 +46,7 @@ namespace TrainingTask.Web.Controllers
         {
             if (task == null)
             {
-                ModelState.AddModelError("", "No data for employee");
+                ModelState.AddModelError("", "No data for task");
                 return BadRequest(ModelState);
             }
 

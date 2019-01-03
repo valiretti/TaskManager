@@ -70,7 +70,7 @@ namespace TrainingTask.Web.Controllers
         {
             if (project == null)
             {
-                ModelState.AddModelError("", "No data for employee");
+                ModelState.AddModelError("", "No data for project");
                 return BadRequest(ModelState);
             }
 
