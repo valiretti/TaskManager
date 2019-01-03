@@ -24,23 +24,36 @@ function CreateTask(task) {
             $("table tbody").append(row(t));
         },
 
-        error: function (jxqr, error, status) {
-            if (jxqr.responseText === "") {
-                $('#errors').append("<h3>" + jxqr.statusText + "</h3>");
-            }
-            else {
-                var response = JSON.parse(jxqr.responseText);
-                if (response['']) {
-
-                    $.each(response[''], function (index, item) {
-                        $('#errors').append("<p>" + item + "</p>");
-                    });
-                }
-            }
-
-            $('#errors').show();
+        error: function(jxqr, error, status) {
+            errorHandling(jxqr, task.id);
         }
     });
+}
+
+function closeErrors() {
+    $('#errors').empty();
+    $('#errors').hide();
+}
+
+function errorHandling(jxqr, id) {
+    if (jxqr.status == 404) {
+        $('#errors').append("<p>" + "The task not found" + "</p>");
+        closeForm();
+        $("tr[data-rowid='" + id + "']").remove();
+    }
+    else if (jxqr.responseText === "") {
+        $('#errors').append("<p>" + jxqr.statusText + "</p>");
+    }
+    else {
+        var response = JSON.parse(jxqr.responseText);
+        if (response['']) {
+
+            $.each(response[''], function (index, item) {
+                $('#errors').append("<p>" + item + "</p>");
+            });
+        }
+    }
+    $('#errors').show();
 }
 
 function GetJson(task) {
@@ -71,7 +84,10 @@ function EditTask(task) {
                     fullNames: employees.filter(e => task.employees && task.employees.some(id => id == e.id))
                         .map(e => e.firstName + " " + e.lastName + " " + e.patronymic)
                 });
-            $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(task));
+            $("tr[data-rowid='" + idForEdit + "']").replaceWith(row(task)); 
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, task.id);
         }
     });
 }
@@ -132,6 +148,9 @@ function DeleteTask(id) {
         method: "DELETE",
         success: function () {
             $("tr[data-rowid='" + id + "']").remove();
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, id);
         }
     });
 }
@@ -170,11 +189,13 @@ $(function () {
         $('#taskForm').show();
         $('#edit').hide();
         $('#addButton').show();
+        closeErrors();
     });
 
     $("#back").click(function (e) {
         e.preventDefault();
         closeForm();
+        closeErrors();
     });
 
 
@@ -190,12 +211,14 @@ $(function () {
         $('#errors').hide();
         let task = GetTaskFromForm();
         CreateTask(task);
+        closeErrors();
     });
 
     $("body").on("click",
         ".editLink",
         function () {
             var id = $(this).data("id");
+            closeErrors();
             $('#taskForm').show();
             $('#edit').show();
             $('#headerEdit').show();
@@ -204,13 +227,15 @@ $(function () {
             idForEdit = id;
             uiPromise
                 .then(() => GetTask(id))
-                .then(task => FillTask(task));
+                .then(task => FillTask(task))
+                .catch(jxqr => errorHandling(jxqr, id));
         });
 
     $("body").on("click",
         ".removeLink",
         function () {
             var id = $(this).data("id");
+            closeErrors();
             let isDelete = confirm("Are you sure to delete this task?");
             if (isDelete) {
                 DeleteTask(id);
