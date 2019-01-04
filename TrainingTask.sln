@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingTask.Web", "src\TrainingTask.Web\TrainingTask.Web.csproj", "{70F73C15-09D6-4186-8E34-F2EC87F20ED1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingTask.Web", "src\TrainingTask.Web\TrainingTask.Web.csproj", "{70F73C15-09D6-4186-8E34-F2EC87F20ED1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingTask.DAL", "src\TrainingTask.DAL\TrainingTask.DAL.csproj", "{DFF05E0B-EEEC-493E-9085-12DAF0B5A231}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingTask.DAL", "src\TrainingTask.DAL\TrainingTask.DAL.csproj", "{DFF05E0B-EEEC-493E-9085-12DAF0B5A231}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingTask.BLL", "src\TrainingTask.BLL\TrainingTask.BLL.csproj", "{98226E54-3F6E-45CD-AD6E-CB2BC73577B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingTask.BLL", "src\TrainingTask.BLL\TrainingTask.BLL.csproj", "{98226E54-3F6E-45CD-AD6E-CB2BC73577B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrainingTask.Common", "src\TrainingTask.Common\TrainingTask.Common.csproj", "{A50E3B24-A5E9-456C-87DA-E04B20E3C701}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrainingTask.Common", "src\TrainingTask.Common\TrainingTask.Common.csproj", "{A50E3B24-A5E9-456C-87DA-E04B20E3C701}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
