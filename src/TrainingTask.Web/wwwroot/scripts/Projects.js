@@ -195,6 +195,9 @@ function GetAllProjects() {
             $.each(projects, function (index, project) {
                 $("table#projects tbody").append(rowProj(project));
             });
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, 0);
         }
     });
 }
