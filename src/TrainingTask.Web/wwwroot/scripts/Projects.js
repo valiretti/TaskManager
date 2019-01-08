@@ -296,6 +296,7 @@ $(function () {
         $('#projectForm').show();
         $('#editProj').hide();
         $('#addButton').show();
+        $("#tasks > tbody").empty();
         closeErrors();
     });
 

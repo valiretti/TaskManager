@@ -85,9 +85,10 @@ namespace TrainingTask.BLL.Services
 
         private void UpdateEmployees(CreateTask task, int id)
         {
+            _employeeTaskRepository.DeleteEmployeesFromTask(id);
+
             if (task.Employees != null)
             {
-                _employeeTaskRepository.DeleteEmployeesFromTask(id);
                 foreach (var employee in task.Employees)
                 {
                     _employeeTaskRepository.Add(employee, id);
