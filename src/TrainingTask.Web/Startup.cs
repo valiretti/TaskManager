@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -25,10 +27,14 @@ namespace TrainingTask.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var appFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var logsFolder = Path.Combine(appFolder, "Logs");
+            Directory.CreateDirectory(logsFolder);
+            var path = Path.Combine(logsFolder, "log.txt");
+
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            string pathToLogging = Configuration.GetConnectionString("PathToLogging");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
+            services.AddSingleton<ILog, Log>(provider => new Log(path));
             services.RegisterRepositories(connectionString);
             services.RegisterServices();
         }
