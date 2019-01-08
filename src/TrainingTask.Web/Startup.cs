@@ -34,6 +34,9 @@ namespace TrainingTask.Web
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddSwaggerDocument();
+
             services.AddSingleton<ILog, Log>(provider => new Log(path));
             services.RegisterRepositories(connectionString);
             services.RegisterServices();
@@ -52,6 +55,8 @@ namespace TrainingTask.Web
             }
 
             app.UseStaticFiles();
+
+            app.UseSwagger().UseSwaggerUi3();
 
             app.UseExceptionHandler(
                 options => {
