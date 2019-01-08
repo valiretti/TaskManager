@@ -1,6 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net;
 using System.Reflection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +28,7 @@ namespace TrainingTask.Web
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var appFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             var logsFolder = Path.Combine(appFolder, "Logs");
@@ -33,13 +36,27 @@ namespace TrainingTask.Web
             var path = Path.Combine(logsFolder, "log.txt");
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerDocument();
 
-            services.AddSingleton<ILog, Log>(provider => new Log(path));
-            services.RegisterRepositories(connectionString);
-            services.RegisterServices();
+
+            // services.AddSingleton<ILog, Log>(provider => new Log(path));
+            //services.RegisterRepositories(connectionString);
+            //services.RegisterServices();
+
+            var builder = new ContainerBuilder();
+            builder.RegisterType<Log>().As<ILog>().WithParameter("pathToLogging", path).SingleInstance();
+            // builder.RegisterModule(new NHibernateModule(connectionString));
+            builder.RegisterModule(new AdoNetModule(connectionString));
+            builder.RegisterModule(new BusinessModule());
+
+            builder.Populate(services);
+            var container = builder.Build();
+
+            return new AutofacServiceProvider(container);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -59,7 +76,8 @@ namespace TrainingTask.Web
             app.UseSwagger().UseSwaggerUi3();
 
             app.UseExceptionHandler(
-                options => {
+                options =>
+                {
                     options.Run(
                         async context =>
                         {
