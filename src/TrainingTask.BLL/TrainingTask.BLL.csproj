@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TrainingTask.Common\TrainingTask.Common.csproj" />
     <ProjectReference Include="..\TrainingTask.DAL\TrainingTask.DAL.csproj" />
   </ItemGroup>

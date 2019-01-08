@@ -10,11 +10,11 @@ using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.DAL.NHRepositories
 {
-    public class EmployeeRepository : IEmployeeRepository
+    public class EmployeeNhRepository : IEmployeeRepository
     {
         private readonly ISession _session;
 
-        public EmployeeRepository(ISession session)
+        public EmployeeNhRepository(ISession session)
         {
             _session = session;
         }

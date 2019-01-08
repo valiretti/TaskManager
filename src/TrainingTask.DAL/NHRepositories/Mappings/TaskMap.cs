@@ -12,11 +12,11 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
         {
             Id(t => t.Id);
             Map(t => t.Name);
-            Map(t => t.WorkHours);
+            Map(t => t.WorkHours).Column("WorkTime");
             Map(t => t.StartDate);
             Map(t => t.FinishDate);
             Map(t => t.Status);
-            References(t => t.ProjectNh).Column("ProjectId")
+            References(t => t.Project).Column("ProjectId")
                 .Cascade.All();
             HasManyToMany(e => e.Employees)
                 .Cascade.All()

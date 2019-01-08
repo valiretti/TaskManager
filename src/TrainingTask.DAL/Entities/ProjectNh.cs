@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TrainingTask.DAL.Entities
 {
-    public class ProjectNh
+    public class ProjectNh : BaseEntity
     {
         public ProjectNh()
         {
-            Tasks = new List<TaskNh>();
+            Tasks = new HashSet<TaskNh>();
         }
-
-        public virtual int Id { get; set; }
 
         public virtual string Name { get; set; }
 
@@ -19,6 +15,6 @@ namespace TrainingTask.DAL.Entities
 
         public virtual string Description { get; set; }
 
-        public virtual IList<TaskNh> Tasks { get; set; }
+        public virtual ISet<TaskNh> Tasks { get; set; }
     }
 }

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using TrainingTask.Common.Enums;
 
 namespace TrainingTask.DAL.Entities
 {
-    public class TaskNh
+    public class TaskNh : BaseEntity
     {
         public TaskNh()
         {
-            Employees = new List<EmployeeNh>();
+            Employees = new HashSet<EmployeeNh>();
         }
-
-        public virtual int Id { get; set; }
 
         public virtual string Name { get; set; }
 
@@ -24,8 +21,8 @@ namespace TrainingTask.DAL.Entities
 
         public virtual Status Status { get; set; }
 
-        public virtual ProjectNh ProjectNh { get; set; }
+        public virtual ProjectNh Project { get; set; }
 
-        public virtual IList<EmployeeNh> Employees { get; set; }
+        public virtual ISet<EmployeeNh> Employees { get; set; }
     }
 }
