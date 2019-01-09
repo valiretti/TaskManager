@@ -13,7 +13,7 @@ namespace TrainingTask.DAL.Entities
 
         public virtual string Name { get; set; }
 
-        public virtual TimeSpan WorkHours { get; set; }
+        public virtual int WorkHours { get; set; }
 
         public virtual DateTime StartDate { get; set; }
 

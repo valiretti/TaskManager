@@ -9,22 +9,18 @@ using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.DAL.NHRepositories
 {
-    public class EmployeeNhRepository : IEmployeeRepository
+    public class EmployeeNhRepository : BaseNhRepository<EmployeeNh>, IEmployeeRepository
     {
         private readonly ISession _session;
         private readonly IMapper _mapper;
 
-        public EmployeeNhRepository(ISession session, IMapper mapper)
+        public EmployeeNhRepository(ISession session, IMapper mapper): base(session, mapper)
         {
             _session = session;
             _mapper = mapper;
         }
 
-        public Employee Get(int id)
-        {
-            var employee = _session.Get<EmployeeNh>(id);
-            return _mapper.Map<Employee>(employee);
-        }
+        public Employee Get(int id) => Get<Employee>(id);
 
         public int Create(Employee item)
         {

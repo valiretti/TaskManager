@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
+using TrainingTask.DAL.Profiles;
 
 namespace TrainingTask.Web
 {
@@ -23,8 +24,11 @@ namespace TrainingTask.Web
                 }
             })).AsSelf().SingleInstance();
 
-            builder.Register(c => c.Resolve<MapperConfiguration>()
-                    .CreateMapper(c.Resolve))
+            builder.Register(c =>
+                {
+                    var ctx = c.Resolve<IComponentContext>();
+                    return c.Resolve<MapperConfiguration>().CreateMapper(ctx.Resolve);
+                })
                 .As<IMapper>()
                 .InstancePerLifetimeScope();
         }

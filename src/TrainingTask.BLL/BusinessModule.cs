@@ -10,7 +10,7 @@ namespace TrainingTask.BLL
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterAssemblyTypes(ThisAssembly)
-                .Where(t => t.Name.EndsWith("Service"))
+                .Where(t => t.Name.EndsWith("Service") && !t.IsAbstract)
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
 

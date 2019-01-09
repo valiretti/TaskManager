@@ -35,7 +35,7 @@ namespace TrainingTask.Web
             var path = Path.Combine(logsFolder, "log.txt");
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            var useOrm = Configuration.GetSection("ORM:Nhibernate").Value == "true";
+            var useOrm = Configuration.GetSection("ORM").GetValue<bool>("Nhibernate");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 

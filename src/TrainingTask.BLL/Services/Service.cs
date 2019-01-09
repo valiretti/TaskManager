@@ -6,7 +6,7 @@ using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.BLL.Services
 {
-    public class Service<T> : IService<T> where T : class
+    public abstract class Service<T> : IService<T> where T : class
     {
         private readonly IRepository<T> _repository;
 

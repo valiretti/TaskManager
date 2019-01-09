@@ -6,6 +6,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using TrainingTask.DAL.NHRepositories.Mappings;
+using TrainingTask.DAL.NHRepositories.Resolvers;
 
 namespace TrainingTask.DAL
 {
@@ -31,6 +32,10 @@ namespace TrainingTask.DAL
                 .Where(t => t.Name.EndsWith("NhRepository"))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterGeneric(typeof(EntityResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(CollectionResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
+
 
             base.Load(builder);
         }
