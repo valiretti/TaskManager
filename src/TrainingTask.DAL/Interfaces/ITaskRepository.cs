@@ -23,5 +23,18 @@ namespace TrainingTask.DAL.Interfaces
         /// </summary>
         /// <param name="id">The task identifier.</param>
         IEnumerable<TaskViewModel> GetByProjectId(int id);
+
+        /// <summary>
+        /// Insert the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        int Create(CreateTask item);
+
+
+        /// <summary>
+        /// Updates the specified item.
+        /// </summary>
+        /// <param name="item">The item.</param>
+        void Update(CreateTask item);
     }
 }

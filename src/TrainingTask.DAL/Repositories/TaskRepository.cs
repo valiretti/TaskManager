@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Transactions;
+using AutoMapper;
 using TrainingTask.Common.Enums;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace TrainingTask.DAL.Repositories
 {
     public class TaskRepository : BaseRepository, ITaskRepository
     {
         private readonly ILog _log;
+        private readonly IMapper _mapper;
+        private readonly IEmployeeTaskRepository _employeeTaskRepository;
 
-        public TaskRepository(string connectionString, ILog log) : base(connectionString)
+        public TaskRepository(string connectionString, ILog log, IMapper mapper, IEmployeeTaskRepository employeeTaskRepository) : base(connectionString)
         {
             _log = log;
+            _mapper = mapper;
+            _employeeTaskRepository = employeeTaskRepository;
         }
 
         public Task Get(int id)
@@ -37,14 +44,23 @@ namespace TrainingTask.DAL.Repositories
             ).FirstOrDefault();
         }
 
-        public int Create(Task item)
+        public int Create(CreateTask task)
         {
+            var item = _mapper.Map<Task>(task);
             try
             {
-                return base.Create(
-                    $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
+                using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                {
+                    var insertedId = base.Create(
+                        $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
                    VALUES ({item.Name}, {item.WorkHours.TotalMinutes}, {item.StartDate}, {item.FinishDate}, {(int)item.Status}, {item.ProjectId} ) 
                    SET @id=SCOPE_IDENTITY()");
+
+                    UpdateEmployees(task, insertedId);
+                    transactionScope.Complete();
+
+                    return insertedId;
+                }
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
@@ -55,15 +71,21 @@ namespace TrainingTask.DAL.Repositories
             }
         }
 
-        public void Update(Task item)
+        public void Update(CreateTask task)
         {
+            var item = _mapper.Map<Task>(task);
             try
             {
-                base.Update(
-                    $@"UPDATE Tasks SET 
+                using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                {
+                    base.Update(
+                        $@"UPDATE Tasks SET 
                     Name = {item.Name}, WorkTime = {item.WorkHours.TotalMinutes}, StartDate = {item.StartDate}, FinishDate = {item.FinishDate}, 
                     Status = {(int)item.Status}, ProjectId = {item.ProjectId} WHERE Id = {item.Id}");
 
+                    UpdateEmployees(task, task.Id);
+                    transactionScope.Complete();
+                }
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
@@ -218,28 +240,17 @@ namespace TrainingTask.DAL.Repositories
             return taskGroups;
         }
 
-        private class TaskModel
+        private void UpdateEmployees(CreateTask task, int id)
         {
-            public int Id { get; set; }
+            _employeeTaskRepository.DeleteEmployeesFromTask(id);
 
-            public string ProjectAbbreviation { get; set; }
-
-            public string Name { get; set; }
-
-            public DateTime StartDate { get; set; }
-
-            public DateTime FinishDate { get; set; }
-
-            public string FullName { get; set; }
-
-            public Status Status { get; set; }
-
-            public int ProjectId { get; set; }
-
-            public int? EmployeeId { get; set; }
-
-            public TimeSpan WorkHours { get; set; }
-
+            if (task.Employees != null)
+            {
+                foreach (var employee in task.Employees)
+                {
+                    _employeeTaskRepository.Add(employee, id);
+                }
+            }
         }
     }
 }
