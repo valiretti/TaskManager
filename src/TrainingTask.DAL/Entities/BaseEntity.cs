@@ -6,7 +6,7 @@ namespace TrainingTask.DAL.Entities
     {
         public virtual int Id { get; set; }
 
-        public bool Equals(BaseEntity other)
+        public virtual bool Equals(BaseEntity other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;

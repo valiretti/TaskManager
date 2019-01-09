@@ -22,7 +22,7 @@ namespace TrainingTask.DAL
         {
             builder.Register<ISessionFactory>(c => Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(_connectionString).ShowSql())
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<TaskMap>())
+                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<EmployeeMap>())
                .BuildSessionFactory()).SingleInstance();
 
             builder.Register<ISession>(c => c.Resolve<ISessionFactory>().OpenSession()).InstancePerLifetimeScope();

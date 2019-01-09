@@ -17,7 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TrainingTask.BLL\TrainingTask.BLL.csproj" />
     <ProjectReference Include="..\TrainingTask.Common\TrainingTask.Common.csproj" />
-    <ProjectReference Include="..\TrainingTask.DAL\TrainingTask.DAL.csproj" />
   </ItemGroup>
 
 </Project>

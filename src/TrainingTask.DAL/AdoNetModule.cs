@@ -12,7 +12,6 @@ namespace TrainingTask.DAL
     public class AdoNetModule : Module
     {
         private readonly string _connectionString;
-        private readonly ILog _log;
 
         public AdoNetModule(string connectionString)
         {
@@ -24,14 +23,10 @@ namespace TrainingTask.DAL
             var parameter = new NamedParameter("connectionString", _connectionString);
 
             builder.RegisterAssemblyTypes(ThisAssembly)
-                .Where(t => t.Name.EndsWith("Repository"))
+                .Where(t => t.IsAssignableTo<BaseRepository>() && !t.IsAbstract)
                 .WithParameter(parameter)
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
-
-
-            builder.RegisterType<EmployeeRepository>().As<IEmployeeRepository>()
-                .WithParameter(parameter).InstancePerLifetimeScope();
 
             base.Load(builder);
         }

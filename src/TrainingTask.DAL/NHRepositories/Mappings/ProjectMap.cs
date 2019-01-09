@@ -10,6 +10,7 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
     {
         public ProjectMap()
         {
+            Table("Projects");
             Id(p => p.Id);
             Map(p => p.Name);
             Map(p => p.Abbreviation);

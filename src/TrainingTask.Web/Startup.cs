@@ -27,7 +27,6 @@ namespace TrainingTask.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             var appFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -36,30 +35,35 @@ namespace TrainingTask.Web
             var path = Path.Combine(logsFolder, "log.txt");
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            var useOrm = Configuration.GetSection("ORM:Nhibernate").Value == "true";
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerDocument();
 
-
-            // services.AddSingleton<ILog, Log>(provider => new Log(path));
-            //services.RegisterRepositories(connectionString);
-            //services.RegisterServices();
-
             var builder = new ContainerBuilder();
+
             builder.RegisterType<Log>().As<ILog>().WithParameter("pathToLogging", path).SingleInstance();
-            // builder.RegisterModule(new NHibernateModule(connectionString));
-            builder.RegisterModule(new AdoNetModule(connectionString));
-            builder.RegisterModule(new BusinessModule());
+
+            if (useOrm)
+            {
+                builder.RegisterModule(new NHibernateModule(connectionString));
+            }
+            else
+            {
+                builder.RegisterModule(new AdoNetModule(connectionString));
+            }
+
+            builder.RegisterModule<BusinessModule>();
+
+            builder.RegisterModule<MapperModule>();
 
             builder.Populate(services);
             var container = builder.Build();
 
             return new AutofacServiceProvider(container);
-
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILog log)
         {
             if (env.IsDevelopment())
