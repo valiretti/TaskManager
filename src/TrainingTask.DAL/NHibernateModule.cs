@@ -36,6 +36,8 @@ namespace TrainingTask.DAL
             builder.RegisterGeneric(typeof(EntityResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
             builder.RegisterGeneric(typeof(CollectionResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
 
+            builder.RegisterType(typeof(ProjectResolver)).AsSelf().InstancePerLifetimeScope();
+
 
             base.Load(builder);
         }

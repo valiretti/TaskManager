@@ -7,6 +7,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Linq;
 using NHibernate.Transform;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Entities;
 using TrainingTask.DAL.Interfaces;
@@ -15,25 +16,17 @@ namespace TrainingTask.DAL.NHRepositories
 {
     public class TaskNhRepository : BaseNhRepository<TaskNh>, ITaskRepository
     {
-        public TaskNhRepository(ISession session, IMapper mapper) : base(session, mapper)
+        public TaskNhRepository(ISession session, IMapper mapper, ILog log) : base(session, mapper, log)
         {
         }
 
         public Task Get(int id) => Get<Task>(id);
 
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<TaskViewModel> GetAll() => GetAll<TaskViewModel>(t => t.Project, t => t.Employees);
+        public IEnumerable<TaskViewModel> GetByProjectId(int id) => GetAll<TaskViewModel>(t => t.Project.Id == id);
+      
+        public IEnumerable<TaskViewModel> GetAll() => GetAll<TaskViewModel>(null, t => t.Project, t => t.Employees);
 
         public TaskViewModel GetViewModel(int id) => Get<TaskViewModel>(id);
-
-        public IEnumerable<TaskViewModel> GetByProjectId(int id)
-        {
-            throw new NotImplementedException();
-        }
 
         public int Create(CreateTask item) => Create<CreateTask>(item);
 

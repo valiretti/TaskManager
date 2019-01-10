@@ -4,6 +4,7 @@ using System.Text;
 using AutoMapper;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Entities;
+using TrainingTask.DAL.NHRepositories.Resolvers;
 
 namespace TrainingTask.DAL.Profiles
 {
@@ -15,6 +16,9 @@ namespace TrainingTask.DAL.Profiles
             CreateMap<Project, ProjectNh>()
                 .ForMember(t => t.Tasks, opt => opt.Ignore())
                 .ReverseMap();
+
+            CreateMap<CreateProject, ProjectNh>()
+                .ForMember(t => t.Tasks, opt => opt.MapFrom<ProjectResolver, IEnumerable<CreateTask>>(ct => ct.Tasks));
         }
     }
 }

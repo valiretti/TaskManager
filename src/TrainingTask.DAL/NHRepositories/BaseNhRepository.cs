@@ -1,25 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using AutoMapper;
 using NHibernate;
+using NHibernate.Exceptions;
 using NHibernate.Linq;
-using TrainingTask.Common.Models;
-using TrainingTask.DAL.Entities;
+using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Interfaces;
 
 namespace TrainingTask.DAL.NHRepositories
 {
-    public abstract class BaseNhRepository<T> where T : class 
+    public abstract class BaseNhRepository<T> where T : class
     {
         protected ISession Session { get; }
         protected IMapper Mapper { get; }
+        public ILog Log { get; }
 
-        protected BaseNhRepository(ISession session, IMapper mapper)
+        protected BaseNhRepository(ISession session, IMapper mapper, ILog log)
         {
             Session = session;
             Mapper = mapper;
+            Log = log;
+        }
+
+        public void Delete(int id)
+        {
+            var entity = Session.Get<T>(id);
+            Session.Delete(entity);
+            Session.Flush();
         }
 
         protected TResult Get<TResult>(int id)
@@ -28,7 +38,7 @@ namespace TrainingTask.DAL.NHRepositories
             return Mapper.Map<TResult>(entity);
         }
 
-        protected IEnumerable<TResult> GetAll<TResult>(params Expression<Func<T, object>>[] fetches)
+        protected IEnumerable<TResult> GetAll<TResult>(Expression<Func<T, bool>> filter = null, params Expression<Func<T, object>>[] fetches)
         {
             var entities = Session.Query<T>();
             if (fetches != null)
@@ -38,22 +48,80 @@ namespace TrainingTask.DAL.NHRepositories
                     entities = entities.Fetch(fetch);
                 }
             }
+            if (filter != null)
+            {
+                entities = entities.Where(filter);
+            }
             return Mapper.Map<IEnumerable<TResult>>(entities);
         }
 
         protected int Create<TEntity>(TEntity item)
         {
-            var employee = Mapper.Map<T>(item);
-            var id = Session.Save(employee);
-            return (int)id;
+            try
+            {
+                var entity = Mapper.Map<T>(item);
+                var id = Session.Save(entity);
+                return (int)id;
+            }
+            catch (GenericADOException ex) when (IsForeignKeyViolation(ex))
+            {
+                var message = ForeignKeyViolationLog(ex);
+                throw new ForeignKeyViolationException(message, ex);
+
+            }
+            catch (GenericADOException ex) when (IsUniquenessViolation(ex))
+            {
+                var message = UniquenessViolationLog(ex);
+                throw new UniquenessViolationException(message, ex);
+            }
         }
 
         protected void Update<TEntity>(int id, TEntity item)
         {
-            var employee = Session.Get<T>(id);
-            Mapper.Map(item, employee);
-            Session.Update(employee);
-            Session.Flush();
+            try
+            {
+                var entity = Session.Get<T>(id);
+                Mapper.Map(item, entity);
+                Session.Update(entity);
+                Session.Flush();
+            }
+            catch (GenericADOException ex) when (IsForeignKeyViolation(ex))
+            {
+                var message = ForeignKeyViolationLog(ex);
+                throw new ForeignKeyViolationException(message, ex);
+
+            }
+            catch (GenericADOException ex) when (IsUniquenessViolation(ex))
+            {
+                var message = UniquenessViolationLog(ex);
+                throw new UniquenessViolationException(message, ex);
+            }
+        }
+
+        private string UniquenessViolationLog(GenericADOException ex)
+        {
+            var message =
+                $"The project already exists.";
+            Log.Error($"{message} SqlException message : {ex.Message}");
+            return message;
+        }
+
+        private static bool IsUniquenessViolation(GenericADOException ex)
+        {
+            return ex.InnerException is SqlException sqlEx && (sqlEx.Number == 2601 || sqlEx.Number == 2627);
+        }
+
+        private string ForeignKeyViolationLog(GenericADOException ex)
+        {
+            var message =
+                $"The item has already deleted.";
+            Log.Error($"{message} SqlException message : {ex.Message}");
+            return message;
+        }
+
+        private static bool IsForeignKeyViolation(GenericADOException ex)
+        {
+            return ex.InnerException is SqlException sqlEx && sqlEx.Number == 547;
         }
     }
 }

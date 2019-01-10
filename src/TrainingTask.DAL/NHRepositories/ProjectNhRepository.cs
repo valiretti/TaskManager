@@ -5,51 +5,26 @@ using System.Text;
 using AutoMapper;
 using NHibernate;
 using NHibernate.Linq;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Entities;
 using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.DAL.NHRepositories
 {
-    public class ProjectNhRepository : IProjectRepository
+    public class ProjectNhRepository : BaseNhRepository<ProjectNh>, IProjectRepository
     {
-        private readonly ISession _session;
-        private readonly IMapper _mapper;
-
-        public ProjectNhRepository(ISession session, IMapper mapper)
+        public ProjectNhRepository(ISession session, IMapper mapper, ILog log) : base(session, mapper, log)
         {
-            _session = session;
-            _mapper = mapper;
         }
 
-        public Project Get(int id)
-        {
-            var employee = _session.Get<ProjectNh>(id);
-            return _mapper.Map<Project>(employee);
-        }
+        public Project Get(int id) => Get<Project>(id);
+     
+        public IEnumerable<Project> GetAll() => GetAll<Project>();
 
-        public void Delete(int id)
-        {
-            _session.Query<ProjectNh>()
-                .Where(c => c.Id == id)
-                .Delete();
-        }
+        public int Create(CreateProject project) => Create<CreateProject>(project);
 
-        public IEnumerable<Project> GetAll()
-        {
-            var employees = _session.Query<ProjectNh>().ToList();
-            return _mapper.Map<IEnumerable<Project>>(employees);
+        public void Update(CreateProject item) => Update(item.Id, item);
 
-        }
-
-        public int Create(CreateProject project)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(CreateProject item)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

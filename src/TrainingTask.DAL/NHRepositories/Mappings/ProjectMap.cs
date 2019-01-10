@@ -16,7 +16,8 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
             Map(p => p.Abbreviation);
             Map(p => p.Description);
             HasMany(p => p.Tasks)
-                .Inverse();
+                .Inverse()
+                .Cascade.All();
         }
     }
 }
