@@ -19,11 +19,11 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
             Map(t => t.FinishDate);
             Map(t => t.Status).CustomType<Status>();
             References(t => t.Project).Column("ProjectId")
-                .Cascade.All();
+                .Cascade.SaveUpdate();
             HasManyToMany(e => e.Employees)
                 .ChildKeyColumn("EmployeeId")
                 .ParentKeyColumn("TaskId")
-                .Cascade.All()
+                .Cascade.SaveUpdate()
                 .Table("EmployeeTasks");
         }
     }

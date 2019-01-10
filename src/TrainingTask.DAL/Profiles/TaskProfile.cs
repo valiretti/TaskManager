@@ -24,7 +24,7 @@ namespace TrainingTask.DAL.Profiles
 
             CreateMap<TaskNh, TaskViewModel>()
                 .ForMember(t => t.WorkHours, opt => opt.MapFrom(t => TimeSpan.FromMinutes(t.WorkHours)))
-                .ForMember(t => t.EmployeeIds, opt => opt.MapFrom(t => t.Employees.Select(e => e.Id)))
+                .ForMember(t => t.Employees, opt => opt.MapFrom(t => t.Employees.Select(e => e.Id)))
                 .ForMember(t => t.FullNames, opt => opt.MapFrom(t => t.Employees.Select(e => $"{e.FirstName} {e.LastName} {e.Patronymic}")));
 
             CreateMap<CreateTask, TaskNh>()

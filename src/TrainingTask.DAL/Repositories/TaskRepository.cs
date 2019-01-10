@@ -214,7 +214,7 @@ namespace TrainingTask.DAL.Repositories
                     StartDate = m.Key.StartDate,
                     FinishDate = m.Key.FinishDate,
                     FullNames = m.Where(p => p.EmployeeId != null).Select(p => p.FullName),
-                    EmployeeIds = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
+                    Employees = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
                     Status = m.Key.Status,
                     ProjectId = m.Key.ProjectId,
                     WorkHours = m.Key.WorkHours

@@ -131,7 +131,7 @@ function FillTask(task) {
     form.elements["startDate"].valueAsDate = new Date(task.startDate);
     form.elements["finishDate"].valueAsDate = new Date(task.finishDate);
     $("#status").val(task.status);
-    $("#employees").val(task.employeeIds);
+    $("#employees").val(task.employees);
 }
 
 function GetTaskFromForm() {
