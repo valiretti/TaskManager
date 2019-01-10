@@ -10,15 +10,15 @@ using TrainingTask.DAL.Entities;
 
 namespace TrainingTask.DAL.NHRepositories.Resolvers
 {
-    internal class ProjectResolver : IMemberValueResolver<CreateProject, ProjectNh, IEnumerable<CreateTask>, ISet<TaskNh>>
+    internal class ProjectTaskResolver : IMemberValueResolver<CreateProject, ProjectNh, IEnumerable<CreateTask>, ISet<TaskNh>>
     {
         private readonly ISession _session;
 
-        public ProjectResolver(ISession session)
+        public ProjectTaskResolver(ISession session)
         {
             _session = session;
         }
-        
+
         public ISet<TaskNh> Resolve(CreateProject source, ProjectNh destination, IEnumerable<CreateTask> sourceMember, ISet<TaskNh> destMember,
               ResolutionContext context)
         {
@@ -35,27 +35,15 @@ namespace TrainingTask.DAL.NHRepositories.Resolvers
             if (sourceMember == null)
                 return new HashSet<TaskNh>();
 
-            var resultTasks = new List<TaskNh>();
+            var resultTasks = new HashSet<TaskNh>();
             foreach (var t in sourceMember)
             {
-                if (t.Id != 0)
-                {
-                    var task = _session.Get<TaskNh>(t.Id);
-                    context.Mapper.Map(t, task, typeof(CreateTask), typeof(TaskNh));
-                    task.Project = destination;
-                    resultTasks.Add(task);
-                }
-                else
-                {
-                    TaskNh task = new TaskNh();
-                    context.Mapper.Map(t, task, typeof(CreateTask), typeof(TaskNh));
-                    task.Project = destination;
-                    resultTasks.Add(task);
-                }
+                var task = t.Id != 0 ? _session.Get<TaskNh>(t.Id) : new TaskNh();
+                context.Mapper.Map(t, task, typeof(CreateTask), typeof(TaskNh));
+                task.Project = destination;
+                resultTasks.Add(task);
             }
-
-            var result = resultTasks.ToHashSet();
-            return result;
+            return resultTasks;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace TrainingTask.DAL.Profiles
                 .ReverseMap();
 
             CreateMap<CreateProject, ProjectNh>()
-                .ForMember(t => t.Tasks, opt => opt.MapFrom<ProjectResolver, IEnumerable<CreateTask>>(ct => ct.Tasks));
+                .ForMember(t => t.Tasks, opt => opt.MapFrom<ProjectTaskResolver, IEnumerable<CreateTask>>(ct => ct.Tasks));
         }
     }
 }

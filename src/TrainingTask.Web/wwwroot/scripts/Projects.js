@@ -300,6 +300,7 @@ $(function () {
         $('#editProj').hide();
         $('#addButton').show();
         $("#tasks > tbody").empty();
+        allTasks.length = 0;
         closeErrors();
     });
 

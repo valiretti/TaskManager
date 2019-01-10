@@ -10,7 +10,7 @@ namespace TrainingTask.DAL.Entities
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id == other.Id;
+            return Id != 0 && Id == other.Id;
         }
 
         public override bool Equals(object obj)

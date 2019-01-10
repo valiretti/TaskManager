@@ -69,6 +69,7 @@ namespace TrainingTask.DAL.NHRepositories
             {
                 var entity = Mapper.Map<T>(item);
                 var id = Session.Save(entity);
+                Session.Flush();
                 return (int)id;
             }
             catch (GenericADOException ex) when (IsForeignKeyViolation(ex))
