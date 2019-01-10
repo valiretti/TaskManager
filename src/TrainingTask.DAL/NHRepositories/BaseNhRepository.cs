@@ -34,7 +34,13 @@ namespace TrainingTask.DAL.NHRepositories
 
         protected TResult Get<TResult>(int id)
         {
+            Log.Trace($"Requested Id: {id} ");
+            Log.Trace("Attempt to connect to data source");
+
             var entity = Session.Get<T>(id);
+
+            Log.Trace("The selection was successful.");
+
             return Mapper.Map<TResult>(entity);
         }
 
@@ -52,6 +58,8 @@ namespace TrainingTask.DAL.NHRepositories
             {
                 entities = entities.Where(filter);
             }
+
+            Log.Debug($"Get from database {entities.Count()} items");
             return Mapper.Map<IEnumerable<TResult>>(entities);
         }
 

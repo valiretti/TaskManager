@@ -36,14 +36,13 @@ namespace TrainingTask.Web
 
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
             var useOrm = Configuration.GetSection("ORM").GetValue<bool>("Nhibernate");
+            var useNlog = Configuration.GetSection("Logs").GetValue<bool>("Nlog");
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddSwaggerDocument();
 
             var builder = new ContainerBuilder();
-
-            builder.RegisterType<Log>().As<ILog>().WithParameter("pathToLogging", path).SingleInstance();
 
             if (useOrm)
             {
@@ -52,6 +51,15 @@ namespace TrainingTask.Web
             else
             {
                 builder.RegisterModule(new AdoNetModule(connectionString));
+            }
+
+            if (useNlog)
+            {
+                builder.RegisterType<Nlog>().As<ILog>().SingleInstance();
+            }
+            else
+            {
+                builder.RegisterType<Log>().As<ILog>().WithParameter("pathToLogging", path).SingleInstance();
             }
 
             builder.RegisterModule<BusinessModule>();
