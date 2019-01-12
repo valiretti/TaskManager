@@ -15,7 +15,7 @@ namespace TrainingTask.DAL.Entities
 
         public virtual string Patronymic { get; set; }
 
-        public string Position { get; set; }
+        public virtual string Position { get; set; }
 
         public virtual ISet<TaskNh> Tasks { get; set; }
     }

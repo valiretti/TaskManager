@@ -9,6 +9,9 @@ function GetEmployees() {
             $.each(employees, function (index, employee) {
                 $("table tbody").append(row(employee));
             });
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, 0);
         }
     });
 }
@@ -136,7 +139,6 @@ function errorHandling(jxqr, id) {
     else if (jxqr.status == 500) {
         $('#errors').append(jxqr.responseText);
         closeForm();
-        closeProjectForm();
     }
     else if (jxqr.responseText === "") {
         $('#errors').append("<p>" + jxqr.statusText + "</p>");

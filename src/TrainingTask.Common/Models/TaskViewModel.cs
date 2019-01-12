@@ -25,7 +25,7 @@ namespace TrainingTask.Common.Models
 
         public int ProjectId { get; set; }
 
-        public IEnumerable<int> EmployeeIds { get; set; }
+        public IEnumerable<int> Employees { get; set; }
 
         public TimeSpan WorkHours { get; set; }
     }

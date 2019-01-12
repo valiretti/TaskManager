@@ -195,6 +195,9 @@ function GetAllProjects() {
             $.each(projects, function (index, project) {
                 $("table#projects tbody").append(rowProj(project));
             });
+        },
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, 0);
         }
     });
 }
@@ -297,6 +300,7 @@ $(function () {
         $('#editProj').hide();
         $('#addButton').show();
         $("#tasks > tbody").empty();
+        allTasks.length = 0;
         closeErrors();
     });
 

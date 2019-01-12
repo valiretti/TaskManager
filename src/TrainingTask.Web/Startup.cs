@@ -1,4 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -22,18 +27,51 @@ namespace TrainingTask.Web
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            var appFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var logsFolder = Path.Combine(appFolder, "Logs");
+            Directory.CreateDirectory(logsFolder);
+            var path = Path.Combine(logsFolder, "log.txt");
+
             string connectionString = Configuration.GetConnectionString("DefaultConnection");
-            string pathToLogging = Configuration.GetConnectionString("PathToLogging");
+            var useOrm = Configuration.GetSection("ORM").GetValue<bool>("Nhibernate");
+            var useNlog = Configuration.GetSection("Logs").GetValue<bool>("Nlog");
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
-            services.RegisterRepositories(connectionString);
-            services.RegisterServices();
+
+            services.AddSwaggerDocument();
+
+            var builder = new ContainerBuilder();
+
+            if (useOrm)
+            {
+                builder.RegisterModule(new NHibernateModule(connectionString));
+            }
+            else
+            {
+                builder.RegisterModule(new AdoNetModule(connectionString));
+            }
+
+            if (useNlog)
+            {
+                builder.RegisterType<Nlog>().As<ILog>().SingleInstance();
+            }
+            else
+            {
+                builder.RegisterType<Log>().As<ILog>().WithParameter("pathToLogging", path).SingleInstance();
+            }
+
+            builder.RegisterModule<BusinessModule>();
+
+            builder.RegisterModule<MapperModule>();
+
+            builder.Populate(services);
+            var container = builder.Build();
+
+            return new AutofacServiceProvider(container);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILog log)
         {
             if (env.IsDevelopment())
@@ -47,8 +85,11 @@ namespace TrainingTask.Web
 
             app.UseStaticFiles();
 
+            app.UseSwagger().UseSwaggerUi3();
+
             app.UseExceptionHandler(
-                options => {
+                options =>
+                {
                     options.Run(
                         async context =>
                         {

@@ -10,12 +10,14 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
     {
         public ProjectMap()
         {
+            Table("Projects");
             Id(p => p.Id);
             Map(p => p.Name);
             Map(p => p.Abbreviation);
             Map(p => p.Description);
             HasMany(p => p.Tasks)
-                .Inverse();
+                .Inverse()
+                .Cascade.All();
         }
     }
 }

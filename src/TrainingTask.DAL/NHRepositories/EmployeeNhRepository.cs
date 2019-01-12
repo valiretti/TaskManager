@@ -1,54 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using AutoMapper;
 using NHibernate;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Entities;
 using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.DAL.NHRepositories
 {
-    public class EmployeeNhRepository : IEmployeeRepository
+    public class EmployeeNhRepository : BaseNhRepository<EmployeeNh>, IEmployeeRepository
     {
-        private readonly ISession _session;
-
-        public EmployeeNhRepository(ISession session)
+        public EmployeeNhRepository(ISession session, IMapper mapper, ILog log) : base(session, mapper, log)
         {
-            _session = session;
         }
 
-        public Employee Get(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public Employee Get(int id) => Get<Employee>(id);
 
-        public int Create(Employee item)
-        {
-            var mapper = new MapperConfiguration(c => c.CreateMap<Employee, EmployeeNh>()).CreateMapper();
-            var employee = mapper.Map<Employee, EmployeeNh>(item);
-            var id = _session.Save(employee);
-            return (int)id;
-        }
+        public IEnumerable<Employee> GetAll() => GetAll<Employee>();
 
-        public void Update(Employee item)
-        {
-            var mapper = new MapperConfiguration(c => c.CreateMap<Employee, EmployeeNh>()).CreateMapper();
-            var employee = mapper.Map<Employee, EmployeeNh>(item);
-           _session.Update(employee);
-        }
+        public int Create(Employee item) => Create<Employee>(item);
 
-        public void Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+        public void Update(Employee item) => Update(item.Id, item);
 
-        public IEnumerable<Employee> GetAll()
-        {
-            var employees = _session.Query<EmployeeNh>().ToList();
-            var mapper = new MapperConfiguration(c => c.CreateMap<EmployeeNh, Employee>()).CreateMapper();
-            return mapper.Map<IEnumerable<EmployeeNh>, IEnumerable<Employee>>(employees);
-        }
-    }
+   }
 }
