@@ -44,8 +44,8 @@ namespace TrainingTask.Web.Controllers
                 return BadRequest(ModelState);
             }
 
-            var result = _employeeService.Add(employee);
-            employee.Id = result;
+            var insertedId = _employeeService.Add(employee);
+            employee.Id = insertedId;
 
             return Ok(employee);
         }

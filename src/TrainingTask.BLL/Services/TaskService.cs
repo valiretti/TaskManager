@@ -37,8 +37,7 @@ namespace TrainingTask.BLL.Services
 
         public IEnumerable<TaskViewModel> GetAll()
         {
-            var result = _repository.GetAll();
-            return result;
+            return _repository.GetAll(); 
         }
     }
 }

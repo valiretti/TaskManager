@@ -48,8 +48,8 @@ namespace TrainingTask.Web.Controllers
 
             try
             {
-                var result = _projectService.Add(project);
-                project.Id = result;
+                var insertedId = _projectService.Add(project);
+                project.Id = insertedId;
 
                 return Ok(project);
             }

@@ -10,7 +10,7 @@ namespace TrainingTask.BLL.Services
     {
         private readonly IRepository<T> _repository;
 
-        public Service(IRepository<T> repository)
+        protected Service(IRepository<T> repository)
         {
             _repository = repository;
         }
