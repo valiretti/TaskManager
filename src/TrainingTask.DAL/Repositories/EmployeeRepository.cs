@@ -19,11 +19,11 @@ namespace TrainingTask.DAL.Repositories
                 $"SELECT TOP 1 Id, FirstName, LastName, Patronymic, Position FROM Employees WHERE Id = {id}",
                 record => new Employee()
                 {
-                    Id = record.GetInt32(0),
-                    FirstName = record.GetString(1),
-                    LastName = record.GetString(2),
-                    Patronymic = record.GetString(3),
-                    Position = record.GetString(4)
+                    Id = (int)record["Id"],
+                    FirstName = (string)record["FirstName"],
+                    LastName = (string)record["LastName"],
+                    Patronymic = (string)record["Patronymic"],
+                    Position = (string)record["Position"]
                 }
                 ).FirstOrDefault();
         }
@@ -56,11 +56,11 @@ namespace TrainingTask.DAL.Repositories
                 null,
                 record => new Employee()
                 {
-                    Id = record.GetInt32(0),
-                    FirstName = record.GetString(1),
-                    LastName = record.GetString(2),
-                    Patronymic = record.GetString(3),
-                    Position = record.GetString(4)
+                    Id = (int)record["Id"],
+                    FirstName = (string)record["FirstName"],
+                    LastName = (string)record["LastName"],
+                    Patronymic = (string)record["Patronymic"],
+                    Position = (string)record["Position"]
                 });
         }
     }

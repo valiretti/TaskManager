@@ -33,13 +33,13 @@ namespace TrainingTask.DAL.Repositories
                 $"SELECT TOP 1 Id, Name, WorkTime, StartDate, FinishDate, Status, ProjectId FROM Tasks WHERE Id = {id}",
                 record => new Task()
                 {
-                    Id = record.GetInt32(0),
-                    Name = record.GetString(1),
-                    WorkHours = TimeSpan.FromMinutes(record.GetInt32(2)),
-                    StartDate = record.GetDateTime(3),
-                    FinishDate = record.GetDateTime(4),
-                    Status = (Status)record.GetInt32(5),
-                    ProjectId = record.GetInt32(6)
+                    Id = (int)record["Id"],
+                    Name = (string)record["Name"],
+                    WorkHours = TimeSpan.FromMinutes((int)record["WorkTime"]),
+                    StartDate = (DateTime)record["StartDate"],
+                    FinishDate = (DateTime)record["FinishDate"],
+                    Status = (Status)(int)record["Status"],
+                    ProjectId = (int)record["ProjectId"]
                 }
             ).FirstOrDefault();
         }
@@ -111,19 +111,19 @@ namespace TrainingTask.DAL.Repositories
                 null,
                 record =>
                 {
-                    string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
-                    string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
-                    string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
+                    string firstName = (record["FirstName"] as string) ?? String.Empty;
+                    string lastName = (record["LastName"] as string) ?? String.Empty;
+                    string patronymic = (record["Patronymic"] as string) ?? String.Empty;
 
                     return new TaskModel()
                     {
-                        Id = record.GetInt32(0),
-                        ProjectAbbreviation = record.GetString(1),
-                        Name = record.GetString(2),
-                        StartDate = record.GetDateTime(3),
-                        FinishDate = record.GetDateTime(4),
+                        Id = (int)record["Id"],
+                        ProjectAbbreviation = (string)record["Abbreviation"],
+                        Name = (string)record["Name"],
+                        StartDate = (DateTime)record["StartDate"],
+                        FinishDate = (DateTime)record["FinishDate"],
                         FullName = $"{firstName} {lastName} {patronymic}",
-                        Status = (Status)record.GetInt32(8)
+                        Status = (Status)(int)record["Status"]
                     };
                 });
 
@@ -183,25 +183,26 @@ namespace TrainingTask.DAL.Repositories
 
         private static TaskModel GetTaskModel(IDataRecord record)
         {
-            string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
-            string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
-            string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
+            string firstName = (record["FirstName"] as string) ?? String.Empty;
+            string lastName = (record["LastName"] as string) ?? String.Empty;
+            string patronymic = (record["Patronymic"] as string) ?? String.Empty;
             int? employeeId = record.IsDBNull(10) ? default(int?) : record.GetInt32(10);
 
             return new TaskModel()
             {
-                Id = record.GetInt32(0),
-                ProjectAbbreviation = record.GetString(1),
-                Name = record.GetString(2),
-                StartDate = record.GetDateTime(3),
-                FinishDate = record.GetDateTime(4),
+                Id = (int)record["Id"],
+                ProjectAbbreviation = (string)record["Abbreviation"],
+                Name = (string)record["Name"],
+                StartDate = (DateTime)record["StartDate"],
+                FinishDate = (DateTime)record["FinishDate"],
                 FullName = $"{firstName} {lastName} {patronymic}",
-                Status = (Status) record.GetInt32(8),
-                ProjectId = record.GetInt32(9),
+                Status = (Status)(int)record["Status"],
+                ProjectId = (int)record["ProjectId"],
                 EmployeeId = employeeId,
-                WorkHours = TimeSpan.FromMinutes(record.GetInt32(11))
+                WorkHours = TimeSpan.FromMinutes((int)record["WorkTime"])
             };
         }
+
         private static IEnumerable<TaskViewModel> GetTaskViewModels(IEnumerable<TaskModel> tasks)
         {
             return tasks

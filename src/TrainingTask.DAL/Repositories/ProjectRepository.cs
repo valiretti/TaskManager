@@ -27,10 +27,10 @@ namespace TrainingTask.DAL.Repositories
                 $"SELECT TOP 1 Id, Name, Abbreviation, Description FROM Projects WHERE Id = {id}",
                 record => new Project()
                 {
-                    Id = record.GetInt32(0),
-                    Name = record.GetString(1),
-                    Abbreviation = record.GetString(2),
-                    Description = record.GetString(3)
+                    Id = (int)record["Id"],
+                    Name = (string)record["Name"],
+                    Abbreviation = (string)record["Abbreviation"],
+                    Description = record["Description"] as string
                 }
             ).FirstOrDefault();
         }
@@ -122,10 +122,10 @@ namespace TrainingTask.DAL.Repositories
                 null,
                 record => new Project()
                 {
-                    Id = record.GetInt32(0),
-                    Name = record.GetString(1),
-                    Abbreviation = record.GetString(2),
-                    Description = record.GetString(3)
+                    Id = (int)record["Id"],
+                    Name = (string)record["Name"],
+                    Abbreviation = (string)record["Abbreviation"],
+                    Description = record["Description"] as string
                 });
         }
     }
