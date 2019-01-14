@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Threading.Tasks;
+using TrainingTask.Common.Enums;
+
+namespace TrainingTask.Web.MVC.Models
+{
+    public class TaskViewModel
+    {
+        public int Id { get; set; }
+
+        [Display(Name = "Project Name")]
+        public string ProjectAbbreviation { get; set; }
+
+        public string Name { get; set; }
+
+        [Display(Name = "Start Date")]
+        public DateTime StartDate { get; set; }
+
+        [Display(Name = "Finish Date")]
+        public DateTime FinishDate { get; set; }
+
+        [Display(Name = "Employees")]
+        public IEnumerable<string> FullNames { get; set; }
+
+        public Status Status { get; set; }
+
+        [Display(Name = "Project")]
+        public int ProjectId { get; set; }
+
+        public IEnumerable<int> Employees { get; set; }
+
+        public TimeSpan WorkHours { get; set; }
+    }
+}
