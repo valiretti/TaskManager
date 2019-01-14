@@ -41,6 +41,12 @@ namespace TrainingTask.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            // In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
+
             services.AddSwaggerDocument();
 
             var builder = new ContainerBuilder();
@@ -71,16 +77,6 @@ namespace TrainingTask.Web
             var container = builder.Build();
 
             return new AutofacServiceProvider(container);
-
-            // In production, the Angular files will be served from this directory
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp/dist";
-            });
-
-            services.AddSingleton<ILog, Log>(provider => new Log(pathToLogging));
-            services.RegisterRepositories(connectionString);
-            services.RegisterServices();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILog log)

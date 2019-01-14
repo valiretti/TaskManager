@@ -53,7 +53,6 @@ export class TasksComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        result.employees = result.employeeIds;
         this.addTask(result);
       }
     });
@@ -84,7 +83,6 @@ export class TasksComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            result.employees = result.employeeIds;
             result.fullNames = [];
 
             result.employees.forEach(id => {

@@ -15,7 +15,7 @@ export class Task {
     projectId: number;
     projectAbbreviation: string;
     fullNames: string[];
-    employeeIds: number[];
+    employees: number[];
 
     get statusName(): string {
         return Status[this.status];

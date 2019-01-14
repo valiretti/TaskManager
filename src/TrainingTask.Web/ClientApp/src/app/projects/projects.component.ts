@@ -69,9 +69,6 @@ export class ProjectsComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            result.tasks.forEach(t => {
-              t.employees = t.employeeIds;
-            });
             this.editProject(result);
           }
         });
