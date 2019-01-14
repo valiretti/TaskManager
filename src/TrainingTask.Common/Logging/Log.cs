@@ -41,7 +41,9 @@ namespace TrainingTask.Common.Logging
         {
             lock (lockObj)
             {
-                _file.Write($"{DateTime.Now} {level}: {message}");
+                _file.Write($"{DateTime.Now} {level.ToUpper()}: {message}");
+                _file.Write(Environment.NewLine);
+                _file.Flush();
             }
         }
     }

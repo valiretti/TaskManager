@@ -5,11 +5,11 @@ using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.BLL.Services
 {
-    public class EmployeeService : IEmployeeService
+    public class EmployeeService : Service<Employee>, IEmployeeService
     {
         private readonly IEmployeeRepository _repository;
 
-        public EmployeeService(IEmployeeRepository repository)
+        public EmployeeService(IEmployeeRepository repository) : base(repository)
         {
             _repository = repository;
         }
@@ -21,20 +21,7 @@ namespace TrainingTask.BLL.Services
 
         public void Update(Employee employee)
         {
-            if (employee != null)
-            {
-                _repository.Update(employee);
-            }
-        }
-
-        public void Delete(int id)
-        {
-            _repository.Delete(id);
-        }
-
-        public Employee Get(int id)
-        {
-            return _repository.Get(id);
+            _repository.Update(employee);
         }
 
         public IEnumerable<Employee> GetAll()

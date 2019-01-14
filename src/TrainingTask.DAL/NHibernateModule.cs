@@ -6,6 +6,7 @@ using FluentNHibernate.Cfg;
 using FluentNHibernate.Cfg.Db;
 using NHibernate;
 using TrainingTask.DAL.NHRepositories.Mappings;
+using TrainingTask.DAL.NHRepositories.Resolvers;
 
 namespace TrainingTask.DAL
 {
@@ -22,7 +23,7 @@ namespace TrainingTask.DAL
         {
             builder.Register<ISessionFactory>(c => Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(_connectionString).ShowSql())
-                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<TaskMap>())
+                .Mappings(m => m.FluentMappings.AddFromAssemblyOf<EmployeeMap>())
                .BuildSessionFactory()).SingleInstance();
 
             builder.Register<ISession>(c => c.Resolve<ISessionFactory>().OpenSession()).InstancePerLifetimeScope();
@@ -31,6 +32,12 @@ namespace TrainingTask.DAL
                 .Where(t => t.Name.EndsWith("NhRepository"))
                 .AsImplementedInterfaces()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterGeneric(typeof(EntityResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
+            builder.RegisterGeneric(typeof(CollectionResolver<,,,>)).AsSelf().InstancePerLifetimeScope();
+
+            builder.RegisterType(typeof(ProjectTaskResolver)).AsSelf().InstancePerLifetimeScope();
+
 
             base.Load(builder);
         }

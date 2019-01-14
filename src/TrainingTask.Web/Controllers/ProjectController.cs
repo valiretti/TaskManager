@@ -11,10 +11,12 @@ namespace TrainingTask.Web.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
+        private readonly ITaskService _taskService;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, ITaskService taskService)
         {
             _projectService = projectService;
+            _taskService = taskService;
         }
 
         [HttpGet, Route("")]
@@ -48,8 +50,8 @@ namespace TrainingTask.Web.Controllers
 
             try
             {
-                var result = _projectService.Add(project);
-                project.Id = result;
+                var insertedId = _projectService.Add(project);
+                project.Id = insertedId;
 
                 return Ok(project);
             }
@@ -112,6 +114,15 @@ namespace TrainingTask.Web.Controllers
 
             _projectService.Delete(id);
             return NoContent();
+        }
+
+        [HttpGet, Route("{id:int:min(1)}/tasks")]
+        public IActionResult GetByProjectId(int id)
+        {
+            var tasks = _taskService.GetByProjectId(id);
+            if (tasks == null)
+                return NotFound();
+            return new ObjectResult(tasks);
         }
     }
 }

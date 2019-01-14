@@ -3,13 +3,12 @@ using TrainingTask.Common.Models;
 
 namespace TrainingTask.BLL.Interfaces
 {
-    public interface IEmployeeService
+    public interface IEmployeeService: IService<Employee>
     {
         /// <summary>
         /// Adds the employee by specified employee.
         /// </summary>
         /// <param name="employee">The employee.</param>
-        /// <returns></returns>
         int Add(Employee employee);
 
         /// <summary>
@@ -19,22 +18,8 @@ namespace TrainingTask.BLL.Interfaces
         void Update(Employee employee);
 
         /// <summary>
-        /// Deletes the employee by specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        void Delete(int id);
-
-        /// <summary>
-        /// Gets the employee by specified identifier.
-        /// </summary>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        Employee Get(int id);
-
-        /// <summary>
         /// Gets all employees.
         /// </summary>
-        /// <returns></returns>
         IEnumerable<Employee> GetAll();
     }
 }

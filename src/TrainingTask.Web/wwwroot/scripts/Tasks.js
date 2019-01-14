@@ -9,6 +9,10 @@ function GetTasks() {
             $.each(tasks, function (index, task) {
                 $("table tbody").append(row(task));
             });
+        },
+
+        error: function (jxqr, error, status) {
+            errorHandling(jxqr, 0);
         }
     });
 }
@@ -44,7 +48,6 @@ function errorHandling(jxqr, id) {
     else if (jxqr.status == 500) {
         $('#errors').append(jxqr.responseText);
         closeForm();
-        closeProjectForm();
     }
     else if (jxqr.responseText === "") {
         $('#errors').append("<p>" + jxqr.statusText + "</p>");
@@ -128,7 +131,7 @@ function FillTask(task) {
     form.elements["startDate"].valueAsDate = new Date(task.startDate);
     form.elements["finishDate"].valueAsDate = new Date(task.finishDate);
     $("#status").val(task.status);
-    $("#employees").val(task.employeeIds);
+    $("#employees").val(task.employees);
 }
 
 function GetTaskFromForm() {

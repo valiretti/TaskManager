@@ -3,21 +3,28 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Transactions;
+using AutoMapper;
 using TrainingTask.Common.Enums;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace TrainingTask.DAL.Repositories
 {
     public class TaskRepository : BaseRepository, ITaskRepository
     {
         private readonly ILog _log;
+        private readonly IMapper _mapper;
+        private readonly IEmployeeTaskRepository _employeeTaskRepository;
 
-        public TaskRepository(string connectionString, ILog log) : base(connectionString)
+        public TaskRepository(string connectionString, ILog log, IMapper mapper, IEmployeeTaskRepository employeeTaskRepository) : base(connectionString)
         {
             _log = log;
+            _mapper = mapper;
+            _employeeTaskRepository = employeeTaskRepository;
         }
 
         public Task Get(int id)
@@ -26,25 +33,34 @@ namespace TrainingTask.DAL.Repositories
                 $"SELECT TOP 1 Id, Name, WorkTime, StartDate, FinishDate, Status, ProjectId FROM Tasks WHERE Id = {id}",
                 record => new Task()
                 {
-                    Id = record.GetInt32(0),
-                    Name = record.GetString(1),
-                    WorkHours = TimeSpan.FromMinutes(record.GetInt32(2)),
-                    StartDate = record.GetDateTime(3),
-                    FinishDate = record.GetDateTime(4),
-                    Status = (Status)record.GetInt32(5),
-                    ProjectId = record.GetInt32(6)
+                    Id = (int)record["Id"],
+                    Name = (string)record["Name"],
+                    WorkHours = TimeSpan.FromMinutes((int)record["WorkTime"]),
+                    StartDate = (DateTime)record["StartDate"],
+                    FinishDate = (DateTime)record["FinishDate"],
+                    Status = (Status)(int)record["Status"],
+                    ProjectId = (int)record["ProjectId"]
                 }
             ).FirstOrDefault();
         }
 
-        public int Create(Task item)
+        public int Create(CreateTask task)
         {
+            var item = _mapper.Map<Task>(task);
             try
             {
-                return base.Create(
-                    $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
+                using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                {
+                    var insertedId = base.Create(
+                        $@"INSERT INTO Tasks (Name, WorkTime, StartDate, FinishDate, Status, ProjectId) 
                    VALUES ({item.Name}, {item.WorkHours.TotalMinutes}, {item.StartDate}, {item.FinishDate}, {(int)item.Status}, {item.ProjectId} ) 
                    SET @id=SCOPE_IDENTITY()");
+
+                    UpdateEmployees(task, insertedId);
+                    transactionScope.Complete();
+
+                    return insertedId;
+                }
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
@@ -55,15 +71,21 @@ namespace TrainingTask.DAL.Repositories
             }
         }
 
-        public void Update(Task item)
+        public void Update(CreateTask task)
         {
+            var item = _mapper.Map<Task>(task);
             try
             {
-                base.Update(
-                    $@"UPDATE Tasks SET 
+                using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                {
+                    base.Update(
+                        $@"UPDATE Tasks SET 
                     Name = {item.Name}, WorkTime = {item.WorkHours.TotalMinutes}, StartDate = {item.StartDate}, FinishDate = {item.FinishDate}, 
                     Status = {(int)item.Status}, ProjectId = {item.ProjectId} WHERE Id = {item.Id}");
 
+                    UpdateEmployees(task, task.Id);
+                    transactionScope.Complete();
+                }
             }
             catch (SqlException ex) when (ex.Number == 547)
             {
@@ -89,19 +111,19 @@ namespace TrainingTask.DAL.Repositories
                 null,
                 record =>
                 {
-                    string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
-                    string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
-                    string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
+                    string firstName = (record["FirstName"] as string) ?? String.Empty;
+                    string lastName = (record["LastName"] as string) ?? String.Empty;
+                    string patronymic = (record["Patronymic"] as string) ?? String.Empty;
 
                     return new TaskModel()
                     {
-                        Id = record.GetInt32(0),
-                        ProjectAbbreviation = record.GetString(1),
-                        Name = record.GetString(2),
-                        StartDate = record.GetDateTime(3),
-                        FinishDate = record.GetDateTime(4),
+                        Id = (int)record["Id"],
+                        ProjectAbbreviation = (string)record["Abbreviation"],
+                        Name = (string)record["Name"],
+                        StartDate = (DateTime)record["StartDate"],
+                        FinishDate = (DateTime)record["FinishDate"],
                         FullName = $"{firstName} {lastName} {patronymic}",
-                        Status = (Status)record.GetInt32(8)
+                        Status = (Status)(int)record["Status"]
                     };
                 });
 
@@ -128,45 +150,9 @@ namespace TrainingTask.DAL.Repositories
                     LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id 
                     LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId 
                     WHERE Tasks.Id = {id}",
-               record =>
-               {
-                   string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
-                   string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
-                   string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
-                   int? employeeId = record.IsDBNull(10) ? default(int?) : record.GetInt32(10);
+               GetTaskModel);
 
-                   return new TaskModel()
-                   {
-                       Id = record.GetInt32(0),
-                       ProjectAbbreviation = record.GetString(1),
-                       Name = record.GetString(2),
-                       StartDate = record.GetDateTime(3),
-                       FinishDate = record.GetDateTime(4),
-                       FullName = $"{firstName} {lastName} {patronymic}",
-                       Status = (Status)record.GetInt32(8),
-                       ProjectId = record.GetInt32(9),
-                       EmployeeId = employeeId,
-                       WorkHours = TimeSpan.FromMinutes(record.GetInt32(11))
-                   };
-               });
-
-            var taskGroups = tasks
-                .GroupBy(t => new { t.Id, t.Name, t.Status, t.ProjectAbbreviation, t.FinishDate, t.StartDate, t.ProjectId, t.WorkHours })
-                .Select(m => new TaskViewModel
-                {
-                    Id = m.Key.Id,
-                    ProjectAbbreviation = m.Key.ProjectAbbreviation,
-                    Name = m.Key.Name,
-                    StartDate = m.Key.StartDate,
-                    FinishDate = m.Key.FinishDate,
-                    FullNames = m.Where(p => p.EmployeeId != null).Select(p => p.FullName),
-                    EmployeeIds = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
-                    Status = m.Key.Status,
-                    ProjectId = m.Key.ProjectId,
-                    WorkHours = m.Key.WorkHours
-                });
-
-            return taskGroups.FirstOrDefault();
+            return GetTaskViewModels(tasks).FirstOrDefault();
         }
 
         public IEnumerable<TaskViewModel> GetByProjectId(int id)
@@ -177,29 +163,49 @@ namespace TrainingTask.DAL.Repositories
                     LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id 
                     LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId 
                     WHERE Tasks.ProjectId = {id}",
-               record =>
-               {
-                   string firstName = record.IsDBNull(5) ? String.Empty : record.GetString(5);
-                   string lastName = record.IsDBNull(6) ? String.Empty : (record.GetString(6));
-                   string patronymic = record.IsDBNull(7) ? String.Empty : record.GetString(7);
-                   int? employeeId = record.IsDBNull(10) ? default(int?) : record.GetInt32(10);
+               GetTaskModel);
 
-                   return new TaskModel()
-                   {
-                       Id = record.GetInt32(0),
-                       ProjectAbbreviation = record.GetString(1),
-                       Name = record.GetString(2),
-                       StartDate = record.GetDateTime(3),
-                       FinishDate = record.GetDateTime(4),
-                       FullName = $"{firstName} {lastName} {patronymic}",
-                       Status = (Status)record.GetInt32(8),
-                       ProjectId = record.GetInt32(9),
-                       EmployeeId = employeeId,
-                       WorkHours = TimeSpan.FromMinutes(record.GetInt32(11))
-                   };
-               });
+            return GetTaskViewModels(tasks);
+        }
 
-            var taskGroups = tasks
+        private void UpdateEmployees(CreateTask task, int id)
+        {
+            _employeeTaskRepository.DeleteEmployeesFromTask(id);
+
+            if (task.Employees != null)
+            {
+                foreach (var employee in task.Employees)
+                {
+                    _employeeTaskRepository.Add(employee, id);
+                }
+            }
+        }
+
+        private static TaskModel GetTaskModel(IDataRecord record)
+        {
+            string firstName = (record["FirstName"] as string) ?? String.Empty;
+            string lastName = (record["LastName"] as string) ?? String.Empty;
+            string patronymic = (record["Patronymic"] as string) ?? String.Empty;
+            int? employeeId = record.IsDBNull(10) ? default(int?) : record.GetInt32(10);
+
+            return new TaskModel()
+            {
+                Id = (int)record["Id"],
+                ProjectAbbreviation = (string)record["Abbreviation"],
+                Name = (string)record["Name"],
+                StartDate = (DateTime)record["StartDate"],
+                FinishDate = (DateTime)record["FinishDate"],
+                FullName = $"{firstName} {lastName} {patronymic}",
+                Status = (Status)(int)record["Status"],
+                ProjectId = (int)record["ProjectId"],
+                EmployeeId = employeeId,
+                WorkHours = TimeSpan.FromMinutes((int)record["WorkTime"])
+            };
+        }
+
+        private static IEnumerable<TaskViewModel> GetTaskViewModels(IEnumerable<TaskModel> tasks)
+        {
+            return tasks
                 .GroupBy(t => new { t.Id, t.Name, t.Status, t.ProjectAbbreviation, t.FinishDate, t.StartDate, t.ProjectId, t.WorkHours })
                 .Select(m => new TaskViewModel
                 {
@@ -209,37 +215,11 @@ namespace TrainingTask.DAL.Repositories
                     StartDate = m.Key.StartDate,
                     FinishDate = m.Key.FinishDate,
                     FullNames = m.Where(p => p.EmployeeId != null).Select(p => p.FullName),
-                    EmployeeIds = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
+                    Employees = m.Where(p => p.EmployeeId != null).Select(p => p.EmployeeId.Value),
                     Status = m.Key.Status,
                     ProjectId = m.Key.ProjectId,
                     WorkHours = m.Key.WorkHours
                 });
-
-            return taskGroups;
-        }
-
-        private class TaskModel
-        {
-            public int Id { get; set; }
-
-            public string ProjectAbbreviation { get; set; }
-
-            public string Name { get; set; }
-
-            public DateTime StartDate { get; set; }
-
-            public DateTime FinishDate { get; set; }
-
-            public string FullName { get; set; }
-
-            public Status Status { get; set; }
-
-            public int ProjectId { get; set; }
-
-            public int? EmployeeId { get; set; }
-
-            public TimeSpan WorkHours { get; set; }
-
         }
     }
 }

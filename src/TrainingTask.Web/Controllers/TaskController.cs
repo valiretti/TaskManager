@@ -32,19 +32,10 @@ namespace TrainingTask.Web.Controllers
             return new ObjectResult(task);
         }
 
-        [HttpGet, Route("byProject/{id:int:min(1)}")]
-        public IActionResult GetByProjectId(int id)
-        {
-            var tasks = _taskService.GetByProjectId(id);
-            if (tasks == null)
-                return NotFound();
-            return new ObjectResult(tasks);
-        }
-
         [HttpPost, Route("")]
-        public IActionResult Add([FromBody] CreateTask task)
+        public IActionResult Add([FromBody] CreateTask model)
         {
-            if (task == null)
+            if (model == null)
             {
                 ModelState.AddModelError("", "No data for task");
                 return BadRequest(ModelState);
@@ -57,9 +48,9 @@ namespace TrainingTask.Web.Controllers
 
             try
             {
-                var insertedId = _taskService.Add(task);
-                var task1 = _taskService.GetViewModel(insertedId);
-                return Ok(task1);
+                var insertedId = _taskService.Add(model);
+                var task = _taskService.GetViewModel(insertedId);
+                return Ok(task);
             }
             catch (ForeignKeyViolationException ex)
             {
