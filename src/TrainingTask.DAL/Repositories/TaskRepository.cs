@@ -62,7 +62,7 @@ namespace TrainingTask.DAL.Repositories
                     return insertedId;
                 }
             }
-            catch (SqlException ex) when (ex.Number == 547)
+            catch (SqlException ex) when (ex.Number == 547 || ex.Number == 515)
             {
                 var message =
                     $"The project with the Id {item.ProjectId} has already deleted.";
@@ -87,7 +87,7 @@ namespace TrainingTask.DAL.Repositories
                     transactionScope.Complete();
                 }
             }
-            catch (SqlException ex) when (ex.Number == 547)
+            catch (SqlException ex) when (ex.Number == 547 || ex.Number == 515)
             {
                 var message =
                     $"The project with the Id {item.ProjectId} has already deleted.";

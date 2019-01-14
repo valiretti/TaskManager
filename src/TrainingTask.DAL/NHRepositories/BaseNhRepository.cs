@@ -130,7 +130,7 @@ namespace TrainingTask.DAL.NHRepositories
 
         private static bool IsForeignKeyViolation(GenericADOException ex)
         {
-            return ex.InnerException is SqlException sqlEx && sqlEx.Number == 547;
+            return ex.InnerException is SqlException sqlEx && (sqlEx.Number == 547 || sqlEx.Number == 515);
         }
     }
 }
