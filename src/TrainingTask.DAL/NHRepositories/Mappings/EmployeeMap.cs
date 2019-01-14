@@ -18,7 +18,7 @@ namespace TrainingTask.DAL.NHRepositories.Mappings
                 .ParentKeyColumn("TaskId")
                 .Cascade.All()
                 .Inverse()
-                .Table("EmployeeTasks");
+                .Table("EmployeeTasks").LazyLoad();
         }
     }
 }
