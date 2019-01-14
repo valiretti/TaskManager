@@ -25,7 +25,7 @@ namespace TrainingTask.Web.MVC.Controllers
             return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
         }
 
-        public ActionResult Success(string action)
+        public ActionResult Success()
         {
             return View();
         }

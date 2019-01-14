@@ -10,6 +10,10 @@ namespace TrainingTask.Web.MVC.Profiles
         {
             CreateMap<Employee, EmployeeViewModel>()
                 .ReverseMap();
+
+            CreateMap<Employee, EmployeeForTaskViewModel>()
+                .ForMember(e => e.FullName, opt => opt.MapFrom(e => $"{e.FirstName} {e.LastName} {e.Patronymic}"));
+
         }
     }
 }
