@@ -32,15 +32,6 @@ namespace TrainingTask.Web.Controllers
             return new ObjectResult(task);
         }
 
-        [HttpGet, Route("byProject/{id:int:min(1)}")]
-        public IActionResult GetByProjectId(int id)
-        {
-            var tasks = _taskService.GetByProjectId(id);
-            if (tasks == null)
-                return NotFound();
-            return new ObjectResult(tasks);
-        }
-
         [HttpPost, Route("")]
         public IActionResult Add([FromBody] CreateTask model)
         {

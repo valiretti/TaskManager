@@ -234,7 +234,7 @@ function GetTasksByProject(id) {
     return new Promise(
         function (resolve, reject) {
             $.ajax({
-                url: 'api/tasks/byProject/' + id,
+                url: 'api/projects/' + id + '/tasks',
                 type: 'GET',
                 contentType: "application/json",
                 success: t => {
