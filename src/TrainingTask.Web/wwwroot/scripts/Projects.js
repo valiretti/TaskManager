@@ -93,8 +93,8 @@ function FillTask(task) {
     form.elements["id"].value = task.id;
     form.elements["name"].value = task.name;
     form.elements["workTime"].value = task.workHours;
-    form.elements["startDate"].valueAsDate = new Date(task.startDate);
-    form.elements["finishDate"].valueAsDate = new Date(task.finishDate);
+    form.elements["startDate"].valueAsDate = new Date(task.startDate +"Z");
+    form.elements["finishDate"].valueAsDate = new Date(task.finishDate + "Z");
     $("#status").val(task.status);
     $("#employees").val(task.employeeIds ? task.employeeIds : task.employees);
 }
