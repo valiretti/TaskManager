@@ -67,7 +67,7 @@ export class HttpService {
         );
     }
 
-    convertTimeSpanToHours(str: string) {
+    convertTimeSpanToHours(str) {
         let parts = str.split(":");
         return parseInt(parts[0], 10) + parseInt(parts[1], 10) / 60.0;
     }
@@ -89,7 +89,7 @@ export class HttpService {
                     t.status = task.status;
                     t.projectId = task.projectId;
                     t.fullNames = task.fullNames;
-                    t.employeeIds = task.employeeIds;
+                    t.employees = task.employees;
                     return t;
                 });
             }),
@@ -101,7 +101,7 @@ export class HttpService {
     getTasksByProject(id: number): Observable<Task[]> {
         let self = this;
 
-        return this.http.get<Task[]>(`api/tasks/byProject/${id}`).pipe(
+        return this.http.get<Task[]>(`api/projects/${id}/tasks`).pipe(
             map(data => {
                 return data.map(function (task: any) {
                     let t = new Task();
@@ -114,7 +114,7 @@ export class HttpService {
                     t.projectId = task.projectId;
                     t.projectAbbreviation = task.projectAbbreviation;
                     t.fullNames = task.fullNames;
-                    t.employeeIds = task.employeeIds;
+                    t.employees = task.employees;
                     return t;
                 });
             }),
@@ -138,7 +138,7 @@ export class HttpService {
                 t.projectId = data.projectId;
                 t.projectAbbreviation = data.projectAbbreviation;
                 t.fullNames = data.fullNames;
-                t.employeeIds = data.employeeIds;
+                t.employees = data.employees;
                 return t;
             }),
             catchError(err => throwError(err))
@@ -161,7 +161,7 @@ export class HttpService {
                 t.projectId = data.projectId;
                 t.projectAbbreviation = data.projectAbbreviation;
                 t.fullNames = data.fullNames;
-                t.employeeIds = data.employeeIds;
+                t.employees = data.employees;
                 return t;
             }),
             catchError(err => throwError(err))

@@ -37,7 +37,7 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <mat-select placeholder="Employees" [(ngModel)]="data.task.employeeIds" multiple name="selectedEmployees">
+      <mat-select placeholder="Employees" [(ngModel)]="data.task.employees" multiple name="selectedEmployees">
         <mat-option *ngFor="let employee of data.employeeList" [value]="employee.id">
           {{employee.lastName}} {{employee.firstName}}
         </mat-option>
