@@ -70,13 +70,6 @@ function EditTask(id) {
 
     task = JSON.stringify(task);
     document.location.href = "/project/EditTask?json=" + task;
-
-    //$.extend(task,
-    //    {
-    //        fullNames: employees.filter(e => task.employees && task.employees.some(id => id == e.id))
-    //            .map(e => e.firstName + " " + e.lastName + " " + e.patronymic)
-    //    });
-    //$("table#tasks tr[data-rowid='" + idForEdit + "']").replaceWith(row(task));
 }
 
 
@@ -106,12 +99,10 @@ function insert() {
     }
 }
 
-$(document).ready(function () {
+$(function () {
 
-    let employeesPromise = GetEmployees();
-    FillEmployees(employees);
-
-    insert();
+    GetEmployees()
+        .then(() => insert());
 
     $("#createProj").click(function (e) {
         sendJson();
@@ -140,27 +131,19 @@ function sendJson(parameters) {
     document.getElementById("Tasks").value = localStorage.getItem("task");
 }
 
-
-
-
-function FillEmployees(employees) {
-    $.each(employees, function (key, value) {
-        $('#employees').append($("<option>").attr("value", value.id).text(value.firstName + " " + value.lastName + " " + value.patronymic));
-    });
-}
-
 function GetEmployees() {
-    var request = new XMLHttpRequest;
-    request.onreadystatechange = reqReadyStateChange;
-    function reqReadyStateChange() {
-        if (request.readyState === 4) {
-            //var status = request.status;
-            //if (status === 200) {
-            employees = JSON.parse(request.responseText);
-            //}
-        }
-    }
-    request.open("GET", "/project/GetEmployees");
-    request.send();
+    return new Promise(
+        function (resolve, reject) {
+            $.ajax({
+                url: '/project/GetEmployees',
+                type: 'GET',
+                contentType: "application/json",
+                success: data => {
+                    employees = data;
+                    resolve();
+                },
+                error: (jxqr, error, status) => reject(jxqr)
+            });
+        });
 }
 
