@@ -83,17 +83,16 @@ export class TasksComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(result => {
           if (result) {
-            result.fullNames = [];
+            result.fullNames = this.employeeList
+              .filter(f => result.employees.indexOf(f.id) >= 0)
+              .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
 
-            result.employees.forEach(id => {
-              this.employeeList.forEach(e => {
-                if (e.id === id) {
-                  result.fullNames.push(`${e.firstName} ${e.lastName} ${e.patronymic}`);
-                }
-              });
-            });
+            let currentProject = this.projectList
+              .find(p => p.id === result.projectId);
 
-            result.projectAbbreviation = this.projectList.filter(p => p.id === result.projectId)[0].abbreviation;
+            if (currentProject.abbreviation) {
+              result.projectAbbreviation = currentProject.abbreviation;
+            }
 
             this.editTask(result);
           }

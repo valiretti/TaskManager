@@ -5,7 +5,12 @@
       <input matInput placeholder="Id" type="text" [value]="data.task.id || ''" name="id" readonly>
     </mat-form-field>
     <mat-form-field>
-      <mat-select placeholder="Project" [(ngModel)]="data.task.projectId" name="projectId">
+      <mat-select *ngIf="data.projectReadOnly" disabled placeholder="Project" [(ngModel)]="data.task.projectId" name="projectId">
+        <mat-option *ngFor="let project of data.projectList" [value]="project.id">
+          {{project.abbreviation}}
+        </mat-option>
+      </mat-select>
+      <mat-select *ngIf="!data.projectReadOnly" placeholder="Project" [(ngModel)]="data.task.projectId" name="projectId">
         <mat-option *ngFor="let project of data.projectList" [value]="project.id">
           {{project.abbreviation}}
         </mat-option>
@@ -18,8 +23,7 @@
       <input matInput placeholder="WorkHours" type="number" required [(ngModel)]="data.task.workHours" name="workHours">
     </mat-form-field>
     <mat-form-field>
-      <input matInput [matDatepicker]="pickerStartDate" placeholder="Start Date" [(ngModel)]="data.task.startDate"
-        name="startDate">
+      <input matInput [matDatepicker]="pickerStartDate" placeholder="Start Date" [(ngModel)]="data.task.startDate" name="startDate">
       <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
       <mat-datepicker #pickerStartDate></mat-datepicker>
     </mat-form-field>

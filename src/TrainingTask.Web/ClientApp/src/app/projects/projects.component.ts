@@ -15,7 +15,6 @@ export class ProjectsComponent implements OnInit {
   @ViewChild('table') table: MatTable<any>;
 
   projects: Project[] = [];
-  project: Project = new Project;
 
   constructor(
     public dialog: MatDialog,
@@ -28,11 +27,16 @@ export class ProjectsComponent implements OnInit {
   }
 
   openAddProjectDialog(): void {
+    let project: Project = new Project;
+    project.tasks = [];
+
     let dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '500px',
+      width: '1000px',
       data: {
         title: 'Add Project',
-        project: this.project,
+        project: project,
+        displayedColumns: ['taskId', 'taskName', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'],
+        httpService: this.httpService,
       },
       disableClose: true
     });
@@ -59,10 +63,10 @@ export class ProjectsComponent implements OnInit {
         let dialogRef = this.dialog.open(ProjectDialogComponent, {
           width: '1000px',
           data: {
-            displayTaskTable: true,
             title: 'Edit Project',
             project: { ...project },
             displayedColumns: ['taskId', 'taskName', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'],
+            httpService: this.httpService,
           },
           disableClose: true
         });
