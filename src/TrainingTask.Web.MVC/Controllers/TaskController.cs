@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Models;
@@ -41,7 +41,7 @@ namespace TrainingTask.Web.MVC.Controllers
         public ActionResult Create()
         {
             FillComboBoxes();
-            return View(;
+            return View("CreateTask");
         }
 
         [HttpPost]
@@ -78,7 +78,7 @@ namespace TrainingTask.Web.MVC.Controllers
                 return NotFound();
 
             FillComboBoxes(task);
-            return View(_mapper.Map<TaskCreationModel>(task));
+            return View("EditTask",_mapper.Map<TaskCreationModel>(task));
         }
 
         [HttpPost]

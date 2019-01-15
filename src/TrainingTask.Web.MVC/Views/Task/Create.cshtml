@@ -24,7 +24,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="WorkHours" class="control-label"></label>
-                <input asp-for="WorkHours" class="form-control" type="number"/>
+                <input asp-for="WorkHours" class="form-control" type="number" min="0.01" step="any"/>
                 <span asp-validation-for="WorkHours" class="text-danger"></span>
             </div>
             <div class="form-group">

@@ -17,9 +17,11 @@ namespace TrainingTask.Web.MVC.Models
         public string Name { get; set; }
 
         [Display(Name = "Start Date")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
         public DateTime StartDate { get; set; }
 
         [Display(Name = "Finish Date")]
+        [DisplayFormat(DataFormatString = "{0:d}")]
         public DateTime FinishDate { get; set; }
 
         [Display(Name = "Employees")]

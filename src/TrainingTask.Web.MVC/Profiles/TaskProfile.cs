@@ -21,7 +21,7 @@ namespace TrainingTask.Web.MVC.Profiles
                 .ReverseMap();
 
             CreateMap<TaskViewModel, TaskCreationModel>()
-                .ForMember(tcm => tcm.WorkHours, opt => opt.MapFrom(tvm => tvm.WorkHours.Hours))
+                .ForMember(tcm => tcm.WorkHours, opt => opt.MapFrom(tvm => tvm.WorkHours.TotalHours))
                 ;
         }
     }

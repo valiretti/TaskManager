@@ -5,8 +5,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using TrainingTask.BLL.Interfaces;
+using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Models;
+using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
+using TaskViewModel = TrainingTask.Common.Models.TaskViewModel;
 
 namespace TrainingTask.Web.MVC.Controllers
 {
@@ -31,34 +37,77 @@ namespace TrainingTask.Web.MVC.Controllers
             return View(_mapper.Map<IEnumerable<ProjectViewModel>>(projects));
         }
 
-      
-        // GET: Project/Create
+        [ImportModelState]
+        public ActionResult CreateTask()
+        {
+            FillComboBoxes();
+            return View();
+        }
+
+        [ImportModelState]
+        public ActionResult EditTask(string json)
+        {
+            FillComboBoxes();
+            var task = JsonConvert.DeserializeObject<CreateTask>(json);
+            return View(_mapper.Map<TaskCreationModel>(task));
+        }
+
+        public ActionResult Success()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public JsonResult GetEmployees()
+        {
+            var employees = _employeeService.GetAll();
+            return Json(employees);
+        }
+
+        [ImportModelState]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Project/Create
         [HttpPost]
+        [ExportModelState]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(ProjectCreationModel project)
         {
+            if (project == null)
+                return BadRequest("No data for model");
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Create");
+            }
+
             try
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
+                _projectService.Add(_mapper.Map<CreateProject>(project));
+                return RedirectToAction("Success");
             }
-            catch
+            catch (UniquenessViolationException ex)
             {
-                return View();
+                ModelState.AddModelError("", ex.Message);
             }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return RedirectToAction("Create");
         }
 
-        // GET: Project/Edit/5
+        [ImportModelState]
         public ActionResult Edit(int id)
         {
-            return View();
+            var project = _projectService.Get(id);
+            if (project == null)
+                return NotFound();
+
+            return View(_mapper.Map<ProjectViewModel>(project));
         }
 
         // POST: Project/Edit/5
@@ -99,6 +148,16 @@ namespace TrainingTask.Web.MVC.Controllers
             {
                 return View();
             }
+        }
+
+        private void FillComboBoxes(TaskViewModel task = null)
+        {
+            SelectList projects = new SelectList(_projectService.GetAll(), "Id", "Name");
+            ViewBag.Projects = projects;
+
+            var employees = _mapper.Map<IEnumerable<EmployeeForTaskViewModel>>(_employeeService.GetAll());
+            MultiSelectList employeesForSelect = new MultiSelectList(employees, "Id", "FullName", task != null ? task.Employees : new List<int>());
+            ViewBag.Employees = employeesForSelect;
         }
     }
 }

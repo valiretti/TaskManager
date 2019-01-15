@@ -1,0 +1,2 @@
+﻿
+localStorage.removeItem("task");
