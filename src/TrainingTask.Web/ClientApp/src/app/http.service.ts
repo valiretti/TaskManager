@@ -7,6 +7,10 @@ import { Observable, throwError } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
 
 @Injectable()
+// TODO: Сервис должен быть обязательно декомпозирован.
+// По Сути в данный момент приложение должно содержать 4 сервиса отвечающие за вызов API:
+// 1. Общий API сервис, который будет делать вызовы сервера (додлжен обрабатывать ошибки, заголовки и прочее_)
+// 2. Сервисы работы с сущностями Employee, Project, Task.
 export class HttpService {
 
     constructor(private http: HttpClient) { }
@@ -77,6 +81,9 @@ export class HttpService {
         let self = this;
 
         return this.http.get<Task[]>('api/tasks').pipe(
+          /* TODO: В общем случае сервисы не должны преобразовывать модели данных.
+          Логику преобразование данных лучше держать либо в геттерах либо в пайпах
+          */
             map(data => {
                 return data.map(function (task: any) {
                     let t = new Task();
