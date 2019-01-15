@@ -1,21 +1,21 @@
 import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatTable } from '@angular/material';
-import { Task, Status } from '../task';
+import { Task } from '../../models/task';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
-import { Employee } from '../employee';
-import { Project } from '../project';
+import { Employee } from '../../models/employee';
+import { Project } from '../../models/project';
+import { StatusTask } from '../../models/statusTaskEnum';
 
 @Component({
   selector: 'app-project-dialog',
-  templateUrl: './project-dialog.component.html',
+  templateUrl: './project-dialog.component.html'
   // TODO: приложение не должно содержать пустых файлов
-  styleUrls: ['./project-dialog.component.css']
 })
 // TODO: Эта компонента дублирует компоненту TasksComponent!
 export class ProjectDialogComponent implements OnInit {
   employeeList: Employee[] = [];
   projectList: Project[] = [];
-  status = Status;
+  status = StatusTask;
   @ViewChild('tableTasksByProject') table: MatTable<any>;
 
   constructor(
@@ -86,7 +86,7 @@ export class ProjectDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // TODO: некорректное присваивание значение полю readonly
-        result.statusName = Status[result.status];
+        result.statusName = StatusTask[result.status];
 
         /* TODO: хранить отдельно сконкатенированное имя - плохая практика, так как в этом случае надо будет заморачиваться над
           обновлением этого поля. Как вариант можно использовать геттер который будет возвращать полное имя либо написатьпайп в котором

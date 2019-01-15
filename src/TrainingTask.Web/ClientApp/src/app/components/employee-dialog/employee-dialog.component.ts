@@ -2,14 +2,13 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
-  selector: 'app-task-dialog',
-  templateUrl: './task-dialog.component.html',
-  styleUrls: ['./task-dialog.component.css']
+  selector: 'app-employee-dialog',
+  templateUrl: './employee-dialog.component.html'
 })
-export class TaskDialogComponent implements OnInit {
+export class EmployeeDialogComponent implements OnInit {
 
   constructor(
-    public dialogRef: MatDialogRef<TaskDialogComponent>,
+    public dialogRef: MatDialogRef<EmployeeDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) { }
 

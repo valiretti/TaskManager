@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../http.service';
+import { HttpService } from '../../services/http.service';
 import { MatTable, MatDialog } from '@angular/material';
-import { Project } from '../project';
+import { Project } from '../../models/project';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.css'],
   providers: [HttpService]
 })
 export class ProjectsComponent implements OnInit {

@@ -1,9 +1,4 @@
-export enum Status {
-    NotStarted = 0,
-    InProgress = 1,
-    Completed = 2,
-    Postponed = 3
-};
+import { StatusTask } from './statusTaskEnum';
 
 export class Task {
     id: number;
@@ -11,13 +6,13 @@ export class Task {
     workHours: number;
     startDate: string;
     finishDate: string;
-    status: Status;    
+    status: StatusTask;
     projectId: number;
     projectAbbreviation: string;
     fullNames: string[];
     employees: number[];
 
     get statusName(): string {
-        return Status[this.status];
+        return StatusTask[this.status];
     }
 }

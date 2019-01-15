@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../http.service';
-import { Employee } from '../employee';
-import {MatDialog, MatDialogConfig, MatTable} from "@angular/material";
+import { HttpService } from '../../services/http.service';
+import { Employee } from '../../models/employee';
+import { MatDialog, MatDialogConfig, MatTable } from "@angular/material";
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 
 @Component({
   selector: 'app-employees',
   templateUrl: './employees.component.html',
-  styleUrls: ['./employees.component.css'],
   /*
    TODO: В реальных приложениях HttpService никогда не используется напрямую,
    В таком контексте использования сам по себе HttpService не будет являться синглтоном что может привести к неожиданным

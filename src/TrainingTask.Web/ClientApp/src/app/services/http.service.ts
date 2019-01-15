@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Employee } from './employee';
-import { Project } from './project';
-import { Task } from './task';
+import { Employee } from '../models/employee';
+import { Project } from '../models/project';
+import { Task } from '../models/task';
 import { Observable, throwError } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
 

@@ -1,15 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../http.service';
-import { Task, Status } from '../task';
+import { HttpService } from '../../services/http.service';
+import { Task } from '../../models/task';
 import { MatTable, MatDialog } from '@angular/material';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
-import { Employee } from '../employee';
-import { Project } from '../project';
+import { Employee } from '../../models/employee';
+import { Project } from '../../models/project';
+import { StatusTask } from '../../models/statusTaskEnum';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css'],
   providers: [HttpService]
 })
 export class TasksComponent implements OnInit {
@@ -20,7 +20,7 @@ export class TasksComponent implements OnInit {
   task: Task = new Task;
   employeeList: Employee[] = [];
   projectList: Project[] = [];
-  status = Status;
+  status = StatusTask;
   isLoading: boolean = true;
 
   constructor(
