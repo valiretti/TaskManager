@@ -21,6 +21,7 @@ export class TasksComponent implements OnInit {
   employeeList: Employee[] = [];
   projectList: Project[] = [];
   status = Status;
+  isLoading: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -29,7 +30,10 @@ export class TasksComponent implements OnInit {
 
   ngOnInit() {
     this.httpService.getTasks()
-      .subscribe(data => this.tasks = data);
+      .subscribe(data => {
+        this.tasks = data;
+        this.isLoading = false;
+      });
 
     this.httpService.getEmployees()
       .subscribe(data => this.employeeList = data);

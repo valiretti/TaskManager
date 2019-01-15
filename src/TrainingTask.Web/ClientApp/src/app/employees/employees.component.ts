@@ -16,6 +16,7 @@ export class EmployeesComponent implements OnInit {
 
   employees: Employee[] = [];
   employee: Employee = new Employee;
+  isLoading: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -24,7 +25,10 @@ export class EmployeesComponent implements OnInit {
 
   ngOnInit() {
     this.httpService.getEmployees()
-      .subscribe(data => this.employees = data);
+      .subscribe(data => {
+        this.isLoading = false;
+        this.employees = data;
+      });
   }
 
   openAddEmployeeDialog(): void {

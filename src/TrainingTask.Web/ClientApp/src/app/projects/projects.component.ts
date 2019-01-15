@@ -15,6 +15,7 @@ export class ProjectsComponent implements OnInit {
   @ViewChild('table') table: MatTable<any>;
 
   projects: Project[] = [];
+  isLoading: boolean = true;
 
   constructor(
     public dialog: MatDialog,
@@ -23,7 +24,10 @@ export class ProjectsComponent implements OnInit {
 
   ngOnInit() {
     this.httpService.getProjects()
-      .subscribe(data => this.projects = data);
+      .subscribe(data => {
+        this.isLoading = false;
+        this.projects = data;
+      });
   }
 
   openAddProjectDialog(): void {

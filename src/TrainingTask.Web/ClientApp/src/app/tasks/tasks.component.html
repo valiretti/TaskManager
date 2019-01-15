@@ -6,7 +6,8 @@
 <br>
 <mat-card>
     <mat-card-content class="mat-elevation-z8">
-        <mat-table #table [dataSource]=tasks>
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
+        <mat-table #table [dataSource]=tasks *ngIf="!isLoading">
             <ng-container matColumnDef="id">
                 <mat-header-cell *matHeaderCellDef> Id </mat-header-cell>
                 <mat-cell *matCellDef="let task"> {{task.id}} </mat-cell>
