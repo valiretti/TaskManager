@@ -9,6 +9,7 @@ export class NotFoundComponent implements OnInit {
 
   constructor() { }
 
+  // TODO: Код не должен содержать пустых методов.
   ngOnInit() {
   }
 

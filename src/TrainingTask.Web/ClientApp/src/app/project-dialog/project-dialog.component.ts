@@ -8,8 +8,10 @@ import { Project } from '../project';
 @Component({
   selector: 'app-project-dialog',
   templateUrl: './project-dialog.component.html',
+  // TODO: приложение не должно содержать пустых файлов
   styleUrls: ['./project-dialog.component.css']
 })
+// TODO: Эта компонента дублирует компоненту TasksComponent!
 export class ProjectDialogComponent implements OnInit {
   employeeList: Employee[] = [];
   projectList: Project[] = [];
@@ -83,12 +85,21 @@ export class ProjectDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        // TODO: некорректное присваивание значение полю readonly
         result.statusName = Status[result.status];
 
+        /* TODO: хранить отдельно сконкатенированное имя - плохая практика, так как в этом случае надо будет заморачиваться над
+          обновлением этого поля. Как вариант можно использовать геттер который будет возвращать полное имя либо написатьпайп в котором
+          будет добавлена логика конкатенации.
+         */
         result.fullNames = this.employeeList
           .filter(f => result.employees.indexOf(f.id) >= 0)
           .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
 
+        /* TODO: Список должен обновляться серверными даннымиб и тут 2 варианта:
+         1. Договориться с бэком, что он будет присылать сохранённую модель в PUT и POST методах
+         2. Перезапрашивать список после сохранения или добавления элемента
+        */
         this.data.project.tasks = this.data.project.tasks.map((t: Task) => {
           return (t.id !== result.id) ? t : result;
         });
