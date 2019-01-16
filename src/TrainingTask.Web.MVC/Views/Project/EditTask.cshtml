@@ -23,8 +23,12 @@
 </div>
 
 <div>
-    <a href="javascript: history.go(-1)">Go Back</a>
+    <input id="Back" type="submit" value="Go Back" class="btn btn-default" />
 </div>
 
-<script src="~/lib/jquery/dist/jquery.js"></script>
-<script src="~/js/edit.js"></script>
+
+@section Scripts
+    {
+    <script src="~/js/edit.js"></script>
+    <script src="~/js/common.js"></script>
+}

@@ -44,7 +44,7 @@
                     @Html.DisplayFor(modelItem => item.Description)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }, new { @class = "editProjLink", data_id = item.Id }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.Id })
                 </td>
             </tr>
@@ -52,4 +52,9 @@
     </tbody>
 </table>
 
-<script src="~/js/clear.js"></script>
+@section Scripts
+    {
+    <script src="~/js/clear.js"></script>
+    <script src="~/js/addExistingTasks.js"></script>
+    <script src="~/js/common.js"></script>
+}
