@@ -1,0 +1,21 @@
+<mat-toolbar color="primary">
+  <div fxHide.gt-xs>
+    <button mat-icon-button>
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+  <div>
+    <a>
+      TaskManager
+    </a>
+  </div>
+  <div fxFlex fxLayout fxLayoutAlign="flex-end" fxHide.xs>
+    <nav fxLayout fxLayoutGap="20px">
+      <a class="link" routerLink="/employees" routerLinkActive="active">Employees</a>
+      <a class="link" routerLink="/tasks" routerLinkActive="active">Tasks</a>
+      <a class="link" routerLink="/projects" routerLinkActive="active">Projects</a>
+    </nav>
+  </div>
+</mat-toolbar>
+<br>
+<router-outlet></router-outlet>
