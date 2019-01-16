@@ -110,7 +110,7 @@ namespace TrainingTask.Web.MVC.Controllers
                 ModelState.AddModelError("", ex.Message);
             }
 
-            return RedirectToAction("Create");
+            return RedirectToAction("Edit");
         }
 
         [ImportModelState]
