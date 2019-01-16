@@ -2,13 +2,12 @@
 $(document).ready(function () {
     $("#taskF").submit(function (e) {
         e.preventDefault();
-        let task = GetFromForm();
+        updateStorage();
+        history.go(-1);
+    });
 
-        let tasks = getFromLocalStorage();
-        tasks.push(task);
-        $.each(tasks, function (key, value) {
-            $(addItem(value));
-        });
+    $("#Back").click(function (e) {
+        updateStorage();
         history.go(-1);
     });
 });
@@ -16,7 +15,7 @@ $(document).ready(function () {
 function GetFromForm() {
     let searchForm = document.forms["taskF"];
     let task = {
-        id: idForEdit,
+        id: getIdFromStorage(),
         name: searchForm.elements["Name"].value,
         workHours: searchForm.elements["WorkHours"].value,
         startDate: searchForm.elements["StartDate"].value,
@@ -27,12 +26,19 @@ function GetFromForm() {
     return task;
 }
 
-function getFromLocalStorage() {
-    let taskString = localStorage.getItem('task');
-    let task = taskString ? JSON.parse(taskString) : [];
-    return task;
+function updateStorage() {
+    let task = GetFromForm();
+    let tasks = getFromStorage();
+    sessionStorage.removeItem('task');
+    tasks.push(task);
+    $.each(tasks, function (key, value) {
+        $(addItem(value));
+    });
 }
 
-function GetTask(tasks, id) {
-    return tasks.find(t => t.id == id || t.tempId == id);
+
+function getIdFromStorage() {
+    let id = sessionStorage.getItem('id');
+    sessionStorage.removeItem('id');
+    return parseInt(id);
 }

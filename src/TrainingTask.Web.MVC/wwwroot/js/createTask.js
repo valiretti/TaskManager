@@ -1,10 +1,7 @@
-﻿var idForEdit;
-var statusStrings = ["Not Started", "In Progress", "Completed", "Postponed"];
-
-function GetTaskFromForm() {
+﻿function GetTaskFromForm() {
     let searchForm = document.forms["taskForm"];
     let task = {
-        id: idForEdit,
+        id: 0,
         name: searchForm.elements["Name"].value,
         workHours: searchForm.elements["WorkHours"].value,
         startDate: searchForm.elements["StartDate"].value,
@@ -25,13 +22,3 @@ $(document).ready(function () {
     });
 });
 
-function setTaskData(task) {
-    localStorage.setItem('task', JSON.stringify(task));
-}
-
-function addItem(taskForInsert) {
-    let taskString = localStorage.getItem('task');
-    let task = taskString ? JSON.parse(taskString) : [];
-    task.push(taskForInsert);
-    setTaskData(task);
-}

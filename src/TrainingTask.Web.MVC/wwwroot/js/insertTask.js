@@ -1,6 +1,6 @@
 ﻿var employees = [];
-var idForEdit;
 var nextId = 0;
+var statusStrings = ["Not Started", "In Progress", "Completed", "Postponed"];
 
 var row = function (task) {
     let tr = $('<tr>').attr("data-rowid", task.id || task.tempId).append(
@@ -36,60 +36,35 @@ function InsertTask(task) {
 }
 
 function DeleteTask(id) {
-    let tasks = getFromLocalStorage();
-    let index = tasks.indexOf(GetTask(tasks, id));
-    tasks.splice(index, 1);
-    localStorage.removeItem("task");
-    $.each(tasks, function (key, value) {
-        $(addItem(value));
-    });
-
+    updateStorage(id);
     $("table#tasks tr[data-rowid='" + id + "']").remove();
 }
 
-function getFromLocalStorage() {
-    let taskString = localStorage.getItem('task');
-    let task = taskString ? JSON.parse(taskString) : [];
-    return task;
-}
-
-function GetTask(tasks, id) {
-    return tasks.find(t => t.id == id || t.tempId == id);
-}
-
-
-function EditTask(id) {
-    let tasks = getFromLocalStorage();
+function updateStorage(id) {
+    let tasks = getFromStorage();
     let task = GetTask(tasks, id);
     let index = tasks.indexOf(task);
     tasks.splice(index, 1);
-    localStorage.removeItem("task");
+    sessionStorage.removeItem('task');
     $.each(tasks, function (key, value) {
         $(addItem(value));
     });
 
+    return task;
+}
+
+function EditTask(id) {
+    let task = updateStorage(id);
+    setIdToStorage(id);
     task = JSON.stringify(task);
     document.location.href = "/project/EditTask?json=" + task;
 }
 
-
-function FillTask(task) {
-    var form = document.forms["taskForm"];
-    form.elements["id"].value = task.id;
-    form.elements["name"].value = task.name;
-    form.elements["workTime"].value = task.workHours;
-    form.elements["startDate"].valueAsDate = new Date(task.startDate + "Z");
-    form.elements["finishDate"].valueAsDate = new Date(task.finishDate + "Z");
-    $("#status").val(task.status);
-    $("#employees").val(task.employeeIds ? task.employeeIds : task.employees);
-}
-
-
 function insert() {
-    let tasks = localStorage['task'];
+    let tasks = sessionStorage.getItem('task');
     if (tasks != undefined) {
         let task = JSON.parse(tasks);
-        localStorage.removeItem("task");
+        sessionStorage.removeItem('task');
         $.each(task, function (key, value) {
             value.tempId = --nextId;
             addItem(value);
@@ -99,14 +74,36 @@ function insert() {
     }
 }
 
-$(function () {
+function setIdToStorage(id) {
+    sessionStorage.setItem('id', JSON.stringify(id));
+}
 
+function sendJson() {
+    document.getElementById("Tasks").value = sessionStorage.getItem('task');
+}
+
+function GetEmployees() {
+    return new Promise(
+        function (resolve, reject) {
+            $.ajax({
+                url: '/project/GetEmployees',
+                type: 'GET',
+                contentType: "application/json",
+                success: data => {
+                    employees = data;
+                    resolve();
+                },
+                error: (jxqr, error, status) => reject(jxqr)
+            });
+        });
+}
+
+$(function () {
     GetEmployees()
         .then(() => insert());
 
     $("#createProj").click(function (e) {
         sendJson();
-        localStorage.removeItem("task");
     });
 
     $("body").on("click",
@@ -127,23 +124,5 @@ $(function () {
         });
 });
 
-function sendJson(parameters) {
-    document.getElementById("Tasks").value = localStorage.getItem("task");
-}
 
-function GetEmployees() {
-    return new Promise(
-        function (resolve, reject) {
-            $.ajax({
-                url: '/project/GetEmployees',
-                type: 'GET',
-                contentType: "application/json",
-                success: data => {
-                    employees = data;
-                    resolve();
-                },
-                error: (jxqr, error, status) => reject(jxqr)
-            });
-        });
-}
 

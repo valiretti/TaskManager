@@ -1,2 +1,2 @@
 ﻿
-localStorage.removeItem("task");
+sessionStorage.removeItem('task');
