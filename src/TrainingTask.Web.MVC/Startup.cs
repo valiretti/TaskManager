@@ -103,6 +103,8 @@ namespace TrainingTask.Web.MVC
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            app.UseExceptionHandler("/Home/Error");
         }
     }
 }

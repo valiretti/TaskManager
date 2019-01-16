@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TrainingTask.BLL.Interfaces;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
@@ -12,17 +14,28 @@ namespace TrainingTask.Web.MVC.Controllers
     {
         private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
+        private readonly ILog _log;
 
-        public EmployeeController(IEmployeeService employeeService, IMapper mapper)
+        public EmployeeController(IEmployeeService employeeService, IMapper mapper, ILog log)
         {
             _employeeService = employeeService;
             _mapper = mapper;
+            _log = log;
         }
 
         public ActionResult Index()
         {
-            var employees = _employeeService.GetAll();
-            return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
+            try
+            {
+                var employees = _employeeService.GetAll();
+                return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
         }
 
         public ActionResult Success()
@@ -49,18 +62,38 @@ namespace TrainingTask.Web.MVC.Controllers
                 return RedirectToAction("Create");
             }
 
-            _employeeService.Add(_mapper.Map<Employee>(employee));
-            return RedirectToAction("Success");
+            try
+            {
+                _employeeService.Add(_mapper.Map<Employee>(employee));
+                return RedirectToAction("Success");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return RedirectToAction("Create");
         }
 
         [ImportModelState]
         public ActionResult Edit(int id)
         {
-            var employee = _employeeService.Get(id);
-            if (employee == null)
-                return NotFound();
+            try
+            {
+                var employee = _employeeService.Get(id);
+                if (employee == null)
+                    return NotFound();
 
-            return View(_mapper.Map<EmployeeViewModel>(employee));
+                return View(_mapper.Map<EmployeeViewModel>(employee));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
@@ -76,24 +109,43 @@ namespace TrainingTask.Web.MVC.Controllers
                 return RedirectToAction("Edit");
             }
 
-            var employee = _mapper.Map<Employee>(model);
-            if (_employeeService.Get(employee.Id) == null)
+            try
             {
-                return NotFound();
+                var employee = _mapper.Map<Employee>(model);
+                if (_employeeService.Get(employee.Id) == null)
+                {
+                    return NotFound();
+                }
+
+                _employeeService.Update(employee);
+                return RedirectToAction("Success");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
             }
 
-            _employeeService.Update(employee);
-            return RedirectToAction("Success");
+            return RedirectToAction("Edit");
         }
 
         [ImportModelState]
         public ActionResult Delete(int id)
         {
-            var employee = _employeeService.Get(id);
-            if (employee == null)
-                return NotFound();
+            try
+            {
+                var employee = _employeeService.Get(id);
+                if (employee == null)
+                    return NotFound();
 
-            return View(_mapper.Map<EmployeeViewModel>(employee));
+                return View(_mapper.Map<EmployeeViewModel>(employee));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
@@ -101,11 +153,21 @@ namespace TrainingTask.Web.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(EmployeeViewModel employee)
         {
-            if (_employeeService.Get(employee.Id) == null)
-                return NotFound();
+            try
+            {
+                if (_employeeService.Get(employee.Id) == null)
+                    return NotFound();
 
-            _employeeService.Delete(employee.Id);
-            return RedirectToAction("Success");
+                _employeeService.Delete(employee.Id);
+                return RedirectToAction("Success");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return RedirectToAction("Delete");
         }
     }
 }

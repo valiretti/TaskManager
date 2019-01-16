@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
@@ -22,34 +20,64 @@ namespace TrainingTask.Web.MVC.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
+        private readonly ILog _log;
 
-        public ProjectController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper)
+        public ProjectController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper, ILog log)
         {
             _taskService = taskService;
             _employeeService = employeeService;
             _projectService = projectService;
             _mapper = mapper;
+            _log = log;
         }
 
         public ActionResult Index()
         {
-            var projects = _projectService.GetAll();
-            return View(_mapper.Map<IEnumerable<ProjectViewModel>>(projects));
+            try
+            {
+                var projects = _projectService.GetAll();
+                return View(_mapper.Map<IEnumerable<ProjectViewModel>>(projects));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
         }
 
         [ImportModelState]
         public ActionResult CreateTask()
         {
-            FillComboBoxes();
-            return View();
+            try
+            {
+                FillComboBoxes();
+                return View();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return RedirectToAction("Index");
         }
 
         [ImportModelState]
         public ActionResult EditTask(string json)
         {
-            FillComboBoxes();
-            var task = JsonConvert.DeserializeObject<CreateTask>(json);
-            return View(_mapper.Map<TaskCreationModel>(task));
+            try
+            {
+                FillComboBoxes();
+                var task = JsonConvert.DeserializeObject<CreateTask>(json);
+                return View(_mapper.Map<TaskCreationModel>(task));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
+
         }
 
         public ActionResult Success()
@@ -60,8 +88,35 @@ namespace TrainingTask.Web.MVC.Controllers
         [HttpGet]
         public JsonResult GetEmployees()
         {
-            var employees = _employeeService.GetAll();
-            return Json(employees);
+            try
+            {
+                var employees = _employeeService.GetAll();
+                return Json(employees);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return Json(new List<EmployeeViewModel>());
+        }
+
+
+        [HttpGet]
+        public JsonResult GetTasksByProjectId(int id)
+        {
+            try
+            {
+                var tasks = _taskService.GetByProjectId(id);
+                return Json(_mapper.Map<IEnumerable<Models.TaskViewModel>>(tasks));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return Json(new List<Models.TaskViewModel>());
+
         }
 
         [ImportModelState]
@@ -96,6 +151,11 @@ namespace TrainingTask.Web.MVC.Controllers
             {
                 ModelState.AddModelError("", ex.Message);
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
 
             return RedirectToAction("Create");
         }
@@ -103,51 +163,104 @@ namespace TrainingTask.Web.MVC.Controllers
         [ImportModelState]
         public ActionResult Edit(int id)
         {
-            var project = _projectService.Get(id);
-            if (project == null)
-                return NotFound();
-
-            return View(_mapper.Map<ProjectViewModel>(project));
-        }
-
-        // POST: Project/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
             try
             {
-                // TODO: Add update logic here
+                var project = _projectService.Get(id);
+                if (project == null)
+                    return NotFound();
 
-                return RedirectToAction(nameof(Index));
+                return View(_mapper.Map<ProjectCreationModel>(project));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
             }
+
+            return BadRequest();
         }
 
-        // GET: Project/Delete/5
+        [HttpPost]
+        [ExportModelState]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(ProjectCreationModel model)
+        {
+            if (model == null)
+                return BadRequest("No data for model");
+
+            if (!ModelState.IsValid)
+            {
+                return RedirectToAction("Edit");
+            }
+
+            try
+            {
+                var project = _mapper.Map<CreateProject>(model);
+                if (_projectService.Get(project.Id) == null)
+                {
+                    return NotFound();
+                }
+
+                _projectService.Update(project);
+                return RedirectToAction("Success");
+            }
+            catch (UniquenessViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (ForeignKeyViolationException ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return RedirectToAction("Edit");
+        }
+
+        [ImportModelState]
         public ActionResult Delete(int id)
         {
-            return View();
+            try
+            {
+                var project = _projectService.Get(id);
+                if (project == null)
+                    return NotFound();
+
+                return View(_mapper.Map<ProjectViewModel>(project));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest();
         }
 
-        // POST: Project/Delete/5
         [HttpPost]
+        [ExportModelState]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(ProjectViewModel project)
         {
             try
             {
-                // TODO: Add delete logic here
+                if (_projectService.Get(project.Id) == null)
+                    return NotFound();
 
-                return RedirectToAction(nameof(Index));
+                _projectService.Delete(project.Id);
+                return RedirectToAction("Success");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
             }
+
+            return RedirectToAction("Delete");
         }
 
         private void FillComboBoxes(TaskViewModel task = null)

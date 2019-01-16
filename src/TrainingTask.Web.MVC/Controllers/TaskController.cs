@@ -1,9 +1,11 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Exceptions;
+using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
@@ -17,19 +19,30 @@ namespace TrainingTask.Web.MVC.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
+        private readonly ILog _log;
 
-        public TaskController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper)
+        public TaskController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper, ILog log)
         {
             _taskService = taskService;
             _employeeService = employeeService;
             _projectService = projectService;
             _mapper = mapper;
+            _log = log;
         }
 
         public ActionResult Index()
         {
-            var tasks = _taskService.GetAll();
-            return View(_mapper.Map<IEnumerable<Models.TaskViewModel>>(tasks));
+            try
+            {
+                var tasks = _taskService.GetAll();
+                return View(_mapper.Map<IEnumerable<Models.TaskViewModel>>(tasks));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
         }
 
         public ActionResult Success()
@@ -40,8 +53,17 @@ namespace TrainingTask.Web.MVC.Controllers
         [ImportModelState]
         public ActionResult Create()
         {
-            FillComboBoxes();
-            return View("CreateTask");
+            try
+            {
+                FillComboBoxes();
+                return View("CreateTask");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
@@ -64,6 +86,12 @@ namespace TrainingTask.Web.MVC.Controllers
             }
             catch (ForeignKeyViolationException ex)
             {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
                 ModelState.AddModelError("", ex.Message);
             }
 
@@ -73,12 +101,22 @@ namespace TrainingTask.Web.MVC.Controllers
         [ImportModelState]
         public ActionResult Edit(int id)
         {
-            var task = _taskService.GetViewModel(id);
-            if (task == null)
-                return NotFound();
+            try
+            {
+                var task = _taskService.GetViewModel(id);
+                if (task == null)
+                    return NotFound();
 
-            FillComboBoxes(task);
-            return View("EditTask",_mapper.Map<TaskCreationModel>(task));
+                FillComboBoxes(task);
+                return View("EditTask", _mapper.Map<TaskCreationModel>(task));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
@@ -107,6 +145,12 @@ namespace TrainingTask.Web.MVC.Controllers
             }
             catch (ForeignKeyViolationException ex)
             {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
                 ModelState.AddModelError("", ex.Message);
             }
 
@@ -116,11 +160,21 @@ namespace TrainingTask.Web.MVC.Controllers
         [ImportModelState]
         public ActionResult Delete(int id)
         {
-            var task = _taskService.GetViewModel(id);
-            if (task == null)
-                return NotFound();
+            try
+            {
+                var task = _taskService.GetViewModel(id);
+                if (task == null)
+                    return NotFound();
 
-            return View(_mapper.Map<Models.TaskViewModel>(task));
+                return View(_mapper.Map<Models.TaskViewModel>(task));
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return BadRequest();
         }
 
         [HttpPost]
@@ -128,11 +182,21 @@ namespace TrainingTask.Web.MVC.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(Models.TaskViewModel task)
         {
-            if (_taskService.Get(task.Id) == null)
-                return NotFound();
+            try
+            {
+                if (_taskService.Get(task.Id) == null)
+                    return NotFound();
 
-            _taskService.Delete(task.Id);
-            return RedirectToAction("Success");
+                _taskService.Delete(task.Id);
+                return RedirectToAction("Success");
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+                ModelState.AddModelError("", ex.Message);
+            }
+
+            return RedirectToAction("Delete");
         }
 
         private void FillComboBoxes(TaskViewModel task = null)
