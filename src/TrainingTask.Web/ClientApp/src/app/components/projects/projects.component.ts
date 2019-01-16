@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../../services/http.service';
 import { MatTable, MatDialog } from '@angular/material';
 import { Project } from '../../models/project';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { ProjectService } from 'src/app/services/project.service';
+import { EmployeeService } from 'src/app/services/employee.service';
+import { TaskService } from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-projects',
-  templateUrl: './projects.component.html',
-  providers: [HttpService]
+  templateUrl: './projects.component.html'
 })
 export class ProjectsComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'abbreviation', 'description', 'edit', 'delete'];
@@ -18,11 +19,13 @@ export class ProjectsComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private httpService: HttpService
+    private projectService: ProjectService,
+    private employeeService: EmployeeService,
+    private taskService: TaskService,
   ) { }
 
   ngOnInit() {
-    this.httpService.getProjects()
+    this.projectService.getProjects()
       .subscribe(data => {
         this.isLoading = false;
         this.projects = data;
@@ -39,7 +42,8 @@ export class ProjectsComponent implements OnInit {
         title: 'Add Project',
         project: project,
         displayedColumns: ['taskId', 'taskName', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'],
-        httpService: this.httpService,
+        projectService: this.projectService,
+        employeeService: this.employeeService,
       },
       disableClose: true
     });
@@ -52,7 +56,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   addProject(project: Project): void {
-    this.httpService.addProject(project)
+    this.projectService.createProject(project)
       .subscribe(project => {
         this.projects.push(project);
         this.table.renderRows();
@@ -60,7 +64,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   openEditProjectDialog(project: Project): void {
-    this.httpService.getTasksByProject(project.id)
+    this.taskService.getTasksByProject(project.id)
       .subscribe(data => {
         project.tasks = data;
         let dialogRef = this.dialog.open(ProjectDialogComponent, {
@@ -69,7 +73,8 @@ export class ProjectsComponent implements OnInit {
             title: 'Edit Project',
             project: { ...project },
             displayedColumns: ['taskId', 'taskName', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'],
-            httpService: this.httpService,
+            projectService: this.projectService,
+            employeeService: this.employeeService,
           },
           disableClose: true
         });
@@ -83,7 +88,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   editProject(project: Project): void {
-    this.httpService.updateProject(project)
+    this.projectService.updateProject(project)
       .subscribe(() => {
         this.projects = this.projects.map(p => {
           return (p.id !== project.id) ? p : project;
@@ -93,7 +98,7 @@ export class ProjectsComponent implements OnInit {
   }
 
   onDeleteProjectClick(projectId: number): void {
-    this.httpService.deleteProject(projectId)
+    this.projectService.deleteProject(projectId)
       .subscribe(() => {
         this.projects = this.projects.filter(p => p.id !== projectId);
         this.table.renderRows();

@@ -25,10 +25,10 @@ export class ProjectDialogComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.data.httpService.getEmployees()
+    this.data.employeeService.getEmployees()
       .subscribe(data => this.employeeList = data);
 
-    this.data.httpService.getProjects()
+    this.data.projectService.getProjects()
       .subscribe(data => this.projectList = data);
   }
 

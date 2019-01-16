@@ -1,16 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../../services/http.service';
 import { Task } from '../../models/task';
 import { MatTable, MatDialog } from '@angular/material';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
 import { Employee } from '../../models/employee';
 import { Project } from '../../models/project';
 import { StatusTask } from '../../models/statusTaskEnum';
+import { EmployeeService } from 'src/app/services/employee.service';
+import { ProjectService } from 'src/app/services/project.service';
+import { TaskService } from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  providers: [HttpService]
+  templateUrl: './tasks.component.html'
 })
 export class TasksComponent implements OnInit {
   displayedColumns: string[] = ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
@@ -25,20 +26,22 @@ export class TasksComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private httpService: HttpService
+    private employeeService: EmployeeService,
+    private projectService: ProjectService,
+    private taskService: TaskService,
   ) { }
 
   ngOnInit() {
-    this.httpService.getTasks()
-      .subscribe(data => {
+    this.taskService.getTasks()
+      .subscribe((data: Task[]) => {
         this.tasks = data;
         this.isLoading = false;
       });
 
-    this.httpService.getEmployees()
+    this.employeeService.getEmployees()
       .subscribe(data => this.employeeList = data);
 
-    this.httpService.getProjects()
+    this.projectService.getProjects()
       .subscribe(data => this.projectList = data);
   }
 
@@ -63,7 +66,7 @@ export class TasksComponent implements OnInit {
   }
 
   addTask(task: Task): void {
-    this.httpService.addTask(task)
+    this.taskService.createTask(task)
       .subscribe(task => {
         this.tasks.push(task);
         this.table.renderRows();
@@ -71,7 +74,7 @@ export class TasksComponent implements OnInit {
   }
 
   openEditTaskDialog(task: Task): void {
-    this.httpService.getTasksById(task.id)
+    this.taskService.getTaskById(task.id)
       .subscribe(data => {
         let dialogRef = this.dialog.open(TaskDialogComponent, {
           width: '500px',
@@ -105,7 +108,7 @@ export class TasksComponent implements OnInit {
   }
 
   editTask(task: Task): void {
-    this.httpService.updateTask(task)
+    this.taskService.updateTask(task)
       .subscribe(() => {
         this.tasks = this.tasks.map(t => {
           return (t.id !== task.id) ? t : task;
@@ -115,7 +118,7 @@ export class TasksComponent implements OnInit {
   }
 
   onDeleteTaskClick(taskId: number): void {
-    this.httpService.deleteTask(taskId)
+    this.taskService.deleteTask(taskId)
       .subscribe(() => {
         this.tasks = this.tasks.filter(t => t.id !== taskId);
         this.table.renderRows();

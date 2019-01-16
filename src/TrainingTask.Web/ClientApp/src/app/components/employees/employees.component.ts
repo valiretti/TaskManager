@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { HttpService } from '../../services/http.service';
 import { Employee } from '../../models/employee';
 import { MatDialog, MatDialogConfig, MatTable } from "@angular/material";
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
+import { EmployeeService } from 'src/app/services/employee.service';
 
 @Component({
   selector: 'app-employees',
@@ -12,7 +12,7 @@ import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.comp
    В таком контексте использования сам по себе HttpService не будет являться синглтоном что может привести к неожиданным
    результаттам работы приложенияб когда будет добавлена обработка заголовков или ошибок сервера
   */
-  providers: [HttpService]
+  // providers: [HttpService]
 })
 // TODO: Компонента перегружена логикой.
 // TODO: Всю логику, которая не имеет непосредственного отношения к шаблону нужно выносить в сервисы
@@ -31,11 +31,11 @@ export class EmployeesComponent implements OnInit {
 
   constructor(
     public dialog: MatDialog,
-    private httpService: HttpService
+    private employeeService: EmployeeService
   ) { }
 
   ngOnInit() {
-    this.httpService.getEmployees()
+    this.employeeService.getEmployees()
       .subscribe(data => {
         this.isLoading = false;
         this.employees = data;
@@ -62,7 +62,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   addEmployee(employee: Employee): void {
-    this.httpService.addEmployee(employee)
+    this.employeeService.createEmployee(employee)
       .subscribe(employee => {
         this.employees.push(employee);
         this.table.renderRows();
@@ -90,7 +90,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   editEmployee(employee: Employee): void {
-    this.httpService.updateEmployee(employee)
+    this.employeeService.updateEmployee(employee)
       .subscribe(() => {
         this.employees = this.employees.map(e => {
           return (e.id !== employee.id) ? e : employee;
@@ -100,7 +100,7 @@ export class EmployeesComponent implements OnInit {
   }
 
   onDeleteEmployeeClick(employeeId: number): void {
-    this.httpService.deleteEmployee(employeeId)
+    this.employeeService.deleteEmployee(employeeId)
       .subscribe(() => {
         // TODO: нужно использовать понятные названия переменных по коду
         this.employees = this.employees.filter(e => e.id !== employeeId);
