@@ -1,9 +1,8 @@
-<div fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="center center">
+<div class="tt-button-panel">
     <button button="submit" mat-raised-button color="primary" (click)="openAddTaskDialog()">
         <mat-icon>add</mat-icon> Add Task
     </button>
 </div>
-<br>
 <mat-card>
     <mat-card-content class="mat-elevation-z8">
         <mat-spinner *ngIf="isLoading"></mat-spinner>

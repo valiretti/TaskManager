@@ -7,6 +7,7 @@ import { EmployeeService } from 'src/app/services/employee.service';
 @Component({
   selector: 'app-employees',
   templateUrl: './employees.component.html',
+  styleUrls: ['./employees.component.css'],
   /*
    TODO: В реальных приложениях HttpService никогда не используется напрямую,
    В таком контексте использования сам по себе HttpService не будет являться синглтоном что может привести к неожиданным

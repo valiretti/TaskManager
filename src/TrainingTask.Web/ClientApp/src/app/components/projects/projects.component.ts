@@ -8,7 +8,8 @@ import { TaskService } from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-projects',
-  templateUrl: './projects.component.html'
+  templateUrl: './projects.component.html',
+  styleUrls: ['./projects.component.css']
 })
 export class ProjectsComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'abbreviation', 'description', 'edit', 'delete'];
