@@ -17,7 +17,11 @@ namespace TrainingTask.Web.MVC.Profiles
 
             CreateMap<ProjectCreationModel, CreateProject>()
                 .ForMember(p => p.Tasks,
-                    opt => opt.MapFrom(p => JsonConvert.DeserializeObject<IEnumerable<CreateTask>>(p.Tasks)));
+                    opt => opt.MapFrom(p => JsonConvert.DeserializeObject<IEnumerable<CreateTask>>(p.Tasks)))
+                .ForMember(p => p.Description, opt => opt.MapFrom(p => p.Description ?? string.Empty));
+
+            CreateMap<Project, ProjectCreationModel>()
+                .ForMember(e => e.Tasks, opt => opt.Ignore());
         }
     }
 }

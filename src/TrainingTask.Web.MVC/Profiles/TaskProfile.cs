@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Models;
-using Task = TrainingTask.Common.Models.Task;
 using TaskViewModel = TrainingTask.Common.Models.TaskViewModel;
 
 namespace TrainingTask.Web.MVC.Profiles
@@ -15,6 +10,7 @@ namespace TrainingTask.Web.MVC.Profiles
         public TaskProfile()
         {
             CreateMap<TaskViewModel, Models.TaskViewModel>()
+                .ForMember(tcm => tcm.WorkHours, opt => opt.MapFrom(tvm => tvm.WorkHours.TotalHours))
                 .ReverseMap();
 
             CreateMap<TaskCreationModel, CreateTask>()
