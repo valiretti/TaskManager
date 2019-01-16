@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Web.MVC.Models
@@ -34,6 +32,6 @@ namespace TrainingTask.Web.MVC.Models
 
         public IEnumerable<int> Employees { get; set; }
 
-        public TimeSpan WorkHours { get; set; }
+        public double WorkHours { get; set; }
     }
 }
