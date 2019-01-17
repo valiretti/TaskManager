@@ -70,5 +70,5 @@
     </tbody>
 </table>
 
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = @pageSize }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = ViewBag.PageSize }))
 

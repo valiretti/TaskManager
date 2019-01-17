@@ -3,6 +3,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
+using Microsoft.Extensions.Configuration;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Interfaces;
@@ -21,14 +22,16 @@ namespace TrainingTask.Web.MVC.Controllers
         private readonly IProjectService _projectService;
         private readonly IMapper _mapper;
         private readonly ILog _log;
+        private readonly IConfiguration _configuration;
 
-        public TaskController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper, ILog log)
+        public TaskController(ITaskService taskService, IEmployeeService employeeService, IProjectService projectService, IMapper mapper, ILog log, IConfiguration configuration)
         {
             _taskService = taskService;
             _employeeService = employeeService;
             _projectService = projectService;
             _mapper = mapper;
             _log = log;
+            _configuration = configuration;
         }
 
         public ActionResult GetAll()
@@ -50,8 +53,9 @@ namespace TrainingTask.Web.MVC.Controllers
         {
             try
             {
-                var pageIndex = page ?? 1;
-                var pageSize = limit ?? 5;
+                var pageIndex = page ?? Constants.FirstPage;
+                var pageSize = limit ?? _configuration.GetSection(Constants.SectionName).GetValue<int>(Constants.Property);
+                ViewBag.PageSize = pageSize;
 
                 var result = _taskService.Get(pageIndex, pageSize);
                 var tasksAsIPagedList = new StaticPagedList<Models.TaskViewModel>(_mapper.Map<IEnumerable<Models.TaskViewModel>>(result.Items), pageIndex, pageSize, result.Total);

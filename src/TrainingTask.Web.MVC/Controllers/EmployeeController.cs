@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
@@ -16,12 +17,15 @@ namespace TrainingTask.Web.MVC.Controllers
         private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
         private readonly ILog _log;
+        private readonly IConfiguration _configuration;
 
-        public EmployeeController(IEmployeeService employeeService, IMapper mapper, ILog log)
+
+        public EmployeeController(IEmployeeService employeeService, IMapper mapper, ILog log, IConfiguration configuration)
         {
             _employeeService = employeeService;
             _mapper = mapper;
             _log = log;
+            _configuration = configuration;
         }
 
         public ActionResult GetAll()
@@ -43,8 +47,9 @@ namespace TrainingTask.Web.MVC.Controllers
         {
             try
             {
-                var pageIndex = page ?? 1;
-                var pageSize = limit ?? 5;
+                var pageIndex = page ?? Constants.FirstPage;
+                var pageSize = limit ?? _configuration.GetSection(Constants.SectionName).GetValue<int>(Constants.Property);
+                ViewBag.PageSize = pageSize;
 
                 var result = _employeeService.Get(pageIndex, pageSize);
                 var employeesAsIPagedList = new StaticPagedList<EmployeeViewModel>(_mapper.Map<IEnumerable<EmployeeViewModel>>(result.Items), pageIndex, pageSize, result.Total);

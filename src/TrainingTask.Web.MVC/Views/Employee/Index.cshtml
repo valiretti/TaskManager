@@ -7,8 +7,6 @@
 @using X.PagedList;
 @using X.PagedList.Mvc.Core;
 
-@{int pageSize = 5;}
-
 <link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 <h2>Employees</h2>
@@ -56,4 +54,4 @@
     </tbody>
 </table>
 
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = @pageSize }))
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = ViewBag.PageSize }))
