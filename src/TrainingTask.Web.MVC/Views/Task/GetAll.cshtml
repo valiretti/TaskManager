@@ -1,15 +1,8 @@
-﻿
-@model IPagedList<TaskViewModel>
+﻿@model IEnumerable<TrainingTask.Web.MVC.Models.TaskViewModel>
+
 @{
-    ViewBag.Title = "Tasks";
+    ViewData["Title"] = "Index";
 }
-
-@using X.PagedList;
-@using X.PagedList.Mvc.Core;
-
-@{int pageSize = 5;}
-
-<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 <h2>Tasks</h2>
 
@@ -18,16 +11,30 @@
 </p>
 <table class="table">
     <thead>
-        <tr>
-            <th>Id</th>
-            <th>Project Abbreviation</th>
-            <th>Name</th>
-            <th>Start Date</th>
-            <th>Finish Date</th>
-            <th>Employees</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ProjectAbbreviation)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.StartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FinishDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FullNames)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th></th>
+    </tr>
     </thead>
     <tbody>
         @foreach (var item in Model)
@@ -62,13 +69,10 @@
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    @Html.ActionLink("Edit", "Edit", new {id=item.Id}) |
+                    @Html.ActionLink("Delete", "Delete", new {id=item.Id})
                 </td>
             </tr>
         }
     </tbody>
 </table>
-
-@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = @pageSize }))
-

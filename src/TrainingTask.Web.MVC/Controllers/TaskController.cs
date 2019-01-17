@@ -9,6 +9,7 @@ using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
+using X.PagedList;
 using TaskViewModel = TrainingTask.Common.Models.TaskViewModel;
 
 namespace TrainingTask.Web.MVC.Controllers
@@ -30,13 +31,33 @@ namespace TrainingTask.Web.MVC.Controllers
             _log = log;
         }
 
-        public ActionResult Index()
+        public ActionResult GetAll()
         {
             try
             {
                 var tasks = _taskService.GetAll();
                 return View(_mapper.Map<IEnumerable<Models.TaskViewModel>>(tasks));
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
+        }
+
+        public ActionResult Index(int? page, int? limit)
+        {
+            try
+            {
+                var pageIndex = page ?? 1;
+                var pageSize = limit ?? 5;
+
+                var result = _taskService.Get(pageIndex, pageSize);
+                var tasksAsIPagedList = new StaticPagedList<Models.TaskViewModel>(_mapper.Map<IEnumerable<Models.TaskViewModel>>(result.Items), pageIndex, pageSize, result.Total);
+                return View(tasksAsIPagedList);
+            }
+
             catch (Exception ex)
             {
                 _log.Error(ex.Message);

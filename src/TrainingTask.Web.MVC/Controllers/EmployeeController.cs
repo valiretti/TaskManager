@@ -7,6 +7,7 @@ using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.Web.MVC.Filters;
 using TrainingTask.Web.MVC.Models;
+using X.PagedList;
 
 namespace TrainingTask.Web.MVC.Controllers
 {
@@ -23,13 +24,33 @@ namespace TrainingTask.Web.MVC.Controllers
             _log = log;
         }
 
-        public ActionResult Index()
+        public ActionResult GetAll()
         {
             try
             {
                 var employees = _employeeService.GetAll();
                 return View(_mapper.Map<IEnumerable<EmployeeViewModel>>(employees));
             }
+            catch (Exception ex)
+            {
+                _log.Error(ex.Message);
+            }
+
+            return BadRequest();
+        }
+
+        public ActionResult Index(int? page, int? limit)
+        {
+            try
+            {
+                var pageIndex = page ?? 1;
+                var pageSize = limit ?? 5;
+
+                var result = _employeeService.Get(pageIndex, pageSize);
+                var employeesAsIPagedList = new StaticPagedList<EmployeeViewModel>(_mapper.Map<IEnumerable<EmployeeViewModel>>(result.Items), pageIndex, pageSize, result.Total);
+                return View(employeesAsIPagedList);
+            }
+
             catch (Exception ex)
             {
                 _log.Error(ex.Message);
