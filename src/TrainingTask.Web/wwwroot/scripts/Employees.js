@@ -1,4 +1,5 @@
 ﻿var idForEdit;
+var positionStrings = ["Developer ", "Tester", "Business Analyst", "Manager", "Administrative"];
 
 function GetEmployees() {
     $.ajax({
@@ -27,7 +28,7 @@ function GetEmployee(id) {
             form.elements["firstName"].value = employee.firstName;
             form.elements["lastName"].value = employee.lastName;
             form.elements["patronymic"].value = employee.patronymic;
-            form.elements["position"].value = employee.position;
+            $("#position").val(employee.position);
         },
         error: function (jxqr, error, status) {
             errorHandling(jxqr, id);
@@ -101,7 +102,7 @@ var row = function (employee) {
         $('<td>').text(employee.firstName),
         $('<td>').text(employee.lastName),
         $('<td>').text(employee.patronymic),
-        $('<td>').text(employee.position),
+        $('<td>').text(positionStrings[employee.position]),
         $('<td>').append(
             $('<a>').addClass("editLink").attr("data-id", employee.id).text("Edit |"),
             $('<a>').addClass("removeLink").attr("data-id", employee.id).text("Delete")));

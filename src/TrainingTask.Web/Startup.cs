@@ -41,13 +41,13 @@ namespace TrainingTask.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
+            services.AddSwaggerDocument();
+
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/dist";
             });
-
-            services.AddSwaggerDocument();
 
             var builder = new ContainerBuilder();
 
@@ -94,6 +94,8 @@ namespace TrainingTask.Web
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
+            app.UseSwagger().UseSwaggerUi3();
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -114,9 +116,7 @@ namespace TrainingTask.Web
                 }
             });
 
-            app.UseSwagger().UseSwaggerUi3();
-
-            app.UseExceptionHandler(
+           app.UseExceptionHandler(
                 options =>
                 {
                     options.Run(

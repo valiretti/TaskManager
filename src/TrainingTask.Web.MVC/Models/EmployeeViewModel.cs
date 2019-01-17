@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TrainingTask.Web.MVC.Models
 {
@@ -22,6 +18,6 @@ namespace TrainingTask.Web.MVC.Models
         public string Patronymic { get; set; }
 
         [Required]
-        public string Position { get; set; }
+        public Position Position { get; set; }
     }
 }
