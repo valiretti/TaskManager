@@ -19,4 +19,10 @@
     <ProjectReference Include="..\TrainingTask.Common\TrainingTask.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
