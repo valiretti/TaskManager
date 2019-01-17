@@ -22,5 +22,7 @@ namespace TrainingTask.DAL.NHRepositories
 
         public void Update(Employee item) => Update(item.Id, item);
 
-   }
+        public Page<Employee> Get(int pageIndex, int limit) => Get<Employee>(pageIndex, limit);
+
+    }
 }

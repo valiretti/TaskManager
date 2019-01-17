@@ -22,5 +22,10 @@ namespace TrainingTask.BLL.Interfaces
         /// </summary>
         /// <returns></returns>
         IEnumerable<Project> GetAll();
+
+        /// <summary>
+        /// Gets projects for 1 page.
+        /// </summary>
+        Page<Project> Get(int pageIndex, int limit);
     }
 }

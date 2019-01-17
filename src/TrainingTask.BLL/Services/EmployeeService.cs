@@ -28,5 +28,10 @@ namespace TrainingTask.BLL.Services
         {
             return _repository.GetAll();
         }
+
+        public Page<Employee> Get(int pageIndex, int limit)
+        {
+            return _repository.Get(pageIndex, limit);
+        }
     }
 }

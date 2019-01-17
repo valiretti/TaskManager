@@ -36,5 +36,10 @@ namespace TrainingTask.DAL.Interfaces
         /// </summary>
         /// <param name="item">The item.</param>
         void Update(CreateTask item);
+
+        /// <summary>
+        /// Gets tasks for 1 page.
+        /// </summary>
+        Page<TaskViewModel> Get(int pageIndex, int limit);
     }
 }

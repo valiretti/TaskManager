@@ -21,5 +21,10 @@ namespace TrainingTask.BLL.Interfaces
         /// Gets all employees.
         /// </summary>
         IEnumerable<Employee> GetAll();
+
+        /// <summary>
+        /// Gets employees for 1 page.
+        /// </summary>
+        Page<Employee> Get(int pageIndex, int limit);
     }
 }

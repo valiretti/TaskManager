@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
 using TrainingTask.DAL.Interfaces;
@@ -38,6 +37,11 @@ namespace TrainingTask.BLL.Services
         public IEnumerable<TaskViewModel> GetAll()
         {
             return _repository.GetAll(); 
+        }
+
+        public Page<TaskViewModel> Get(int pageIndex, int limit)
+        {
+            return _repository.Get(pageIndex, limit);
         }
     }
 }

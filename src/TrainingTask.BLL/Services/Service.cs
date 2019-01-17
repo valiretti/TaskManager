@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using TrainingTask.BLL.Interfaces;
+﻿using TrainingTask.BLL.Interfaces;
 using TrainingTask.DAL.Interfaces;
 
 namespace TrainingTask.BLL.Services
