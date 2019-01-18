@@ -81,7 +81,6 @@ namespace TrainingTask.DAL.Repositories
 
             var employees = base.GetAll<Employee>(
                 $"SELECT Id, FirstName, LastName, Patronymic, Position FROM Employees ORDER BY Id OFFSET {(pageIndex - 1) * limit} ROWS FETCH NEXT {limit} ROWS ONLY",
-                null,
                 record => new Employee()
                 {
                     Id = (int)record["Id"],

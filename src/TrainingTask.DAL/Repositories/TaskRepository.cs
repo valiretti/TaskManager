@@ -195,13 +195,12 @@ namespace TrainingTask.DAL.Repositories
             }
 
             var tasks = base.GetAll(
-                "SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status FROM Tasks " +
-                "JOIN Projects ON Projects.Id = Tasks.ProjectId " +
-                "LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id " +
-                "LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId " +
-                $"WHERE Tasks.Id IN (SELECT Id FROM Tasks ORDER BY Id OFFSET { (pageIndex - 1) * limit} ROWS FETCH NEXT { limit} ROWS ONLY)",
-                null,
-                record =>
+                $@"SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status FROM Tasks
+                JOIN Projects ON Projects.Id = Tasks.ProjectId
+                LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id
+                LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId 
+                WHERE Tasks.Id IN (SELECT Id FROM Tasks ORDER BY Id OFFSET { (pageIndex - 1) * limit} ROWS FETCH NEXT { limit} ROWS ONLY)",
+              record =>
                 {
                     string firstName = (record["FirstName"] as string) ?? String.Empty;
                     string lastName = (record["LastName"] as string) ?? String.Empty;
@@ -230,7 +229,7 @@ namespace TrainingTask.DAL.Repositories
                     FullNames = m.Where(p => !string.IsNullOrWhiteSpace(p.FullName)).Select(p => p.FullName),
                     Status = m.Key.Status
                 });
-            
+
             return new Page<TaskViewModel>
             {
                 Items = taskGroups,

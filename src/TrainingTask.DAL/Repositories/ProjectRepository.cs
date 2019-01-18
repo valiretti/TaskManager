@@ -146,14 +146,13 @@ namespace TrainingTask.DAL.Repositories
 
             var projects = base.GetAll<Project>(
                 $"SELECT Id, Name, Abbreviation, Description FROM Projects ORDER BY Id OFFSET {(pageIndex - 1) * limit} ROWS FETCH NEXT {limit} ROWS ONLY",
-                null,
-                record => new Project()
-                {
-                    Id = (int)record["Id"],
-                    Name = (string)record["Name"],
-                    Abbreviation = (string)record["Abbreviation"],
-                    Description = record["Description"] as string
-                });
+               record => new Project()
+               {
+                   Id = (int)record["Id"],
+                   Name = (string)record["Name"],
+                   Abbreviation = (string)record["Abbreviation"],
+                   Description = record["Description"] as string
+               });
 
             return new Page<Project>
             {
