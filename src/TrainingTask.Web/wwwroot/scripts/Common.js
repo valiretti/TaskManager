@@ -12,7 +12,7 @@ function GetProjects() {
     return new Promise(
         function (resolve, reject) {
             $.ajax({
-                url: 'api/projects',
+                url: 'api/projects/all',
                 type: 'GET',
                 contentType: "application/json",
                 success: p => {
@@ -28,7 +28,7 @@ function GetEmployees() {
     return new Promise(
         function (resolve, reject) {
             $.ajax({
-                url: 'api/employees',
+                url: 'api/employees/all',
                 type: 'GET',
                 contentType: "application/json",
                 success: e => {

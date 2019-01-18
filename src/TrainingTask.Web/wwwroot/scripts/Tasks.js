@@ -25,7 +25,8 @@ function CreateTask(task) {
         data: GetJson(task),
         success: function (t) {
             closeForm();
-            $("table tbody").append(row(t));
+            location.reload();
+            //$("table tbody").append(row(t));
         },
 
         error: function(jxqr, error, status) {
@@ -155,7 +156,8 @@ function DeleteTask(id) {
         contentType: "application/json",
         method: "DELETE",
         success: function () {
-            $("tr[data-rowid='" + id + "']").remove();
+            location.reload();
+            //$("tr[data-rowid='" + id + "']").remove();
         },
         error: function (jxqr, error, status) {
             errorHandling(jxqr, id);
@@ -179,6 +181,31 @@ function GetTask(id) {
 $(function () {
 
     closeForm();
+
+    $('#demo').pagination({
+        dataSource:
+            'api/tasks?',
+        alias: {
+            pageNumber: 'page',
+            pageSize: 'limit'
+        },
+        locator: 'items',
+        totalNumberLocator: function (response) {
+            let count = response.total;
+            return count;
+        },
+        pageSize: 5,
+        autoHidePrevious: true,
+        autoHideNext: true,
+        callback: function (data, pagination) {
+            closeForm();
+            $("table tbody").children().remove();
+
+            $.each(data, function (index, task) {
+                $("table tbody").append(row(task));
+            });
+        }
+    });
 
     let projectsPromise = GetProjects();
     let employeesPromise = GetEmployees();
@@ -250,5 +277,5 @@ $(function () {
             }
         });
 
-    GetTasks();
+    //GetTasks();
 })

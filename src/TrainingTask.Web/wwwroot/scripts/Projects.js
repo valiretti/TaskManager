@@ -96,7 +96,7 @@ function FillTask(task) {
     form.elements["startDate"].valueAsDate = new Date(task.startDate +"Z");
     form.elements["finishDate"].valueAsDate = new Date(task.finishDate + "Z");
     $("#status").val(task.status);
-    $("#employees").val(task.employeeIds ? task.employeeIds : task.employees);
+    $("#employees").val(task.employees);
 }
 
 function InsertTask(task) {
@@ -177,7 +177,8 @@ function CreateProject(project) {
         data: GetJson(project),
         success: function (t) {
             closeProjectForm();
-            $("table#projects tbody").append(rowProj(t));
+            location.reload();
+            //$("table#projects tbody").append(rowProj(t));
         },
 
         error: function (jxqr, error, status) {
@@ -208,7 +209,8 @@ function DeleteProject(id) {
         contentType: "application/json",
         method: "DELETE",
         success: function () {
-            $("table#projects tr[data-rowid='" + id + "']").remove();
+            location.reload();
+            //$("table#projects tr[data-rowid='" + id + "']").remove();
         },
 
         error: function (jxqr, error, status) {
@@ -281,6 +283,32 @@ $(function () {
 
     closeForm();
     closeProjectForm();
+
+    $('#demo').pagination({
+        dataSource:
+            'api/projects?',
+        alias: {
+            pageNumber: 'page',
+            pageSize: 'limit'
+        },
+        locator: 'items',
+        totalNumberLocator: function (response) {
+            let count = response.total;
+            return count;
+        },
+        pageSize: 5,
+        autoHidePrevious: true,
+        autoHideNext: true,
+        callback: function (data, pagination) {
+            closeForm();
+            closeProjectForm();
+            $("table#projects tbody").children().remove();
+
+            $.each(data, function (index, project) {
+                $("table#projects tbody").append(rowProj(project));
+            });
+        }
+    });
 
     let projectsPromise = GetProjects();
     let employeesPromise = GetEmployees();
@@ -422,5 +450,5 @@ $(function () {
             }
         });
 
-    GetAllProjects();
+    //GetAllProjects();
 })

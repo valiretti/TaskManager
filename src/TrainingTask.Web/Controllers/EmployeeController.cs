@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Models;
 
@@ -9,16 +10,27 @@ namespace TrainingTask.Web.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IConfiguration _configuration;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IConfiguration configuration)
         {
             _employeeService = employeeService;
+            _configuration = configuration;
         }
 
-        [HttpGet, Route("")]
+        [HttpGet, Route("all")]
         public IActionResult GetAll()
         {
             return Ok(_employeeService.GetAll());
+        }
+
+        [HttpGet, Route("")]
+        public ActionResult GetPage(int? page, int? limit)
+        {
+            var pageIndex = page ?? Constants.FirstPage;
+            var pageSize = limit ?? _configuration.GetSection(Constants.SectionName).GetValue<int>(Constants.Property);
+
+            return Ok(_employeeService.Get(pageIndex, pageSize));
         }
 
         [HttpGet, Route("{id:int:min(1)}")]

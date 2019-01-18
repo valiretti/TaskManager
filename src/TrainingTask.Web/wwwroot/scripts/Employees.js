@@ -3,7 +3,7 @@ var positionStrings = ["Developer ", "Tester", "Business Analyst", "Manager", "A
 
 function GetEmployees() {
     $.ajax({
-        url: '/api/employees',
+        url: '/api/employees/all',
         type: 'GET',
         contentType: "application/json",
         success: function (employees) {
@@ -44,7 +44,7 @@ function CreateEmployee(employee) {
         data: GetJson(employee),
         success: function (empl) {
             closeForm();
-            $("table tbody").append(row(empl));
+            location.reload();
         },
 
         error: function (jxqr, error, status) {
@@ -88,7 +88,7 @@ function DeleteEmployee(id) {
         success: function () {
             closeForm();
             closeErrors();
-            $("tr[data-rowid='" + id + "']").remove();
+            location.reload();
         },
         error: function (jxqr, error, status) {
             errorHandling(jxqr, id);
@@ -160,6 +160,31 @@ $(function () {
 
     closeForm();
 
+    $('#demo').pagination({
+        dataSource:
+            'api/employees?',
+        alias: {
+            pageNumber: 'page',
+            pageSize: 'limit'
+        },
+        locator: 'items',
+        totalNumberLocator: function (response) {
+            let count = response.total;
+            return count;
+        },
+        pageSize: 5,
+        autoHidePrevious: true,
+        autoHideNext: true,
+        callback: function (data, pagination) {
+            closeForm();
+            $("table tbody").children().remove();
+
+            $.each(data, function (index, employee) {
+                $("table tbody").append(row(employee));
+            });
+        }
+    });
+
     $("#add").click(function (e) {
         e.preventDefault();
         $('#headerEdit').hide();
@@ -214,5 +239,5 @@ $(function () {
             }
         });
 
-    GetEmployees();
+    //GetEmployees();
 });
