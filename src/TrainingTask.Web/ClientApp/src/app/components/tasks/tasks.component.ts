@@ -1,13 +1,13 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Task } from '../../models/task';
-import { MatTable, MatDialog } from '@angular/material';
-import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
-import { Employee } from '../../models/employee';
-import { Project } from '../../models/project';
-import { StatusTask } from '../../models/statusTaskEnum';
-import { EmployeeService } from 'src/app/services/employee.service';
-import { ProjectService } from 'src/app/services/project.service';
-import { TaskService } from 'src/app/services/task.service';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {Task} from '../../models/task';
+import {MatTable, MatDialog} from '@angular/material';
+import {TaskDialogComponent} from '../task-dialog/task-dialog.component';
+import {Employee} from '../../models/employee';
+import {Project} from '../../models/project';
+import {StatusTask} from '../../models/statusTaskEnum';
+import {EmployeeService} from 'src/app/services/employee.service';
+import {ProjectService} from 'src/app/services/project.service';
+import {TaskService} from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-tasks',
@@ -23,14 +23,15 @@ export class TasksComponent implements OnInit {
   employeeList: Employee[] = [];
   projectList: Project[] = [];
   status = StatusTask;
-  isLoading: boolean = true;
+  isLoading = true;
 
   constructor(
     public dialog: MatDialog,
     private employeeService: EmployeeService,
     private projectService: ProjectService,
     private taskService: TaskService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.taskService.getTasks()
@@ -46,8 +47,8 @@ export class TasksComponent implements OnInit {
       .subscribe(data => this.projectList = data);
   }
 
-  openAddTaskDialog(): void {
-    let dialogRef = this.dialog.open(TaskDialogComponent, {
+  openAddTaskDialog() {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
       width: '500px',
       data: {
         title: 'Add Task',
@@ -66,18 +67,18 @@ export class TasksComponent implements OnInit {
     });
   }
 
-  addTask(task: Task): void {
+  addTask(task: Task) {
     this.taskService.createTask(task)
-      .subscribe(task => {
-        this.tasks.push(task);
+      .subscribe(responseTask => {
+        this.tasks.push(responseTask);
         this.table.renderRows();
       });
   }
 
-  openEditTaskDialog(task: Task): void {
+  openEditTaskDialog(task: Task) {
     this.taskService.getTaskById(task.id)
       .subscribe(data => {
-        let dialogRef = this.dialog.open(TaskDialogComponent, {
+        const dialogRef = this.dialog.open(TaskDialogComponent, {
           width: '500px',
           data: {
             title: 'Edit Task',
@@ -95,7 +96,7 @@ export class TasksComponent implements OnInit {
               .filter(f => result.employees.indexOf(f.id) >= 0)
               .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
 
-            let currentProject = this.projectList
+            const currentProject = this.projectList
               .find(p => p.id === result.projectId);
 
             if (currentProject.abbreviation) {
@@ -108,7 +109,7 @@ export class TasksComponent implements OnInit {
       });
   }
 
-  editTask(task: Task): void {
+  editTask(task: Task) {
     this.taskService.updateTask(task)
       .subscribe(() => {
         this.tasks = this.tasks.map(t => {
@@ -118,7 +119,7 @@ export class TasksComponent implements OnInit {
       });
   }
 
-  onDeleteTaskClick(taskId: number): void {
+  onDeleteTaskClick(taskId: number) {
     this.taskService.deleteTask(taskId)
       .subscribe(() => {
         this.tasks = this.tasks.filter(t => t.id !== taskId);

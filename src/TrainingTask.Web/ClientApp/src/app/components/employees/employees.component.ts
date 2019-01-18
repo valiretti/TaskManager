@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Employee } from '../../models/employee';
-import { MatDialog, MatDialogConfig, MatTable } from "@angular/material";
-import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import { EmployeeService } from 'src/app/services/employee.service';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {Employee} from '../../models/employee';
+import {EmployeeDataSource} from '../../services/employee.datasource';
+import {DialogService} from '../../services/dialog.service';
 
 @Component({
   selector: 'app-employees',
@@ -13,99 +12,29 @@ import { EmployeeService } from 'src/app/services/employee.service';
    В таком контексте использования сам по себе HttpService не будет являться синглтоном что может привести к неожиданным
    результаттам работы приложенияб когда будет добавлена обработка заголовков или ошибок сервера
   */
-  // providers: [HttpService]
+  providers: [EmployeeDataSource, DialogService]
 })
 // TODO: Компонента перегружена логикой.
 // TODO: Всю логику, которая не имеет непосредственного отношения к шаблону нужно выносить в сервисы
 // TODO: Обязательно нужно декомпозировать элементы приложения
 export class EmployeesComponent implements OnInit {
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'patronymic', 'position', 'edit', 'delete'];
-  // TODO: В контексте данной компоненты можно обойтись без ссылки "table" и использовать класс MatTable
-  @ViewChild('table') table: MatTable<any>;
-
-  // TODO: Стоит сделать это поле асинхронным (в идеале это должен быть класс расширяющий класс DataSource)
-  employees: Employee[] = [];
-
-  // TODO: В этом месте нет необходимости создавать новый объект
-  employee: Employee = new Employee;
-  isLoading: boolean = true;
 
   constructor(
-    public dialog: MatDialog,
-    private employeeService: EmployeeService
-  ) { }
+    public dataSource: EmployeeDataSource,
+    public dialogService: DialogService,
+  ) {
+  }
 
   ngOnInit() {
-    this.employeeService.getEmployees()
-      .subscribe(data => {
-        this.isLoading = false;
-        this.employees = data;
-      });
+    this.dataSource.reloadEmployee();
   }
 
-  openAddEmployeeDialog(): void {
-    let dialogRef = this.dialog.open(EmployeeDialogComponent, {
-      width: '500px',
-      // TODO: в этом месте в открытый диалог передаётся анонимный объект, что затрудняет типизацию!
-      data: {
-        title: 'Add Employee',
-        employee: this.employee
-      },
-      disableClose: true
-    });
-
-    // TODO: Нужно обязательно указывать типы данных. Имена переменных должныотражать характер информации, которая в них сожержиться
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addEmployee(result);
-      }
-    });
+  onOpenDetailsEmployeeClick(employee: Employee = new Employee()) {
+    this.dialogService.openDetailsEmployeeDialog(employee);
   }
 
-  addEmployee(employee: Employee): void {
-    this.employeeService.createEmployee(employee)
-      .subscribe(employee => {
-        this.employees.push(employee);
-        this.table.renderRows();
-      });
-  }
-
-  openEditEmployeeDialog(employee: Employee): void {
-    /* TODO: по сути этот метод дублирует код метода openAddEmployeeDialog().
-      Добавление новой записи можно рассматривать как частный случай редактирования
-    */
-    let dialogRef = this.dialog.open(EmployeeDialogComponent, {
-      width: '500px',
-      data: {
-        title: 'Edit Employee',
-        employee: { ...employee }
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.editEmployee(result);
-      }
-    });
-  }
-
-  editEmployee(employee: Employee): void {
-    this.employeeService.updateEmployee(employee)
-      .subscribe(() => {
-        this.employees = this.employees.map(e => {
-          return (e.id !== employee.id) ? e : employee;
-        });
-        this.table.renderRows();
-      });
-  }
-
-  onDeleteEmployeeClick(employeeId: number): void {
-    this.employeeService.deleteEmployee(employeeId)
-      .subscribe(() => {
-        // TODO: нужно использовать понятные названия переменных по коду
-        this.employees = this.employees.filter(e => e.id !== employeeId);
-        this.table.renderRows();
-      });
+  onDeleteEmployeeClick(employeeId: number) {
+    this.dialogService.openDeleteEmployeeDialog(employeeId);
   }
 }

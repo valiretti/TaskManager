@@ -1,10 +1,10 @@
-import { Component, OnInit, Inject, ViewChild } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatTable } from '@angular/material';
-import { Task } from '../../models/task';
-import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
-import { Employee } from '../../models/employee';
-import { Project } from '../../models/project';
-import { StatusTask } from '../../models/statusTaskEnum';
+import {Component, OnInit, Inject, ViewChild} from '@angular/core';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatTable} from '@angular/material';
+import {Task} from '../../models/task';
+import {TaskDialogComponent} from '../task-dialog/task-dialog.component';
+import {Employee} from '../../models/employee';
+import {Project} from '../../models/project';
+import {StatusTask} from '../../models/statusTaskEnum';
 
 @Component({
   selector: 'app-project-dialog',
@@ -22,7 +22,8 @@ export class ProjectDialogComponent implements OnInit {
     public dialog: MatDialog,
     public dialogRef: MatDialogRef<ProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.data.employeeService.getEmployees()
@@ -32,19 +33,19 @@ export class ProjectDialogComponent implements OnInit {
       .subscribe(data => this.projectList = data);
   }
 
-  onCancelClick(): void {
+  onCancelClick() {
     this.closeDialog();
   }
 
-  closeDialog(): void {
+  closeDialog() {
     this.dialogRef.close();
   }
 
-  openAddTaskDialog(): void {
-    let task: Task = new Task;
+  openAddTaskDialog() {
+    const task: Task = new Task;
     task.projectId = this.data.project.id;
 
-    let dialogRef = this.dialog.open(TaskDialogComponent, {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
       width: '500px',
       data: {
         title: 'Add Task',
@@ -69,12 +70,12 @@ export class ProjectDialogComponent implements OnInit {
     });
   }
 
-  openEditTaskDialog(task: Task): void {
-    let dialogRef = this.dialog.open(TaskDialogComponent, {
+  openEditTaskDialog(task: Task) {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
       width: '500px',
       data: {
         title: 'Edit Task',
-        task: { ...task },
+        task: {...task},
         status: this.status,
         projectList: this.projectList,
         employeeList: this.employeeList,
@@ -107,7 +108,7 @@ export class ProjectDialogComponent implements OnInit {
     });
   }
 
-  onDeleteTaskClick(taskId: number): void {
+  onDeleteTaskClick(taskId: number) {
     this.data.project.tasks = this.data.project.tasks.filter((t: Task) => t.id !== taskId);
   }
 

@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatTable, MatDialog } from '@angular/material';
-import { Project } from '../../models/project';
-import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { ProjectService } from 'src/app/services/project.service';
-import { EmployeeService } from 'src/app/services/employee.service';
-import { TaskService } from 'src/app/services/task.service';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatTable, MatDialog} from '@angular/material';
+import {Project} from '../../models/project';
+import {ProjectDialogComponent} from '../project-dialog/project-dialog.component';
+import {ProjectService} from 'src/app/services/project.service';
+import {EmployeeService} from 'src/app/services/employee.service';
+import {TaskService} from 'src/app/services/task.service';
 
 @Component({
   selector: 'app-projects',
@@ -16,14 +16,15 @@ export class ProjectsComponent implements OnInit {
   @ViewChild('table') table: MatTable<any>;
 
   projects: Project[] = [];
-  isLoading: boolean = true;
+  isLoading = true;
 
   constructor(
     public dialog: MatDialog,
     private projectService: ProjectService,
     private employeeService: EmployeeService,
     private taskService: TaskService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.projectService.getProjects()
@@ -33,11 +34,11 @@ export class ProjectsComponent implements OnInit {
       });
   }
 
-  openAddProjectDialog(): void {
-    let project: Project = new Project;
+  openAddProjectDialog() {
+    const project: Project = new Project;
     project.tasks = [];
 
-    let dialogRef = this.dialog.open(ProjectDialogComponent, {
+    const dialogRef = this.dialog.open(ProjectDialogComponent, {
       width: '1000px',
       data: {
         title: 'Add Project',
@@ -56,23 +57,23 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
-  addProject(project: Project): void {
+  addProject(project: Project) {
     this.projectService.createProject(project)
-      .subscribe(project => {
-        this.projects.push(project);
+      .subscribe(responseProject => {
+        this.projects.push(responseProject);
         this.table.renderRows();
       });
   }
 
-  openEditProjectDialog(project: Project): void {
+  openEditProjectDialog(project: Project) {
     this.taskService.getTasksByProject(project.id)
       .subscribe(data => {
         project.tasks = data;
-        let dialogRef = this.dialog.open(ProjectDialogComponent, {
+        const dialogRef = this.dialog.open(ProjectDialogComponent, {
           width: '1000px',
           data: {
             title: 'Edit Project',
-            project: { ...project },
+            project: {...project},
             displayedColumns: ['taskId', 'taskName', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'],
             projectService: this.projectService,
             employeeService: this.employeeService,
@@ -88,7 +89,7 @@ export class ProjectsComponent implements OnInit {
       });
   }
 
-  editProject(project: Project): void {
+  editProject(project: Project) {
     this.projectService.updateProject(project)
       .subscribe(() => {
         this.projects = this.projects.map(p => {
@@ -98,7 +99,7 @@ export class ProjectsComponent implements OnInit {
       });
   }
 
-  onDeleteProjectClick(projectId: number): void {
+  onDeleteProjectClick(projectId: number) {
     this.projectService.deleteProject(projectId)
       .subscribe(() => {
         this.projects = this.projects.filter(p => p.id !== projectId);

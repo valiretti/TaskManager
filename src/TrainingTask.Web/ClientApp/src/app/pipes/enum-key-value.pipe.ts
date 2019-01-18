@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 
 @Pipe({
   name: 'enumKeyValue'
@@ -6,10 +6,10 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class EnumKeyValuePipe implements PipeTransform {
 
   transform(value: any, args?: any): any {
-    let keys = [];
-    for (var enumMember in value) {
+    const keys = [];
+    for (const enumMember in value) {
       if (!isNaN(parseInt(enumMember, 10))) {
-        keys.push({ key: Number(enumMember), value: value[enumMember] });
+        keys.push({key: Number(enumMember), value: value[enumMember]});
       }
     }
     return keys;

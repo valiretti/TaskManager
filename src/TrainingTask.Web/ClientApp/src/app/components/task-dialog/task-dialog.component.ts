@@ -15,11 +15,11 @@ export class TaskDialogComponent implements OnInit {
   ngOnInit() {
   }
 
-  onCancelClick(): void {
+  onCancelClick() {
     this.closeDialog();
   }
 
-  closeDialog(): void {
+  closeDialog() {
     this.dialogRef.close();
   }
 

@@ -1,21 +1,23 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
+<h1 mat-dialog-title>{{data.id ? 'Edit Employee' : 'Add Employee'}}</h1>
 <div mat-dialog-content>
   <form fxLayout="column">
     <mat-form-field>
-      <input matInput placeholder=" First Name" type="text" required [(ngModel)]="data.employee.firstName" name="firstName">
+      <input matInput placeholder=" First Name" type="text" required [(ngModel)]="data.firstName"
+             name="firstName">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Last Name" type="text" required [(ngModel)]="data.employee.lastName" name="lastName">
+      <input matInput placeholder="Last Name" type="text" required [(ngModel)]="data.lastName" name="lastName">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Patronymic" type="text" required [(ngModel)]="data.employee.patronymic" name="patronymic">
+      <input matInput placeholder="Patronymic" type="text" required [(ngModel)]="data.patronymic"
+             name="patronymic">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Position" type="text" required [(ngModel)]="data.employee.position" name="position">
+      <input matInput placeholder="Position" type="text" required [(ngModel)]="data.position" name="position">
     </mat-form-field>
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-raised-button cdkFocusInitial color="primary" [mat-dialog-close]="data.employee">Save</button>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="onSaveEmployeeClick(data)">Save</button>
   <button mat-raised-button color="warn" (click)="onCancelClick()">Cancel</button>
 </div>

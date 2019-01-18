@@ -15,6 +15,7 @@ import {
   MatNativeDateModule,
   MatChipsModule,
   MatProgressSpinnerModule,
+  MatSnackBarModule,
 } from '@angular/material';
 
 
@@ -35,6 +36,7 @@ import {
     MatNativeDateModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
   exports: [
     MatSidenavModule,
@@ -52,6 +54,7 @@ import {
     MatNativeDateModule,
     MatChipsModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ]
 })
 export class MaterialModule { }

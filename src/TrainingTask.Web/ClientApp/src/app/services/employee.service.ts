@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Employee } from '../models/employee';
-import { HttpService } from './http.service';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {Employee} from '../models/employee';
+import {HttpService} from './http.service';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +10,8 @@ export class EmployeeService {
 
   private employeesUrl = 'api/employees';
 
-  constructor(private httpService: HttpService) { }
+  constructor(private httpService: HttpService) {
+  }
 
   getEmployees(): Observable<Employee[]> {
     return this.httpService.get<Employee[]>(this.employeesUrl);
@@ -24,8 +25,12 @@ export class EmployeeService {
     return this.httpService.put<Employee>(this.employeesUrl, employee);
   }
 
-  deleteEmployee(id: number): Observable<{}> {
-    return this.httpService.delete(`${this.employeesUrl}/${id}`);
+  deleteEmployee(employeeId: number): Observable<{}> {
+    return this.httpService.delete(`${this.employeesUrl}/${employeeId}`);
+  }
+
+  saveEmployee(employee: Employee): Observable<Employee> {
+    return (Boolean(employee.id)) ? this.updateEmployee(employee) : this.createEmployee(employee);
   }
 
 }

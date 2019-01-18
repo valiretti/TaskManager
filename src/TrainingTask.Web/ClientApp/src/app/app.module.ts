@@ -15,6 +15,7 @@ import { EmployeeDialogComponent } from './components/employee-dialog/employee-d
 import { ProjectDialogComponent } from './components/project-dialog/project-dialog.component';
 import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
 import { EnumKeyValuePipe } from './pipes/enum-key-value.pipe';
+import { DeleteDialogComponent } from './components/delete-dialog/delete-dialog.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { EnumKeyValuePipe } from './pipes/enum-key-value.pipe';
     ProjectDialogComponent,
     TaskDialogComponent,
     EnumKeyValuePipe,
+    DeleteDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,7 +43,8 @@ import { EnumKeyValuePipe } from './pipes/enum-key-value.pipe';
   entryComponents: [
     EmployeeDialogComponent,
     ProjectDialogComponent,
-    TaskDialogComponent
+    TaskDialogComponent,
+    DeleteDialogComponent,
   ],
   providers: [],
   bootstrap: [AppComponent]
