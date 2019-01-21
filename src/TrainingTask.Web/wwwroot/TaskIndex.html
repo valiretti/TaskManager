@@ -6,6 +6,8 @@
     <title>Tasks</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="https://pagination.js.org/dist/2.1.4/pagination.min.js"></script>
+    <link href="paginationjs.css" rel="stylesheet">
     <script src="/scripts/Common.js"></script>
     <script src="/scripts/Tasks.js"></script>
 </head>
@@ -41,7 +43,7 @@
                 <input type="date" required class="form-control" name="finishDate" />
             </div>
             <div class="form-group">
-                <label for="finishDate">Status:</label>
+                <label for="status">Status:</label>
                 <select id="status" required name="status" class="form-control">
                     <option value="0">Not Started</option>
                     <option value="1">In Progress</option>
@@ -59,10 +61,13 @@
                 <a id="back" class="btn btn-sm btn-primary">Cancel</a>
             </div>
         </form>
-        <table class="table table-condensed table-striped table-bordered">
-            <thead><tr><th>Id</th><th>Project Name</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
-            <tbody></tbody>
-        </table>
+        <div class="demo" id="demo">
+            <table class="table table-condensed table-striped table-bordered">
+                <thead><tr><th>Id</th><th>Project Name</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <br />
         <a href="/Index.html" class="btn btn-sm btn-primary">Back</a>
     </div>
 </body>

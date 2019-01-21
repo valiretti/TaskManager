@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TrainingTask.BLL.Interfaces;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Models;
@@ -11,16 +12,27 @@ namespace TrainingTask.Web.Controllers
     public class TaskController : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly IConfiguration _configuration;
 
-        public TaskController(ITaskService taskService)
+        public TaskController(ITaskService taskService, IConfiguration configuration)
         {
             _taskService = taskService;
+            _configuration = configuration;
         }
 
-        [HttpGet, Route("")]
+        [HttpGet, Route("all")]
         public IActionResult GetAll()
         {
             return Ok(_taskService.GetAll());
+        }
+
+        [HttpGet, Route("")]
+        public ActionResult GetPage(int? page, int? limit)
+        {
+            var pageIndex = page ?? Constants.FirstPage;
+            var pageSize = limit ?? _configuration.GetSection(Constants.SectionName).GetValue<int>(Constants.Property);
+
+            return Ok(_taskService.Get(pageIndex, pageSize));
         }
 
         [HttpGet, Route("{id:int:min(1)}")]

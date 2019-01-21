@@ -62,7 +62,7 @@ namespace TrainingTask.DAL.Repositories
                     return insertedId;
                 }
             }
-            catch (SqlException ex) when (ex.Number == 547)
+            catch (SqlException ex) when (ex.Number == 547 || ex.Number == 515)
             {
                 var message =
                     $"The project with the Id {item.ProjectId} has already deleted.";
@@ -87,7 +87,7 @@ namespace TrainingTask.DAL.Repositories
                     transactionScope.Complete();
                 }
             }
-            catch (SqlException ex) when (ex.Number == 547)
+            catch (SqlException ex) when (ex.Number == 547 || ex.Number == 515)
             {
                 var message =
                     $"The project with the Id {item.ProjectId} has already deleted.";
@@ -179,6 +179,62 @@ namespace TrainingTask.DAL.Repositories
                     _employeeTaskRepository.Add(employee, id);
                 }
             }
+        }
+
+        public int Count() => base.Count("Tasks");
+
+        public Page<TaskViewModel> Get(int pageIndex, int limit)
+        {
+            if (pageIndex <= 0)
+            {
+                throw new ArgumentException("The page index must be greater than 0");
+            }
+            if (limit <= 0)
+            {
+                throw new ArgumentException("The limit must be greater than 0");
+            }
+
+            var tasks = base.GetAll(
+                $@"SELECT Tasks.Id, Projects.Abbreviation, Tasks.Name, Tasks.StartDate, Tasks.FinishDate, Employees.FirstName, Employees.LastName, Employees.Patronymic, Tasks.Status FROM Tasks
+                JOIN Projects ON Projects.Id = Tasks.ProjectId
+                LEFT JOIN EmployeeTasks ON EmployeeTasks.TaskId = Tasks.Id
+                LEFT JOIN Employees ON Employees.Id = EmployeeTasks.EmployeeId 
+                WHERE Tasks.Id IN (SELECT Id FROM Tasks ORDER BY Id OFFSET { (pageIndex - 1) * limit} ROWS FETCH NEXT { limit} ROWS ONLY)",
+              record =>
+                {
+                    string firstName = (record["FirstName"] as string) ?? String.Empty;
+                    string lastName = (record["LastName"] as string) ?? String.Empty;
+                    string patronymic = (record["Patronymic"] as string) ?? String.Empty;
+
+                    return new TaskModel()
+                    {
+                        Id = (int)record["Id"],
+                        ProjectAbbreviation = (string)record["Abbreviation"],
+                        Name = (string)record["Name"],
+                        StartDate = (DateTime)record["StartDate"],
+                        FinishDate = (DateTime)record["FinishDate"],
+                        FullName = $"{firstName} {lastName} {patronymic}",
+                        Status = (Status)(int)record["Status"]
+                    };
+                });
+
+            var taskGroups = tasks.GroupBy(t => new { t.Id, t.Name, t.Status, t.ProjectAbbreviation, t.FinishDate, t.StartDate })
+                .Select(m => new TaskViewModel
+                {
+                    Id = m.Key.Id,
+                    ProjectAbbreviation = m.Key.ProjectAbbreviation,
+                    Name = m.Key.Name,
+                    StartDate = m.Key.StartDate,
+                    FinishDate = m.Key.FinishDate,
+                    FullNames = m.Where(p => !string.IsNullOrWhiteSpace(p.FullName)).Select(p => p.FullName),
+                    Status = m.Key.Status
+                });
+
+            return new Page<TaskViewModel>
+            {
+                Items = taskGroups,
+                Total = Count()
+            };
         }
 
         private static TaskModel GetTaskModel(IDataRecord record)

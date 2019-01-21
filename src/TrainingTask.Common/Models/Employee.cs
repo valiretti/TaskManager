@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using TrainingTask.Common.Enums;
 
 namespace TrainingTask.Common.Models
 {
@@ -19,7 +20,7 @@ namespace TrainingTask.Common.Models
         public string Patronymic { get; set; }
 
         [Required]
-        public string Position { get; set; }
+        public Position Position { get; set; }
 
     }
 }

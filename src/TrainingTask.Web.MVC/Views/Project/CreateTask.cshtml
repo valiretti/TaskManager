@@ -1,0 +1,30 @@
+﻿@model TrainingTask.Web.MVC.Models.TaskCreationModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h2>Create Task</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form name="taskForm" id="taskForm" asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <partial name="../Task/CreateTaskPartial" />
+
+            <input type="submit" value="Create" class="btn btn-default" />
+        </form>
+    </div>
+</div>
+
+<div>
+    <a href="javascript: history.go(-1)">Go Back</a>
+</div>
+
+@section Scripts
+{
+    <script src="~/js/createTask.js"></script>
+    <script src="~/js/common.js"></script>
+}

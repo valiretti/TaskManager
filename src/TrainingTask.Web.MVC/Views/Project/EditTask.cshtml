@@ -1,0 +1,34 @@
+﻿
+@model TrainingTask.Web.MVC.Models.TaskCreationModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit Task</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form id="taskF" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <partial name="../Task/EditTaskPartial" />
+
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <input id="Back" type="submit" value="Go Back" class="btn btn-default" />
+</div>
+
+
+@section Scripts
+    {
+    <script src="~/js/edit.js"></script>
+    <script src="~/js/common.js"></script>
+}

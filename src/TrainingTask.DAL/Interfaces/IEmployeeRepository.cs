@@ -21,5 +21,10 @@ namespace TrainingTask.DAL.Interfaces
         /// </summary>
         /// <param name="item">The item.</param>
         void Update(Employee item);
+
+        /// <summary>
+        /// Gets employees for 1 page.
+        /// </summary>
+        Page<Employee> Get(int pageIndex, int limit);
     }
 }

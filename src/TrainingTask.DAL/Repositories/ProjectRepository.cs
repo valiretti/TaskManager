@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Transactions;
+using TrainingTask.Common.Enums;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Interfaces;
 using TrainingTask.Common.Models;
@@ -127,6 +129,36 @@ namespace TrainingTask.DAL.Repositories
                     Abbreviation = (string)record["Abbreviation"],
                     Description = record["Description"] as string
                 });
+        }
+
+        public int Count() => base.Count("Projects");
+
+        public Page<Project> Get(int pageIndex, int limit)
+        {
+            if (pageIndex <= 0)
+            {
+                throw new ArgumentException("The page index must be greater than 0");
+            }
+            if (limit <= 0)
+            {
+                throw new ArgumentException("The limit must be greater than 0");
+            }
+
+            var projects = base.GetAll<Project>(
+                $"SELECT Id, Name, Abbreviation, Description FROM Projects ORDER BY Id OFFSET {(pageIndex - 1) * limit} ROWS FETCH NEXT {limit} ROWS ONLY",
+               record => new Project()
+               {
+                   Id = (int)record["Id"],
+                   Name = (string)record["Name"],
+                   Abbreviation = (string)record["Abbreviation"],
+                   Description = record["Description"] as string
+               });
+
+            return new Page<Project>
+            {
+                Items = projects,
+                Total = Count()
+            };
         }
     }
 }

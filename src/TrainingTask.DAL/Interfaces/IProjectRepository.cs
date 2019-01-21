@@ -22,5 +22,10 @@ namespace TrainingTask.DAL.Interfaces
         /// </summary>
         /// <param name="item">The project.</param>
         void Update(CreateProject item);
+
+        /// <summary>
+        /// Gets projects for 1 page.
+        /// </summary>
+        Page<Project> Get(int pageIndex, int limit);
     }
 }

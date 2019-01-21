@@ -119,6 +119,19 @@ namespace TrainingTask.DAL.Repositories
             }
         }
 
+        public virtual int Count(string tableName)
+        {
+            string sqlExpression = $"SELECT COUNT(*) FROM {tableName}";
+            using (SqlConnection connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                SqlCommand command = new SqlCommand(sqlExpression, connection);
+                object count = command.ExecuteScalar();
+
+                return Convert.ToInt32(count);
+            }
+        }
+
         private static (string sql, Dictionary<string, object> parameters) GetSqlWithParameters(FormattableString sqlExpression)
         {
             var parameters = sqlExpression.GetArguments()

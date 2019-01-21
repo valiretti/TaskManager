@@ -1,0 +1,61 @@
+﻿@model TrainingTask.Web.MVC.Models.ProjectCreationModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h2>Edit Project</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form name="projForm" asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="Id" type="hidden" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Abbreviation" class="control-label"></label>
+                <input asp-for="Abbreviation" class="form-control" />
+                <span asp-validation-for="Abbreviation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input asp-for="Tasks" id="Tasks" type="hidden" class="form-control" />
+            </div>
+
+            <label>Tasks:</label>
+            <div class="form-group">
+                <button asp-action="CreateTask" asp-controller="Project" class="btn btn-default">Create Task</button>
+            </div>
+
+            <table id="tasks" name="tasks" class="table">
+                <thead><tr><th>Id</th><th>Name</th><th>Start Date</th><th>Finish Date</th><th>Employees</th><th>Status</th></tr></thead>
+                <tbody></tbody>
+            </table>
+
+            <div class="form-group">
+                <input id="createProj" type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts
+    {
+    <script src="~/js/insertTask.js"></script>
+    <script src="~/js/common.js"></script>
+}

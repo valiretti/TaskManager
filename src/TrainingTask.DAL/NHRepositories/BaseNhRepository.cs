@@ -5,10 +5,12 @@ using System.Linq;
 using System.Linq.Expressions;
 using AutoMapper;
 using NHibernate;
+using NHibernate.Criterion;
 using NHibernate.Exceptions;
 using NHibernate.Linq;
 using TrainingTask.Common.Exceptions;
 using TrainingTask.Common.Interfaces;
+using TrainingTask.Common.Models;
 
 namespace TrainingTask.DAL.NHRepositories
 {
@@ -107,7 +109,34 @@ namespace TrainingTask.DAL.NHRepositories
             }
         }
 
-        private string UniquenessViolationLog(GenericADOException ex)
+        protected Page<TResult> Get<TResult>(int pageIndex, int limit)
+        {
+            if (pageIndex <= 0)
+            {
+                throw new ArgumentException("The page index must be greater than 0");
+            }
+            if (limit <= 0)
+            {
+                throw new ArgumentException("The limit must be greater than 0");
+            }
+
+            var query = Session.QueryOver<T>()
+                .Skip((pageIndex - 1) * limit)
+                .Take(limit)
+                .Future<T>();
+            var result = Mapper.Map<IEnumerable<TResult>>(query.ToList());
+            var rowCount = Session.QueryOver<T>()
+                .Select(Projections.Count(Projections.Id()))
+                .FutureValue<int>().Value;
+
+            return new Page<TResult>()
+            {
+                Items = result,
+                Total = rowCount
+            };
+        }
+
+    private string UniquenessViolationLog(GenericADOException ex)
         {
             var message =
                 $"The project already exists.";
@@ -130,7 +159,7 @@ namespace TrainingTask.DAL.NHRepositories
 
         private static bool IsForeignKeyViolation(GenericADOException ex)
         {
-            return ex.InnerException is SqlException sqlEx && sqlEx.Number == 547;
+            return ex.InnerException is SqlException sqlEx && (sqlEx.Number == 547 || sqlEx.Number == 515);
         }
     }
 }

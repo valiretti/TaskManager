@@ -33,5 +33,10 @@ namespace TrainingTask.BLL.Interfaces
         /// </summary>
         /// <param name="id">The identifier.</param>
         IEnumerable<TaskViewModel> GetByProjectId(int id);
+
+        /// <summary>
+        /// Gets tasks for 1 page.
+        /// </summary>
+        Page<TaskViewModel> Get(int pageIndex, int limit);
     }
 }

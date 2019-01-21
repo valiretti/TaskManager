@@ -31,5 +31,7 @@ namespace TrainingTask.DAL.NHRepositories
         public int Create(CreateTask item) => Create<CreateTask>(item);
 
         public void Update(CreateTask item) => Update(item.Id, item);
+
+        public Page<TaskViewModel> Get(int pageIndex, int limit) => Get<TaskViewModel>(pageIndex, limit);
     }
 }

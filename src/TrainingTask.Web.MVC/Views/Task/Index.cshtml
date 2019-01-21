@@ -1,0 +1,74 @@
+﻿
+@model IPagedList<TaskViewModel>
+@{
+    ViewBag.Title = "Tasks";
+}
+
+@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+
+@{int pageSize = 5;}
+
+<link href="/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+<h2>Tasks</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Project Abbreviation</th>
+            <th>Name</th>
+            <th>Start Date</th>
+            <th>Finish Date</th>
+            <th>Employees</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.ProjectAbbreviation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StartDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FinishDate)
+                </td>
+                <td>
+                    <ul>
+                        @foreach (var e in item.FullNames)
+                        {
+                            <li>@e</li>
+                        }
+                    </ul>
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, limit = ViewBag.PageSize }))
+

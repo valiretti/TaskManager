@@ -1,0 +1,2 @@
+﻿
+sessionStorage.removeItem('task');
