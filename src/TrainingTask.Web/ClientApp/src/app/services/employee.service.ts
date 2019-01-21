@@ -13,8 +13,8 @@ export class EmployeeService {
   constructor(private httpService: HttpService) {
   }
 
-  getEmployees(): Observable<Employee[]> {
-    return this.httpService.get<Employee[]>(this.employeesUrl);
+  getEmployees(): Observable<Array<Employee>> {
+    return this.httpService.get<Array<Employee>>(this.employeesUrl);
   }
 
   createEmployee(employee: Employee): Observable<Employee> {

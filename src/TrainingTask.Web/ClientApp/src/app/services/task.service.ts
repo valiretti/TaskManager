@@ -1,7 +1,8 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { HttpService } from './http.service';
-import { Task } from '../models/task';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {HttpService} from './http.service';
+import {Task} from '../models/task';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -10,18 +11,31 @@ export class TaskService {
 
   private tasksUrl = 'api/tasks';
 
-  constructor(private httpService: HttpService) { }
-
-  getTasks(): Observable<Task[]> {
-    return this.httpService.get<Task[]>(this.tasksUrl);
+  constructor(private httpService: HttpService) {
   }
 
-  getTasksByProject(id: number): Observable<Task[]> {
-    return this.httpService.get<Task[]>(`api/projects/${id}/tasks`);
+  getTasks(): Observable<Array<Task>> {
+    return this.httpService.get<Array<Task>>(this.tasksUrl).pipe(
+      map((taskList: Array<any>) => {
+        return taskList.map((task: any) => {
+          const partStr = task.workHours.split(':');
+          task.workHours = parseInt(partStr[0], 10) + parseInt(partStr[1], 10) / 60.0;
+          return task;
+        });
+      })
+    );
   }
 
-  getTaskById(id: number): Observable<Task> {
-    return this.httpService.get<Task>(`${this.tasksUrl}/${id}`);
+  getTasksByProject(id: number): Observable<Array<Task>> {
+    return this.httpService.get<Array<Task>>(`api/projects/${id}/tasks`).pipe(
+      map((taskList: Array<any>) => {
+        return taskList.map((task: any) => {
+          const partStr = task.workHours.split(':');
+          task.workHours = parseInt(partStr[0], 10) + parseInt(partStr[1], 10) / 60.0;
+          return task;
+        });
+      })
+    );
   }
 
   createTask(task: Task): Observable<Task> {
@@ -34,6 +48,10 @@ export class TaskService {
 
   deleteTask(id: number): Observable<{}> {
     return this.httpService.delete(`${this.tasksUrl}/${id}`);
+  }
+
+  saveTask(task: Task): Observable<Task> {
+    return (Boolean(task.id)) ? this.updateTask(task) : this.createTask(task);
   }
 
 }

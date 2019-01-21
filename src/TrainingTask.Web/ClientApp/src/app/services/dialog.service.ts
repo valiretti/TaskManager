@@ -4,6 +4,8 @@ import {EmployeeDialogComponent} from '../components/employee-dialog/employee-di
 import {cloneDeep} from 'lodash';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {DeleteDialogComponent} from '../components/delete-dialog/delete-dialog.component';
+import {Task} from '../models/task';
+import {TaskDialogComponent} from '../components/task-dialog/task-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -30,11 +32,17 @@ export class DialogService {
     return this.openDialog(EmployeeDialogComponent, config);
   }
 
-  openDeleteEmployeeDialog(employeeId: number): MatDialogRef<any, any> {
-    const config: MatDialogConfig<number> = {
-      data: employeeId
+  openDetailsTaskDialog(task: Task): MatDialogRef<any, any> {
+    const config: MatDialogConfig<Task> = {
+      width: '500px',
+      data: cloneDeep(task),
+      disableClose: true
     };
 
-    return this.openDialog(DeleteDialogComponent, config);
+    return this.openDialog(TaskDialogComponent, config);
+  }
+
+  openDeleteDialog(): MatDialogRef<any, any> {
+    return this.dialog.open(DeleteDialogComponent);
   }
 }

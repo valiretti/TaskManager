@@ -12,6 +12,10 @@ export class EmployeeDataSource extends DataSource<Employee> {
 
   private data: BehaviorSubject<Array<Employee>> = new BehaviorSubject([]);
 
+  get employeeList(): Array<Employee> {
+    return this.data.value;
+  }
+
   constructor(
     private employeeService: EmployeeService
   ) {

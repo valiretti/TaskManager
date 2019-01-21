@@ -2,6 +2,9 @@ import {Component, OnInit, Type, ViewChild} from '@angular/core';
 import {Employee} from '../../models/employee';
 import {EmployeeDataSource} from '../../services/employee.datasource';
 import {DialogService} from '../../services/dialog.service';
+import {TaskService} from '../../services/task.service';
+import {MessageService} from '../../services/message.service';
+import {EmployeeService} from '../../services/employee.service';
 
 @Component({
   selector: 'app-employees',
@@ -23,6 +26,8 @@ export class EmployeesComponent implements OnInit {
   constructor(
     public dataSource: EmployeeDataSource,
     public dialogService: DialogService,
+    private employeeService: EmployeeService,
+    public messageService: MessageService,
   ) {
   }
 
@@ -39,9 +44,19 @@ export class EmployeesComponent implements OnInit {
 
   onDeleteEmployeeClick(employeeId: number) {
     this.dialogService
-      .openDeleteEmployeeDialog(employeeId)
+      .openDeleteDialog()
       .afterClosed()
-      .subscribe(this.handleCloseDialog);
+      .subscribe((isDelete) => {
+        if (isDelete) {
+          this.employeeService.deleteEmployee(employeeId).subscribe(() => {
+              this.handleCloseDialog(true);
+              this.messageService.openSnackBar('deleted successfully', 'Success!');
+            },
+            () => {
+              this.messageService.openSnackBar('unable to delete', 'Error!');
+            });
+        }
+      });
   }
 
   handleCloseDialog = (isDataChanged: boolean) => {

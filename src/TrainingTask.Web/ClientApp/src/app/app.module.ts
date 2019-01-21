@@ -17,6 +17,7 @@ import {TaskDialogComponent} from './components/task-dialog/task-dialog.componen
 import {EnumKeyValuePipe} from './pipes/enum-key-value.pipe';
 import {DeleteDialogComponent} from './components/delete-dialog/delete-dialog.component';
 import {EmployeeDataSource} from './services/employee.datasource';
+import {ProjectDataSource} from './services/project.datasource';
 
 
 @NgModule({
@@ -47,7 +48,7 @@ import {EmployeeDataSource} from './services/employee.datasource';
     TaskDialogComponent,
     DeleteDialogComponent,
   ],
-  providers: [],
+  providers: [EmployeeDataSource, ProjectDataSource],
   bootstrap: [AppComponent]
 })
 export class AppModule {

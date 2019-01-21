@@ -1,48 +1,44 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
+<h1 mat-dialog-title>{{data.id ? 'Edit Task' : 'Add Task'}}</h1>
 <div mat-dialog-content>
   <form fxLayout="column">
     <mat-form-field>
-      <input matInput placeholder="Id" type="text" [value]="data.task.id || ''" name="id" readonly>
+      <input matInput placeholder="Id" type="text" [value]="data.id || ''" name="id" readonly>
     </mat-form-field>
     <mat-form-field>
-      <mat-select *ngIf="data.projectReadOnly" disabled placeholder="Project" [(ngModel)]="data.task.projectId" name="projectId">
-        <mat-option *ngFor="let project of data.projectList" [value]="project.id">
-          {{project.abbreviation}}
-        </mat-option>
-      </mat-select>
-      <mat-select *ngIf="!data.projectReadOnly" placeholder="Project" [(ngModel)]="data.task.projectId" name="projectId">
-        <mat-option *ngFor="let project of data.projectList" [value]="project.id">
+      <mat-select [disabled]="data.id" placeholder="Project" [(ngModel)]="data.projectId" name="projectId">
+        <mat-option *ngFor="let project of projectDataSource.projectList" [value]="project.id">
           {{project.abbreviation}}
         </mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Name" type="text" required [(ngModel)]="data.task.name" name="name">
+      <input matInput placeholder="Name" type="text" required [(ngModel)]="data.name" name="name">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="WorkHours" type="number" required [(ngModel)]="data.task.workHours" name="workHours">
+      <input matInput placeholder="WorkHours" type="number" required [(ngModel)]="data.workHours" name="workHours">
     </mat-form-field>
     <mat-form-field>
-      <input matInput [matDatepicker]="pickerStartDate" placeholder="Start Date" [(ngModel)]="data.task.startDate" name="startDate">
+      <input matInput [matDatepicker]="pickerStartDate" placeholder="Start Date" [(ngModel)]="data.startDate"
+             name="startDate">
       <mat-datepicker-toggle matSuffix [for]="pickerStartDate"></mat-datepicker-toggle>
       <mat-datepicker #pickerStartDate></mat-datepicker>
     </mat-form-field>
     <mat-form-field>
-      <input matInput [matDatepicker]="pickerFinishDate" placeholder="Finish Date" [(ngModel)]="data.task.finishDate"
-        name="finishDate">
+      <input matInput [matDatepicker]="pickerFinishDate" placeholder="Finish Date" [(ngModel)]="data.finishDate"
+             name="finishDate">
       <mat-datepicker-toggle matSuffix [for]="pickerFinishDate"></mat-datepicker-toggle>
       <mat-datepicker #pickerFinishDate></mat-datepicker>
     </mat-form-field>
     <mat-form-field>
-      <mat-select placeholder="Status" [(ngModel)]="data.task.status" name="status">
-        <mat-option *ngFor="let status of data.status | enumKeyValue" [value]="status.key">
+      <mat-select placeholder="Status" [(ngModel)]="data.status" name="status">
+        <mat-option *ngFor="let status of statusList | keyvalue" [value]="status.key">
           {{status.value}}
         </mat-option>
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <mat-select placeholder="Employees" [(ngModel)]="data.task.employees" multiple name="selectedEmployees">
-        <mat-option *ngFor="let employee of data.employeeList" [value]="employee.id">
+      <mat-select placeholder="Employees" [(ngModel)]="data.employees" multiple name="selectedEmployees">
+        <mat-option *ngFor="let employee of employeeDataSource.employeeList" [value]="employee.id">
           {{employee.lastName}} {{employee.firstName}}
         </mat-option>
       </mat-select>
@@ -50,6 +46,6 @@
   </form>
 </div>
 <div mat-dialog-actions align="end">
-  <button mat-raised-button cdkFocusInitial color="primary" [mat-dialog-close]="data.task">Save</button>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="onSaveTaskClick(data)">Save</button>
   <button mat-raised-button color="warn" (click)="onCancelClick()">Cancel</button>
 </div>

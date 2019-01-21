@@ -1,130 +1,62 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {Task} from '../../models/task';
-import {MatTable, MatDialog} from '@angular/material';
-import {TaskDialogComponent} from '../task-dialog/task-dialog.component';
-import {Employee} from '../../models/employee';
-import {Project} from '../../models/project';
-import {StatusTask} from '../../models/statusTaskEnum';
-import {EmployeeService} from 'src/app/services/employee.service';
-import {ProjectService} from 'src/app/services/project.service';
-import {TaskService} from 'src/app/services/task.service';
+import {TaskDataSource} from '../../services/task.datasource';
+import {DialogService} from '../../services/dialog.service';
+import {statusList} from '../../constants/statusList';
+import {TaskService} from '../../services/task.service';
+import {MessageService} from '../../services/message.service';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css']
+  styleUrls: ['./tasks.component.css'],
+  providers: [TaskDataSource]
 })
 export class TasksComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
-  @ViewChild('table') table: MatTable<any>;
+  displayedColumns: string[] =
+    ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
 
-  tasks: Task[] = [];
-  task: Task = new Task;
-  employeeList: Employee[] = [];
-  projectList: Project[] = [];
-  status = StatusTask;
-  isLoading = true;
+  statusList: Map<number, string> = statusList;
 
   constructor(
-    public dialog: MatDialog,
-    private employeeService: EmployeeService,
-    private projectService: ProjectService,
+    public taskDataSource: TaskDataSource,
+    public dialogService: DialogService,
     private taskService: TaskService,
+    public messageService: MessageService,
   ) {
   }
 
   ngOnInit() {
-    this.taskService.getTasks()
-      .subscribe((data: Task[]) => {
-        this.tasks = data;
-        this.isLoading = false;
-      });
-
-    this.employeeService.getEmployees()
-      .subscribe(data => this.employeeList = data);
-
-    this.projectService.getProjects()
-      .subscribe(data => this.projectList = data);
+    this.taskDataSource.reloadTask();
   }
 
-  openAddTaskDialog() {
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '500px',
-      data: {
-        title: 'Add Task',
-        task: this.task,
-        status: this.status,
-        projectList: this.projectList,
-        employeeList: this.employeeList
-      },
-      disableClose: true
-    });
+  handleCloseDialog = (isDataChanged: boolean) => {
+    if (isDataChanged) {
+      this.taskDataSource.reloadTask();
+    }
+  };
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addTask(result);
-      }
-    });
-  }
-
-  addTask(task: Task) {
-    this.taskService.createTask(task)
-      .subscribe(responseTask => {
-        this.tasks.push(responseTask);
-        this.table.renderRows();
-      });
-  }
-
-  openEditTaskDialog(task: Task) {
-    this.taskService.getTaskById(task.id)
-      .subscribe(data => {
-        const dialogRef = this.dialog.open(TaskDialogComponent, {
-          width: '500px',
-          data: {
-            title: 'Edit Task',
-            task: data,
-            status: this.status,
-            projectList: this.projectList,
-            employeeList: this.employeeList
-          },
-          disableClose: true
-        });
-
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            result.fullNames = this.employeeList
-              .filter(f => result.employees.indexOf(f.id) >= 0)
-              .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
-
-            const currentProject = this.projectList
-              .find(p => p.id === result.projectId);
-
-            if (currentProject.abbreviation) {
-              result.projectAbbreviation = currentProject.abbreviation;
-            }
-
-            this.editTask(result);
-          }
-        });
-      });
-  }
-
-  editTask(task: Task) {
-    this.taskService.updateTask(task)
-      .subscribe(() => {
-        this.tasks = this.tasks.map(t => {
-          return (t.id !== task.id) ? t : task;
-        });
-        this.table.renderRows();
-      });
+  onOpenDetailsTaskClick(task: Task = new Task()) {
+    this.dialogService
+      .openDetailsTaskDialog(task)
+      .afterClosed()
+      .subscribe(this.handleCloseDialog);
   }
 
   onDeleteTaskClick(taskId: number) {
-    this.taskService.deleteTask(taskId)
-      .subscribe(() => {
-        this.tasks = this.tasks.filter(t => t.id !== taskId);
-        this.table.renderRows();
+    this.dialogService
+      .openDeleteDialog()
+      .afterClosed()
+      .subscribe((isDelete) => {
+        if (isDelete) {
+          this.taskService.deleteTask(taskId).subscribe(() => {
+              this.handleCloseDialog(true);
+              this.messageService.openSnackBar('deleted successfully', 'Success!');
+            },
+            () => {
+              this.messageService.openSnackBar('unable to delete', 'Error!');
+            });
+        }
       });
   }
-
 }
