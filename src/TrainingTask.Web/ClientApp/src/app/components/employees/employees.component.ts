@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, Type, ViewChild} from '@angular/core';
 import {Employee} from '../../models/employee';
 import {EmployeeDataSource} from '../../services/employee.datasource';
 import {DialogService} from '../../services/dialog.service';
@@ -12,7 +12,7 @@ import {DialogService} from '../../services/dialog.service';
    В таком контексте использования сам по себе HttpService не будет являться синглтоном что может привести к неожиданным
    результаттам работы приложенияб когда будет добавлена обработка заголовков или ошибок сервера
   */
-  providers: [EmployeeDataSource, DialogService]
+  providers: [EmployeeDataSource]
 })
 // TODO: Компонента перегружена логикой.
 // TODO: Всю логику, которая не имеет непосредственного отношения к шаблону нужно выносить в сервисы
@@ -31,10 +31,22 @@ export class EmployeesComponent implements OnInit {
   }
 
   onOpenDetailsEmployeeClick(employee: Employee = new Employee()) {
-    this.dialogService.openDetailsEmployeeDialog(employee);
+    this.dialogService
+      .openDetailsEmployeeDialog(employee)
+      .afterClosed()
+      .subscribe(this.handleCloseDialog);
   }
 
   onDeleteEmployeeClick(employeeId: number) {
-    this.dialogService.openDeleteEmployeeDialog(employeeId);
+    this.dialogService
+      .openDeleteEmployeeDialog(employeeId)
+      .afterClosed()
+      .subscribe(this.handleCloseDialog);
   }
+
+  handleCloseDialog = (isDataChanged: boolean) => {
+    if (isDataChanged) {
+      this.dataSource.reloadEmployee();
+    }
+  };
 }

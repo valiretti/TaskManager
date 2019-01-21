@@ -7,7 +7,6 @@ import {MessageService} from '../../services/message.service';
 @Component({
   selector: 'app-delete-dialog',
   templateUrl: './delete-dialog.component.html',
-  providers: [MessageService]
 })
 export class DeleteDialogComponent {
 

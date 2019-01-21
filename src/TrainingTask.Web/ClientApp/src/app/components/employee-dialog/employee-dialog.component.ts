@@ -7,7 +7,6 @@ import {MessageService} from '../../services/message.service';
 @Component({
   selector: 'app-employee-dialog',
   templateUrl: './employee-dialog.component.html',
-  providers: [MessageService]
 })
 export class EmployeeDialogComponent {
 
