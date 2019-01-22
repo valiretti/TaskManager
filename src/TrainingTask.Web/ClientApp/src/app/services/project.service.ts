@@ -13,7 +13,7 @@ export class ProjectService {
   constructor(private httpService: HttpService) { }
 
   getProjects(): Observable<Project[]> {
-    return this.httpService.get<Project[]>(this.projectsUrl);
+    return this.httpService.get<Project[]>(`${this.projectsUrl}/all`);
   }
 
   createProject(project: Project): Observable<Project> {

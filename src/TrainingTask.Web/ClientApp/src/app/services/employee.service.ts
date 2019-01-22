@@ -14,7 +14,7 @@ export class EmployeeService {
   }
 
   getEmployees(): Observable<Array<Employee>> {
-    return this.httpService.get<Array<Employee>>(this.employeesUrl);
+    return this.httpService.get<Array<Employee>>(`${this.employeesUrl}/all`);
   }
 
   createEmployee(employee: Employee): Observable<Employee> {

@@ -13,7 +13,11 @@
              name="patronymic">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Position" type="text" required [(ngModel)]="data.position" name="position">
+      <mat-select placeholder="Position" required [(ngModel)]="data.position" name="position">
+        <mat-option *ngFor="let position of positionEmployeeList | keyvalue" [value]="position.key">
+          {{position.value}}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
   </form>
 </div>

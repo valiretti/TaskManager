@@ -15,7 +15,7 @@ export class TaskService {
   }
 
   getTasks(): Observable<Array<Task>> {
-    return this.httpService.get<Array<Task>>(this.tasksUrl).pipe(
+    return this.httpService.get<Array<Task>>(`${this.tasksUrl}/all`).pipe(
       map((taskList: Array<any>) => {
         return taskList.map((task: any) => {
           const partStr = task.workHours.split(':');

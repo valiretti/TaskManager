@@ -2,9 +2,9 @@ import {Component, OnInit, Type, ViewChild} from '@angular/core';
 import {Employee} from '../../models/employee';
 import {EmployeeDataSource} from '../../services/employee.datasource';
 import {DialogService} from '../../services/dialog.service';
-import {TaskService} from '../../services/task.service';
 import {MessageService} from '../../services/message.service';
 import {EmployeeService} from '../../services/employee.service';
+import {positionEmployeeList} from '../../constants/positionEmployeeList';
 
 @Component({
   selector: 'app-employees',
@@ -22,6 +22,7 @@ import {EmployeeService} from '../../services/employee.service';
 // TODO: Обязательно нужно декомпозировать элементы приложения
 export class EmployeesComponent implements OnInit {
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'patronymic', 'position', 'edit', 'delete'];
+  positionEmployeeList: Map<number, string> = positionEmployeeList;
 
   constructor(
     public dataSource: EmployeeDataSource,

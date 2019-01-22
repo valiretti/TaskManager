@@ -29,7 +29,7 @@
       </ng-container>
       <ng-container matColumnDef="position">
         <mat-header-cell *matHeaderCellDef> Position</mat-header-cell>
-        <mat-cell *matCellDef="let employee"> {{employee.position}} </mat-cell>
+        <mat-cell *matCellDef="let employee"> {{positionEmployeeList.get(employee.position)}} </mat-cell>
       </ng-container>
       <ng-container matColumnDef="edit">
         <mat-header-cell *matHeaderCellDef></mat-header-cell>

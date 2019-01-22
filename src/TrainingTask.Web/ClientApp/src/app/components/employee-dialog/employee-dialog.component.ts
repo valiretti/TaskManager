@@ -3,12 +3,14 @@ import {MatDialogRef, MAT_DIALOG_DATA, MatTable} from '@angular/material';
 import {Employee} from '../../models/employee';
 import {EmployeeService} from '../../services/employee.service';
 import {MessageService} from '../../services/message.service';
+import {positionEmployeeList} from '../../constants/positionEmployeeList';
 
 @Component({
   selector: 'app-employee-dialog',
   templateUrl: './employee-dialog.component.html',
 })
 export class EmployeeDialogComponent {
+  positionEmployeeList: Map<number, string> = positionEmployeeList;
 
   constructor(
     private employeeService: EmployeeService,
