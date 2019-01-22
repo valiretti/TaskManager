@@ -5,7 +5,8 @@
       <input matInput placeholder="Id" type="text" [value]="data.id || ''" name="id" readonly>
     </mat-form-field>
     <mat-form-field>
-      <mat-select [disabled]="data.id" placeholder="Project" [(ngModel)]="data.projectId" name="projectId">
+      <!--[disabled]="isDisabledProjectName"-->
+      <mat-select placeholder="Project" [(ngModel)]="data.projectId" name="projectId">
         <mat-option *ngFor="let project of projectDataSource.projectList" [value]="project.id">
           {{project.abbreviation}}
         </mat-option>

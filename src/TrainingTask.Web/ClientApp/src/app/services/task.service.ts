@@ -26,18 +26,6 @@ export class TaskService {
     );
   }
 
-  getTasksByProject(id: number): Observable<Array<Task>> {
-    return this.httpService.get<Array<Task>>(`api/projects/${id}/tasks`).pipe(
-      map((taskList: Array<any>) => {
-        return taskList.map((task: any) => {
-          const partStr = task.workHours.split(':');
-          task.workHours = parseInt(partStr[0], 10) + parseInt(partStr[1], 10) / 60.0;
-          return task;
-        });
-      })
-    );
-  }
-
   createTask(task: Task): Observable<Task> {
     return this.httpService.post<Task>(this.tasksUrl, task);
   }

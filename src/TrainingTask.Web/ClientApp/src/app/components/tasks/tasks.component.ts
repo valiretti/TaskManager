@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, Input} from '@angular/core';
 import {Task} from '../../models/task';
 import {TaskDataSource} from '../../services/task.datasource';
 import {DialogService} from '../../services/dialog.service';
@@ -13,8 +13,8 @@ import {MessageService} from '../../services/message.service';
   providers: [TaskDataSource]
 })
 export class TasksComponent implements OnInit {
-  displayedColumns: string[] =
-    ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
+  @Input() projectId: number;
+  displayedColumns: string[];
 
   statusList: Map<number, string> = statusList;
 
@@ -27,16 +27,22 @@ export class TasksComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.taskDataSource.reloadTask();
+    this.taskDataSource.reloadTask(this.projectId);
+    this.displayedColumns = Boolean(this.projectId) ?
+      ['id', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'] :
+      ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
   }
 
   handleCloseDialog = (isDataChanged: boolean) => {
     if (isDataChanged) {
-      this.taskDataSource.reloadTask();
+      this.taskDataSource.reloadTask(this.projectId);
     }
   };
 
   onOpenDetailsTaskClick(task: Task = new Task()) {
+    if (Boolean(this.projectId)) {
+      task.projectId = this.projectId;
+    }
     this.dialogService
       .openDetailsTaskDialog(task)
       .afterClosed()

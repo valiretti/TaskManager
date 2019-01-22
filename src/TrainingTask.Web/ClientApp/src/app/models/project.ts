@@ -5,5 +5,4 @@ export class Project {
   name: string;
   abbreviation: string;
   description: string;
-  tasks: Task[];
 }

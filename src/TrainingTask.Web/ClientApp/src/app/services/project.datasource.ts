@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Project} from '../models/project';
 import {ProjectService} from './project.service';
+import {Task} from '../models/task';
 
 @Injectable()
 export class ProjectDataSource extends DataSource<Project> {

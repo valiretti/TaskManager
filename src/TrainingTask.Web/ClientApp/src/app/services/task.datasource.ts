@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {Injectable} from '@angular/core';
 import {Task} from '../models/task';
 import {TaskService} from './task.service';
+import {ProjectService} from './project.service';
 
 @Injectable()
 export class TaskDataSource extends DataSource<Task> {
@@ -13,7 +14,8 @@ export class TaskDataSource extends DataSource<Task> {
   private data: BehaviorSubject<Array<Task>> = new BehaviorSubject([]);
 
   constructor(
-    private taskService: TaskService
+    private taskService: TaskService,
+    private projectService: ProjectService,
   ) {
     super();
   }
@@ -27,11 +29,18 @@ export class TaskDataSource extends DataSource<Task> {
     this.loading.complete();
   }
 
-  public reloadTask() {
+  public reloadTask(projectId: number) {
     this.loading.next(true);
-    this.taskService.getTasks().subscribe((response: Array<Task>) => {
-      this.data.next(response);
-      this.loading.next(false);
-    });
+    if (Boolean(projectId)) {
+      this.projectService.getTasksByProject(projectId).subscribe((response: Array<Task>) => {
+        this.data.next(response);
+        this.loading.next(false);
+      });
+    } else {
+      this.taskService.getTasks().subscribe((response: Array<Task>) => {
+        this.data.next(response);
+        this.loading.next(false);
+      });
+    }
   }
 }

@@ -1,10 +1,10 @@
-import {Component, OnInit, Inject, ViewChild} from '@angular/core';
-import {MatDialogRef, MAT_DIALOG_DATA, MatDialog, MatTable} from '@angular/material';
-import {Task} from '../../models/task';
-import {TaskDialogComponent} from '../task-dialog/task-dialog.component';
-import {Employee} from '../../models/employee';
+import {Component, Inject} from '@angular/core';
+import {MatDialogRef, MAT_DIALOG_DATA, MatDialog} from '@angular/material';
 import {Project} from '../../models/project';
-import {StatusTask} from '../../models/statusTaskEnum';
+import {EmployeeDataSource} from '../../services/employee.datasource';
+import {ProjectDataSource} from '../../services/project.datasource';
+import {ProjectService} from '../../services/project.service';
+import {MessageService} from '../../services/message.service';
 
 @Component({
   selector: 'app-project-dialog',
@@ -12,104 +12,34 @@ import {StatusTask} from '../../models/statusTaskEnum';
   // TODO: приложение не должно содержать пустых файлов
 })
 // TODO: Эта компонента дублирует компоненту TasksComponent!
-export class ProjectDialogComponent implements OnInit {
-  employeeList: Employee[] = [];
-  projectList: Project[] = [];
-  status = StatusTask;
-  @ViewChild('tableTasksByProject') table: MatTable<any>;
-
+export class ProjectDialogComponent {
   constructor(
-    public dialog: MatDialog,
+    private projectService: ProjectService,
     public dialogRef: MatDialogRef<ProjectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public data: Project,
+    public messageService: MessageService,
   ) {
   }
 
-  ngOnInit() {
-    this.data.employeeService.getEmployees()
-      .subscribe(data => this.employeeList = data);
-
-    this.data.projectService.getProjects()
-      .subscribe(data => this.projectList = data);
+  onSaveProjectClick(project: Project) {
+    this.projectService.saveProject(project).subscribe(
+      () => {
+        this.closeDialog(true);
+        this.messageService.openSnackBar('saved successfully', 'Success!');
+      },
+      () => {
+        this.closeDialog(false);
+        this.messageService.openSnackBar('unable to save', 'Error!');
+      }
+    );
   }
 
   onCancelClick() {
-    this.closeDialog();
+    this.closeDialog(false);
   }
 
-  closeDialog() {
-    this.dialogRef.close();
-  }
-
-  openAddTaskDialog() {
-    const task: Task = new Task;
-    task.projectId = this.data.project.id;
-
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '500px',
-      data: {
-        title: 'Add Task',
-        task: task,
-        status: this.status,
-        projectList: this.projectList,
-        employeeList: this.employeeList,
-        projectReadOnly: true
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        result.fullNames = this.employeeList
-          .filter(f => result.employees.indexOf(f.id) >= 0)
-          .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
-
-        this.data.project.tasks.push(result);
-        this.table.renderRows();
-      }
-    });
-  }
-
-  openEditTaskDialog(task: Task) {
-    const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '500px',
-      data: {
-        title: 'Edit Task',
-        task: {...task},
-        status: this.status,
-        projectList: this.projectList,
-        employeeList: this.employeeList,
-        projectReadOnly: true
-      },
-      disableClose: true
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        // TODO: некорректное присваивание значение полю readonly
-        result.statusName = StatusTask[result.status];
-
-        /* TODO: хранить отдельно сконкатенированное имя - плохая практика, так как в этом случае надо будет заморачиваться над
-          обновлением этого поля. Как вариант можно использовать геттер который будет возвращать полное имя либо написатьпайп в котором
-          будет добавлена логика конкатенации.
-         */
-        result.fullNames = this.employeeList
-          .filter(f => result.employees.indexOf(f.id) >= 0)
-          .map(e => `${e.firstName} ${e.lastName} ${e.patronymic}`);
-
-        /* TODO: Список должен обновляться серверными даннымиб и тут 2 варианта:
-         1. Договориться с бэком, что он будет присылать сохранённую модель в PUT и POST методах
-         2. Перезапрашивать список после сохранения или добавления элемента
-        */
-        this.data.project.tasks = this.data.project.tasks.map((t: Task) => {
-          return (t.id !== result.id) ? t : result;
-        });
-      }
-    });
-  }
-
-  onDeleteTaskClick(taskId: number) {
-    this.data.project.tasks = this.data.project.tasks.filter((t: Task) => t.id !== taskId);
+  closeDialog(isChangeData: boolean) {
+    this.dialogRef.close(isChangeData);
   }
 
 }

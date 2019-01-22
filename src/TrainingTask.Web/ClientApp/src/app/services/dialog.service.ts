@@ -6,6 +6,8 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {DeleteDialogComponent} from '../components/delete-dialog/delete-dialog.component';
 import {Task} from '../models/task';
 import {TaskDialogComponent} from '../components/task-dialog/task-dialog.component';
+import {Project} from '../models/project';
+import {ProjectDialogComponent} from '../components/project-dialog/project-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -40,6 +42,16 @@ export class DialogService {
     };
 
     return this.openDialog(TaskDialogComponent, config);
+  }
+
+  openDetailsProjectDialog(project: Project): MatDialogRef<any, any> {
+    const config: MatDialogConfig<Project> = {
+      width: '1000px',
+      data: cloneDeep(project),
+      disableClose: true
+    };
+
+    return this.openDialog(ProjectDialogComponent, config);
   }
 
   openDeleteDialog(): MatDialogRef<any, any> {
