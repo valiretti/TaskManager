@@ -21,6 +21,10 @@ export class ProjectDialogComponent {
   ) {
   }
 
+  setTasksByProject(tasks) {
+    this.data.tasks = tasks;
+  }
+
   onSaveProjectClick(project: Project) {
     this.projectService.saveProject(project).subscribe(
       () => {

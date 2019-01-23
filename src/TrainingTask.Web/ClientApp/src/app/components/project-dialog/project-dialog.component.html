@@ -16,7 +16,7 @@
     </mat-form-field>
     <div *ngIf="data.id">
       <h3>Tasks</h3>
-      <app-tasks [projectId]=data.id></app-tasks>
+      <app-tasks [projectId]=data.id (setTasksByProject)="setTasksByProject($event)"></app-tasks>
     </div>
   </form>
 </div>

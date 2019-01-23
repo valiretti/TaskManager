@@ -5,4 +5,5 @@ export class Project {
   name: string;
   abbreviation: string;
   description: string;
+  tasks: Array<Task>;
 }

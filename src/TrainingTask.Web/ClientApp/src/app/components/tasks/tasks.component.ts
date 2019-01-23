@@ -1,10 +1,11 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, Output, EventEmitter} from '@angular/core';
 import {Task} from '../../models/task';
 import {TaskDataSource} from '../../services/task.datasource';
 import {DialogService} from '../../services/dialog.service';
 import {statusList} from '../../constants/statusList';
 import {TaskService} from '../../services/task.service';
 import {MessageService} from '../../services/message.service';
+import {ProjectService} from '../../services/project.service';
 
 @Component({
   selector: 'app-tasks',
@@ -14,6 +15,7 @@ import {MessageService} from '../../services/message.service';
 })
 export class TasksComponent implements OnInit {
   @Input() projectId: number;
+  @Output() setTasksByProject = new EventEmitter<Array<Task>>();
   displayedColumns: string[];
   isDisabledProjectName: boolean;
 
@@ -23,6 +25,7 @@ export class TasksComponent implements OnInit {
     public taskDataSource: TaskDataSource,
     public dialogService: DialogService,
     private taskService: TaskService,
+    private projectService: ProjectService,
     public messageService: MessageService,
   ) {
   }
@@ -33,11 +36,23 @@ export class TasksComponent implements OnInit {
       ['id', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'] :
       ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
     this.isDisabledProjectName = Boolean(this.projectId) ? true : false;
+    this.reloadTasksByProject();
+  }
+
+  reloadTasksByProject() {
+    if (Boolean(this.projectId)) {
+      this.projectService.getTasksByProject(this.projectId).subscribe((response: Array<Task>) => {
+        this.setTasksByProject.emit(response);
+      });
+    } else {
+      this.setTasksByProject.emit([]);
+    }
   }
 
   handleCloseDialog = (isDataChanged: boolean) => {
     if (isDataChanged) {
       this.taskDataSource.reloadTask(this.projectId);
+      this.reloadTasksByProject();
     }
   };
 
