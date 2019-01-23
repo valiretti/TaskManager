@@ -9,6 +9,7 @@ import {EmployeeService} from './employee.service';
 export class EmployeeDataSource extends DataSource<Employee> {
 
   public loading = new BehaviorSubject<boolean>(false);
+  public numberEmployees = new BehaviorSubject<number>(0);
 
   private data: BehaviorSubject<Array<Employee>> = new BehaviorSubject([]);
 
@@ -31,9 +32,18 @@ export class EmployeeDataSource extends DataSource<Employee> {
     this.loading.complete();
   }
 
-  public reloadEmployee() {
+  public reloadEmployee(page: number = 1, limit: number = 10) {
     this.loading.next(true);
-    this.employeeService.getEmployees().subscribe((response: Array<Employee>) => {
+    this.employeeService.getEmployees(page, limit).subscribe((response: any) => {
+      this.data.next(response.items);
+      this.loading.next(false);
+      this.numberEmployees.next(response.total);
+    });
+  }
+
+  public reloadEmployeeAll() {
+    this.loading.next(true);
+    this.employeeService.getEmployeesAll().subscribe((response: any) => {
       this.data.next(response);
       this.loading.next(false);
     });

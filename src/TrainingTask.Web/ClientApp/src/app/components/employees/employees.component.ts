@@ -1,10 +1,12 @@
-import {Component, OnInit, Type, ViewChild} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Employee} from '../../models/employee';
 import {EmployeeDataSource} from '../../services/employee.datasource';
 import {DialogService} from '../../services/dialog.service';
 import {MessageService} from '../../services/message.service';
 import {EmployeeService} from '../../services/employee.service';
 import {positionEmployeeList} from '../../constants/positionEmployeeList';
+import {PageEvent} from '@angular/material';
+import {Task} from '../../models/task';
 
 @Component({
   selector: 'app-employees',
@@ -23,6 +25,7 @@ import {positionEmployeeList} from '../../constants/positionEmployeeList';
 export class EmployeesComponent implements OnInit {
   displayedColumns: string[] = ['id', 'firstName', 'lastName', 'patronymic', 'position', 'edit', 'delete'];
   positionEmployeeList: Map<number, string> = positionEmployeeList;
+  pageEvent: PageEvent = new PageEvent();
 
   constructor(
     public dataSource: EmployeeDataSource,
@@ -33,7 +36,14 @@ export class EmployeesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataSource.reloadEmployee();
+    this.pageEvent.pageIndex = 0;
+    this.pageEvent.pageSize = 10;
+    this.dataSource.reloadEmployee(this.pageEvent.pageIndex + 1, this.pageEvent.pageSize);
+  }
+
+  handlePage(event: PageEvent): PageEvent {
+    this.dataSource.reloadEmployee(event.pageIndex + 1, event.pageSize);
+    return event;
   }
 
   onOpenDetailsEmployeeClick(employee: Employee = new Employee()) {
@@ -62,7 +72,7 @@ export class EmployeesComponent implements OnInit {
 
   handleCloseDialog = (isDataChanged: boolean) => {
     if (isDataChanged) {
-      this.dataSource.reloadEmployee();
+      this.dataSource.reloadEmployee(this.pageEvent.pageIndex + 1, this.pageEvent.pageSize);
     }
   };
 }

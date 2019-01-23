@@ -27,7 +27,7 @@ export class TaskDialogComponent implements OnInit {
 
   ngOnInit() {
     if (this.employeeDataSource.employeeList.length === 0) {
-      this.employeeDataSource.reloadEmployee();
+      this.employeeDataSource.reloadEmployeeAll();
     }
     if (this.projectDataSource.projectList.length === 0) {
       this.projectDataSource.reloadProject();
