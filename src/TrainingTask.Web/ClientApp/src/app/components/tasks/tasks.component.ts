@@ -15,6 +15,7 @@ import {MessageService} from '../../services/message.service';
 export class TasksComponent implements OnInit {
   @Input() projectId: number;
   displayedColumns: string[];
+  isDisabledProjectName: boolean;
 
   statusList: Map<number, string> = statusList;
 
@@ -31,6 +32,7 @@ export class TasksComponent implements OnInit {
     this.displayedColumns = Boolean(this.projectId) ?
       ['id', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'] :
       ['id', 'projectName', 'name', 'startDate', 'finishDate', 'employees', 'status', 'edit', 'delete'];
+    this.isDisabledProjectName = Boolean(this.projectId) ? true : false;
   }
 
   handleCloseDialog = (isDataChanged: boolean) => {
@@ -40,11 +42,11 @@ export class TasksComponent implements OnInit {
   };
 
   onOpenDetailsTaskClick(task: Task = new Task()) {
-    if (Boolean(this.projectId)) {
+    if (Boolean(this.projectId) && !Boolean(task.projectId)) {
       task.projectId = this.projectId;
     }
     this.dialogService
-      .openDetailsTaskDialog(task)
+      .openDetailsTaskDialog(task, this.isDisabledProjectName)
       .afterClosed()
       .subscribe(this.handleCloseDialog);
   }

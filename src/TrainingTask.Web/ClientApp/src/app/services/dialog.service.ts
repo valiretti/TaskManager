@@ -25,33 +25,33 @@ export class DialogService {
   }
 
   openDetailsEmployeeDialog(employee: Employee): MatDialogRef<any, any> {
-    const config: MatDialogConfig<Employee> = {
-      width: '500px',
-      data: cloneDeep(employee),
-      disableClose: true
-    };
+    const dialogConfig: MatDialogConfig<Employee> = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.disableClose = true;
+    dialogConfig.data = cloneDeep(employee);
 
-    return this.openDialog(EmployeeDialogComponent, config);
+    return this.openDialog(EmployeeDialogComponent, dialogConfig);
   }
 
-  openDetailsTaskDialog(task: Task): MatDialogRef<any, any> {
-    const config: MatDialogConfig<Task> = {
-      width: '500px',
-      data: cloneDeep(task),
-      disableClose: true
+  openDetailsTaskDialog(task: Task, isDisabledProjectName: boolean): MatDialogRef<any, any> {
+    const dialogConfig: MatDialogConfig<any> = new MatDialogConfig();
+    dialogConfig.width = '500px';
+    dialogConfig.disableClose = true;
+    dialogConfig.data = {
+      isDisabledProjectName: isDisabledProjectName,
+      task: cloneDeep(task)
     };
 
-    return this.openDialog(TaskDialogComponent, config);
+    return this.openDialog(TaskDialogComponent, dialogConfig);
   }
 
   openDetailsProjectDialog(project: Project): MatDialogRef<any, any> {
-    const config: MatDialogConfig<Project> = {
-      width: '1000px',
-      data: cloneDeep(project),
-      disableClose: true
-    };
+    const dialogConfig: MatDialogConfig<Project> = new MatDialogConfig();
+    dialogConfig.width = '1000px';
+    dialogConfig.disableClose = true;
+    dialogConfig.data = cloneDeep(project);
 
-    return this.openDialog(ProjectDialogComponent, config);
+    return this.openDialog(ProjectDialogComponent, dialogConfig);
   }
 
   openDeleteDialog(): MatDialogRef<any, any> {

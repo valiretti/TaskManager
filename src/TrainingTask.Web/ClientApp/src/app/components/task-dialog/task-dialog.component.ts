@@ -20,7 +20,7 @@ export class TaskDialogComponent implements OnInit {
     private employeeDataSource: EmployeeDataSource,
     private projectDataSource: ProjectDataSource,
     public dialogRef: MatDialogRef<TaskDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Task,
+    @Inject(MAT_DIALOG_DATA) public data: any,
     public messageService: MessageService,
   ) {
   }
