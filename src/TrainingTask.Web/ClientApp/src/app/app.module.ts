@@ -1,24 +1,24 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {AppRoutingModule} from './modules/app-routing.module';
+import {AppComponent} from './app.component';
+import {HttpClientModule} from '@angular/common/http';
+import {EmployeesComponent} from './components/employees/employees.component';
+import {TasksComponent} from './components/tasks/tasks.component';
+import {ProjectsComponent} from './components/projects/projects.component';
+import {NotFoundComponent} from './components/not-found/not-found.component';
+import {FormsModule} from '@angular/forms';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MaterialModule} from './modules/material.module';
+import {FlexLayoutModule} from '@angular/flex-layout';
+import {EmployeeDialogComponent} from './components/employee-dialog/employee-dialog.component';
+import {ProjectDialogComponent} from './components/project-dialog/project-dialog.component';
+import {TaskDialogComponent} from './components/task-dialog/task-dialog.component';
+import {EnumKeyValuePipe} from './pipes/enum-key-value.pipe';
+import {DeleteDialogComponent} from './components/delete-dialog/delete-dialog.component';
+import {EmployeeDataSource} from './services/employee.datasource';
+import {ProjectDataSource} from './services/project.datasource';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-
-import { HttpClientModule } from '@angular/common/http';
-import { EmployeesComponent } from './employees/employees.component';
-import { TasksComponent } from './tasks/tasks.component';
-import { ProjectsComponent } from './projects/projects.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-
-import { FormsModule } from '@angular/forms';
-
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MaterialModule } from './material.module';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { EmployeeDialogComponent } from './employee-dialog/employee-dialog.component';
-import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
-import { TaskDialogComponent } from './task-dialog/task-dialog.component';
-import { EnumKeyValuePipe } from './enum-key-value.pipe';
 
 @NgModule({
   declarations: [
@@ -31,6 +31,7 @@ import { EnumKeyValuePipe } from './enum-key-value.pipe';
     ProjectDialogComponent,
     TaskDialogComponent,
     EnumKeyValuePipe,
+    DeleteDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,9 +45,11 @@ import { EnumKeyValuePipe } from './enum-key-value.pipe';
   entryComponents: [
     EmployeeDialogComponent,
     ProjectDialogComponent,
-    TaskDialogComponent
+    TaskDialogComponent,
+    DeleteDialogComponent,
   ],
-  providers: [],
+  providers: [EmployeeDataSource, ProjectDataSource],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

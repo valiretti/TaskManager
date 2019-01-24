@@ -1,0 +1,26 @@
+<h1 mat-dialog-title>{{data.id ? 'Edit Project' : 'Add Project'}}</h1>
+<div mat-dialog-content>
+  <form fxLayout="column">
+    <mat-form-field>
+      <input matInput placeholder="Id" type="text" [value]="data.id || ''" name="id" readonly>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Name" type="text" required [(ngModel)]="data.name" name="name">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Abbreviation" type="text" required [(ngModel)]="data.abbreviation"
+             name="abbreviation">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Description" type="text" required [(ngModel)]="data.description" name="description">
+    </mat-form-field>
+    <div *ngIf="data.id">
+      <h3>Tasks</h3>
+      <app-tasks [projectId]=data.id (setTasksByProject)="setTasksByProject($event)"></app-tasks>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="onSaveProjectClick(data)">Save</button>
+  <button mat-raised-button color="warn" (click)="onCancelClick()">Cancel</button>
+</div>

@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>{{data.id ? 'Edit Employee' : 'Add Employee'}}</h1>
+<div mat-dialog-content>
+  <form fxLayout="column">
+    <mat-form-field>
+      <input matInput placeholder=" First Name" type="text" required [(ngModel)]="data.firstName"
+             name="firstName">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Last Name" type="text" required [(ngModel)]="data.lastName" name="lastName">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Patronymic" type="text" required [(ngModel)]="data.patronymic"
+             name="patronymic">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Position" required [(ngModel)]="data.position" name="position">
+        <mat-option *ngFor="let position of positionEmployeeList | keyvalue" [value]="position.key">
+          {{position.value}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="onSaveEmployeeClick(data)">Save</button>
+  <button mat-raised-button color="warn" (click)="onCancelClick()">Cancel</button>
+</div>
